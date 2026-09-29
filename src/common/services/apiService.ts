@@ -79,7 +79,7 @@ class ApiService {
 
           // Redirect ke login page
           if (typeof window !== "undefined") {
-            window.location.href = ROUTES.LOGIN;
+            window.location.href = import.meta.env.BASE_URL + ROUTES.LOGIN.replace(/^\//, "");
           }
 
           return Promise.reject(this.handleError(error));
