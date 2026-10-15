@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
 import { IoEye } from "react-icons/io5";
 
-interface MonitoringTarifData {
+export interface MonitoringTarifData {
   id: string;
   unit: string;
   periode: string;
@@ -12,6 +12,11 @@ interface MonitoringTarifData {
   totalAkun: number;
   sudahDiatur: number;
   belumDiatur: number;
+  penerima?: string;
+  status?: string;
+  jenisAkun?: string;
+  frekuensi?: string;
+  kelompok?: string;
 }
 
 interface MonitoringTarifTableProps {

@@ -1,0 +1,136 @@
+{
+  "periode": [
+    {
+      "id": "20262",
+      "nama": "2026 Genap",
+      "tahun": 2026,
+      "semester": "Genap",
+      "isActive": true
+    },
+    {
+      "id": "20261",
+      "nama": "2026 Ganjil",
+      "tahun": 2026,
+      "semester": "Ganjil",
+      "isActive": false
+    },
+    {
+      "id": "20252",
+      "nama": "2025 Genap",
+      "tahun": 2025,
+      "semester": "Genap",
+      "isActive": false
+    },
+    {
+      "id": "20251",
+      "nama": "2025 Ganjil",
+      "tahun": 2025,
+      "semester": "Ganjil",
+      "isActive": false
+    },
+    {
+      "id": "20242",
+      "nama": "2024 Genap",
+      "tahun": 2024,
+      "semester": "Genap",
+      "isActive": false
+    },
+    {
+      "id": "20241",
+      "nama": "2024 Ganjil",
+      "tahun": 2024,
+      "semester": "Ganjil",
+      "isActive": false
+    }
+  ],
+  "dashboard": {
+    "stats": {
+      "totalTagihan": 23300000000,
+      "totalTagihanLunas": 31050000000,
+      "totalPembayaran": 30400000000,
+      "saldoDeposit": 1250000000
+    },
+    "periode": "2026 Genap",
+    "lastUpdated": "2026-10-13T06:00:00Z"
+  },
+  "tagihan": [
+    {
+      "id": "1",
+      "nim": "21110501001",
+      "nama": "Ahmad Fauzi",
+      "prodi": "Teknik Informatika",
+      "periode": "2026 Genap",
+      "jenisTagihan": "SPP Tetap",
+      "nominal": 3500000,
+      "status": "Lunas",
+      "tanggal": "2026-02-15"
+    },
+    {
+      "id": "2",
+      "nim": "21110501002",
+      "nama": "Budi Santoso",
+      "prodi": "Sistem Informasi",
+      "periode": "2026 Genap",
+      "jenisTagihan": "SPP Variabel",
+      "nominal": 2400000,
+      "status": "Belum Lunas",
+      "tanggal": "2026-02-18"
+    },
+    {
+      "id": "3",
+      "nim": "21110501003",
+      "nama": "Citra Lestari",
+      "prodi": "Manajemen",
+      "periode": "2026 Genap",
+      "jenisTagihan": "Praktikum",
+      "nominal": 750000,
+      "status": "Lunas",
+      "tanggal": "2026-02-20"
+    },
+    {
+      "id": "4",
+      "nim": "21110501004",
+      "nama": "Dewi Anggraini",
+      "prodi": "Akuntansi",
+      "periode": "2026 Genap",
+      "jenisTagihan": "SPP Tetap",
+      "nominal": 3500000,
+      "status": "Belum Lunas",
+      "tanggal": "2026-02-22"
+    }
+  ],
+  "pembayaran": [
+    {
+      "id": "1",
+      "noTransaksi": "TRX-20260215-001",
+      "nim": "21110501001",
+      "nama": "Ahmad Fauzi",
+      "periode": "2026 Genap",
+      "channel": "Bank Syariah Indonesia",
+      "nominal": 3500000,
+      "status": "Berhasil",
+      "tanggal": "2026-02-15 10:30:00"
+    },
+    {
+      "id": "2",
+      "noTransaksi": "TRX-20260220-002",
+      "nim": "21110501003",
+      "nama": "Citra Lestari",
+      "periode": "2026 Genap",
+      "channel": "Bank Mandiri",
+      "nominal": 750000,
+      "status": "Berhasil",
+      "tanggal": "2026-02-20 14:15:00"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "nama": "Siddik Super Admin",
+      "email": "admin@uika-bogor.ac.id",
+      "roles": ["SUPER_ADMIN", "ADMIN_KEUANGAN"],
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}

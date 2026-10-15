@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
 import { IoEye } from "react-icons/io5";
 
-interface MonitoringTagihanMahasiswaData {
+export interface MonitoringTagihanMahasiswaData {
   id: string;
   unit: string;
   jalurPendaftaran: string;
@@ -10,6 +10,10 @@ interface MonitoringTagihanMahasiswaData {
   gelombang: string;
   periodeMasuk: string;
   jumlahMahasiswa: number;
+  periodeTagihan?: string;
+  jenisAkun?: string;
+  frekuensi?: string;
+  kelompok?: string;
 }
 
 interface MonitoringTagihanMahasiswaTableProps {

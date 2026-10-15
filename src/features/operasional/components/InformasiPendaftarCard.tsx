@@ -33,7 +33,16 @@ const InformasiPendaftarCard: React.FC<InformasiPendaftarCardProps> = ({ data, i
     ...customFields,
   ];
 
-  return <InformationCard fields={fields} isLoading={isLoading} className={className} bgColorClass="bg-blue-50" borderColorClass="border-blue-400" labelColorClass="text-blue-700" />;
+  return (
+    <InformationCard
+      fields={fields}
+      isLoading={isLoading}
+      className={className}
+      bgColorClass="bg-[#f0f6fe]"
+      borderColorClass="border-[#84b5ea]"
+      labelColorClass="text-[#6284be] font-medium"
+    />
+  );
 };
 
 export default InformasiPendaftarCard;

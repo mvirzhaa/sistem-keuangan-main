@@ -7,7 +7,7 @@ interface FilterDataMonitoringUktProps {
   className?: string;
 }
 
-interface FilterValues {
+export interface FilterValues {
   penerima: string;
   periodeMasuk: string;
   gelombang: string;
@@ -17,7 +17,10 @@ interface FilterValues {
   kelompokUkt: string;
 }
 
-const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({ onFilter, className = "" }) => {
+const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
+  onFilter,
+  className = "",
+}) => {
   const [filters, setFilters] = useState<FilterValues>({
     penerima: "Mahasiswa",
     periodeMasuk: "2025 Genap",
@@ -31,17 +34,47 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({ o
   // Options untuk dropdown
   const penerimaOptions = ["Mahasiswa", "Dosen", "Tenaga Pendidik"];
 
-  const periodeMasukOptions = ["2025 Genap", "2025 Ganjil", "2024 Genap", "2024 Ganjil"];
+  const periodeMasukOptions = [
+    "2025 Genap",
+    "2025 Ganjil",
+    "2024 Genap",
+    "2024 Ganjil",
+  ];
 
   const gelombangOptions = ["Gelombang 1", "Gelombang 2", "Gelombang 3"];
 
-  const jalurPendaftaranOptions = ["-- Semua Jalur Pendaftaran --", "SNMPTN", "SBMPTN", "Seleksi Mandiri"];
+  const jalurPendaftaranOptions = [
+    "-- Semua Jalur Pendaftaran --",
+    "SNMPTN",
+    "SBMPTN",
+    "Seleksi Mandiri",
+  ];
 
-  const sistemKuliahOptions = ["Reguler Sore", "Reguler Pagi", "Kelas Karyawan"];
+  const sistemKuliahOptions = [
+    "Reguler Sore",
+    "Reguler Pagi",
+    "Kelas Karyawan",
+  ];
 
-  const programStudiOptions = ["Universitas Ibn Khaldun", "Fakultas Teknik", "Fakultas Ekonomi", "Fakultas Hukum"];
+  const programStudiOptions = [
+    "Universitas Ibn Khaldun",
+    "S1 - Teknik Informatika",
+    "S1 - Sistem Informasi",
+    "S1 - Teknik Sipil",
+    "S1 - Teknik Mesin",
+    "S1 - Akuntansi",
+    "S1 - Manajemen",
+    "S1 - Ilmu Hukum",
+  ];
 
-  const kelompokUktOptions = ["-- Semua Kelompok UKT --", "Kelompok 1", "Kelompok 2", "Kelompok 3"];
+  const kelompokUktOptions = [
+    "-- Semua Kelompok UKT --",
+    "Kelompok UKT 1",
+    "Kelompok UKT 2",
+    "Kelompok UKT 3",
+    "Kelompok UKT 4",
+    "Kelompok UKT 5",
+  ];
 
   // Handle perubahan filter
   const handleFilterChange = (key: keyof FilterValues, value: string) => {
@@ -59,59 +92,116 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({ o
   };
 
   return (
-    <div className={`border-t-4 border-t-amber-500 rounded-md shadow-md p-5 text-xs ${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 ">
-        {/* Baris 1 */}
+    <div
+      className={`border-t-4 border-t-amber-500 bg-white rounded-md shadow-md p-5 text-xs ${className}`}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+        {/* Baris 1: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600 flex-1/2">Penerima</label>
-          <SearchableDropdown options={penerimaOptions} defaultValue={filters.penerima} onChange={(value) => handleFilterChange("penerima", value)} className="w-full" />
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Penerima
+          </label>
+          <SearchableDropdown
+            options={penerimaOptions}
+            defaultValue={filters.penerima}
+            value={filters.penerima}
+            onChange={(value) => handleFilterChange("penerima", value)}
+            className="w-full"
+          />
         </div>
 
+        {/* Baris 1: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600 flex-1/2">Periode Masuk</label>
-          <SearchableDropdown options={periodeMasukOptions} defaultValue={filters.periodeMasuk} onChange={(value) => handleFilterChange("periodeMasuk", value)} className="w-full" />
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Periode Masuk
+          </label>
+          <SearchableDropdown
+            options={periodeMasukOptions}
+            defaultValue={filters.periodeMasuk}
+            value={filters.periodeMasuk}
+            onChange={(value) => handleFilterChange("periodeMasuk", value)}
+            className="w-full"
+          />
         </div>
 
-        {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
-
-        {/* Baris 2 */}
+        {/* Baris 2: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600 flex-1/2">Gelombang</label>
-          <SearchableDropdown options={gelombangOptions} defaultValue={filters.gelombang} onChange={(value) => handleFilterChange("gelombang", value)} className="w-full" />
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Gelombang
+          </label>
+          <SearchableDropdown
+            options={gelombangOptions}
+            defaultValue={filters.gelombang}
+            value={filters.gelombang}
+            onChange={(value) => handleFilterChange("gelombang", value)}
+            className="w-full"
+          />
         </div>
 
+        {/* Baris 2: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600 flex-1/2">Jalur Pendaftaran</label>
-          <SearchableDropdown options={jalurPendaftaranOptions} defaultValue={filters.jalurPendaftaran} onChange={(value) => handleFilterChange("jalurPendaftaran", value)} className="w-full" />
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Jalur Pendaftaran
+          </label>
+          <SearchableDropdown
+            options={jalurPendaftaranOptions}
+            defaultValue={filters.jalurPendaftaran}
+            value={filters.jalurPendaftaran}
+            onChange={(value) => handleFilterChange("jalurPendaftaran", value)}
+            className="w-full"
+          />
         </div>
 
-        {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
-
-        {/* Baris 3 */}
+        {/* Baris 3: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600 flex-1/2">Sistem Kuliah</label>
-          <SearchableDropdown options={sistemKuliahOptions} defaultValue={filters.sistemKuliah} onChange={(value) => handleFilterChange("sistemKuliah", value)} className="w-full" />
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Sistem Kuliah
+          </label>
+          <SearchableDropdown
+            options={sistemKuliahOptions}
+            defaultValue={filters.sistemKuliah}
+            value={filters.sistemKuliah}
+            onChange={(value) => handleFilterChange("sistemKuliah", value)}
+            className="w-full"
+          />
         </div>
 
+        {/* Baris 3: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600 flex-1/2">Program Studi</label>
-          <SearchableDropdown options={programStudiOptions} defaultValue={filters.programStudi} onChange={(value) => handleFilterChange("programStudi", value)} className="w-full" />
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Program Studi
+          </label>
+          <SearchableDropdown
+            options={programStudiOptions}
+            defaultValue={filters.programStudi}
+            value={filters.programStudi}
+            onChange={(value) => handleFilterChange("programStudi", value)}
+            className="w-full"
+          />
         </div>
 
-        {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
-
-        {/* Baris 4 */}
-        <div className="flex items-center mb-1">
-          <label className="w-32 font-medium text-amber-600 flex-1/2 ">Kelompok UKT</label>
-          <SearchableDropdown options={kelompokUktOptions} defaultValue={filters.kelompokUkt} onChange={(value) => handleFilterChange("kelompokUkt", value)} className="w-full" />
+        {/* Baris 4: Kolom Kiri */}
+        <div className="flex items-center">
+          <label className="w-36 font-semibold text-amber-600 shrink-0">
+            Kelompok UKT
+          </label>
+          <SearchableDropdown
+            options={kelompokUktOptions}
+            defaultValue={filters.kelompokUkt}
+            value={filters.kelompokUkt}
+            onChange={(value) => handleFilterChange("kelompokUkt", value)}
+            className="w-full"
+          />
         </div>
 
+        {/* Baris 4: Kolom Kanan - Tombol Simpan Filter */}
         <div className="flex justify-end items-center">
-          <button onClick={handleSubmit} className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors">
-            <IoFilter className="mr-2" />
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="bg-amber-500 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-md flex items-center transition-colors cursor-pointer shadow-sm text-xs"
+          >
+            <IoFilter className="mr-2 text-sm" />
             Simpan Filter
           </button>
         </div>

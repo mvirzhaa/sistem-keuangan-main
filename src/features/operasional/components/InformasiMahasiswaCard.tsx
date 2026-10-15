@@ -37,7 +37,7 @@ const InformasiMahasiswaCard: React.FC<InformasiMahasiswaCardProps> = ({ data, i
     ...customFields,
   ];
 
-  return <InformationCard fields={fields} isLoading={isLoading} className={className} bgColorClass="bg-cyan-50" borderColorClass="border-cyan-400" labelColorClass="text-blue-800" />;
+  return <InformationCard fields={fields} isLoading={isLoading} className={className} bgColorClass="bg-[#f0f6fe]" borderColorClass="border-[#84b5ea]" labelColorClass="text-blue-800" />;
 };
 
 export default InformasiMahasiswaCard;

@@ -5,11 +5,13 @@
   --color-green-800: #10ac84;
 }
 
+html,
 body {
   margin: 0;
   padding: 0;
   font-family: "Poppins", sans-serif;
   color: #252a38;
+  overflow-x: hidden;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -34,3 +36,45 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+
+/* Highcharts export button: consistent clean 3-line grey menu without black background */
+.highcharts-button-box {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
+.highcharts-button:hover .highcharts-button-box {
+  fill: #f3f4f6 !important;
+}
+
+.highcharts-button-symbol {
+  stroke: #4b5563 !important;
+  fill: #4b5563 !important;
+}
+
+.highcharts-menu {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  background: #ffffff !important;
+  padding: 4px 0 !important;
+}
+
+.highcharts-menu-item {
+  padding: 8px 16px !important;
+  color: #374151 !important;
+  font-size: 12px !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.highcharts-menu-item:hover {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.highcharts-menu hr {
+  margin: 4px 0 !important;
+  border: 0 !important;
+  border-top: 1px solid #f1f5f9 !important;
+}
+

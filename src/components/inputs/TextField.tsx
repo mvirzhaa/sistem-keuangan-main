@@ -2,6 +2,7 @@ import React, {
   type InputHTMLAttributes,
   forwardRef,
   useState,
+  useId,
   type ChangeEvent,
   type KeyboardEvent,
 } from "react";
@@ -20,6 +21,7 @@ interface TextFieldProps
   className?: string;
   containerClassName?: string;
   inputClassName?: string;
+  labelClassName?: string;
   onIconClick?: () => void;
   // Enhanced onChange handler that provides the value directly
   onChange?: (value: string, event: ChangeEvent<HTMLInputElement>) => void;
@@ -39,6 +41,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       className = "",
       containerClassName = "",
       inputClassName = "",
+      labelClassName = "",
       onIconClick,
       disabled,
       onChange,
@@ -47,6 +50,8 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     },
     ref,
   ) => {
+    const defaultId = useId();
+    const inputId = rest.id || defaultId;
     const [isFocused, setIsFocused] = useState(false);
     const [currentValue, setCurrentValue] = useState(
       rest.value || rest.defaultValue || "",
@@ -92,7 +97,10 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     return (
       <div className={`${fullWidth ? "w-full" : ""} ${containerClassName}`}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor={inputId}
+            className={`block text-sm font-medium text-gray-700 mb-1 cursor-pointer select-none ${labelClassName}`}
+          >
             {label}
             {rest.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -110,6 +118,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           )}
 
           <input
+            id={inputId}
             ref={ref}
             className={`
               block w-full px-3 py-1.5 text-sm

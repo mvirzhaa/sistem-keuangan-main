@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
 import { IoFilter } from "react-icons/io5";
 
-interface FilterDataMonitoringTarifProps {
+export interface FilterDataMonitoringTarifProps {
   onFilter?: (filters: FilterValues) => void;
   className?: string;
+  initialFilters?: FilterValues;
 }
 
-interface FilterValues {
+export interface FilterValues {
   penerima: string;
   periodeMasuk: string;
   unit: string;
@@ -17,25 +18,67 @@ interface FilterValues {
   kelompok: string;
 }
 
-const FilterDataMonitoringTarifCard: React.FC<FilterDataMonitoringTarifProps> = ({ onFilter, className = "" }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    penerima: "Mahasiswa",
-    periodeMasuk: "-- Semua Periode --",
-    unit: "Universitas Ibn Khaldun",
-    status: "-- Semua --",
-    jenisAkun: "-- Semua --",
-    frekuensi: "-- Semua --",
-    kelompok: "-- Semua --",
-  });
+const FilterDataMonitoringTarifCard: React.FC<FilterDataMonitoringTarifProps> = ({
+  onFilter,
+  className = "",
+  initialFilters,
+}) => {
+  const [filters, setFilters] = useState<FilterValues>(
+    initialFilters || {
+      penerima: "Mahasiswa",
+      periodeMasuk: "-- Semua Periode --",
+      unit: "Universitas Ibn Khaldun",
+      status: "-- Semua --",
+      jenisAkun: "-- Semua --",
+      frekuensi: "-- Semua --",
+      kelompok: "-- Semua --",
+    },
+  );
 
   // Options untuk dropdown
   const penerimaOptions = ["Mahasiswa", "Pendaftar", "Alumni", "Dosen"];
-  const periodeOptions = ["-- Semua Periode --", "2024 Genap", "2024 Ganjil", "2023 Genap"];
-  const unitOptions = ["Universitas Ibn Khaldun", "Fakultas Teknik", "Fakultas Ekonomi"];
+  const periodeOptions = [
+    "-- Semua Periode --",
+    "2026 Ganjil",
+    "2026 Genap",
+    "2025 Ganjil",
+    "2025 Genap",
+    "2024 Ganjil",
+    "2024 Genap",
+    "1994 Ganjil",
+  ];
+  const unitOptions = [
+    "Universitas Ibn Khaldun",
+    "86205",
+    "S1 - Teknik Sipil",
+    "S1 - Teknik Informatika",
+    "S1 - Sistem Informasi",
+    "S1 - Ilmu Hukum",
+    "S1 - Manajemen",
+    "S1 - Akuntansi",
+    "S2 - Pendidikan Agama Islam (S2)",
+  ];
   const statusOptions = ["-- Semua --", "Aktif", "Tidak Aktif", "Cuti"];
-  const jenisAkunOptions = ["-- Semua --", "Biaya Kuliah", "Biaya Registrasi", "Biaya Wisuda"];
-  const frekuensiOptions = ["-- Semua --", "Harian", "Bulanan", "Semesteran", "Tahunan"];
-  const kelompokOptions = ["-- Semua --", "Kelompok 1", "Kelompok 2", "Kelompok 3"];
+  const jenisAkunOptions = [
+    "-- Semua --",
+    "Biaya Kuliah",
+    "Biaya Registrasi",
+    "Biaya Wisuda",
+    "UKT",
+  ];
+  const frekuensiOptions = [
+    "-- Semua --",
+    "Harian",
+    "Bulanan",
+    "Semesteran",
+    "Tahunan",
+  ];
+  const kelompokOptions = [
+    "-- Semua --",
+    "Kelompok 1",
+    "Kelompok 2",
+    "Kelompok 3",
+  ];
 
   // Handle perubahan filter
   const handleFilterChange = (key: keyof FilterValues, value: string) => {

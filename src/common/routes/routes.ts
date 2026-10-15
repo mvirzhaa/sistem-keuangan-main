@@ -10,9 +10,15 @@ export const ROUTES = {
     PEMBAYARAN_FORMULIR: "/operasional/pembayaran_formulir",
     UKT_MAHASISWA: "/operasional/ukt_mahasiswa",
     MONITORING_TARIF: "/operasional/monitoring_tarif",
+    DETAIL_MONITORING_TARIF: "/operasional/monitoring_tarif/detail",
     MONITORING_TAGIHAN: "/operasional/monitoring_tagihan_mahasiswa",
+    DETAIL_MONITORING_TAGIHAN:
+      "/operasional/monitoring_tagihan_mahasiswa/detail",
     MONITORING_ATURAN: "/operasional/monitoring_aturan_akademik",
+    DETAIL_MONITORING_ATURAN:
+      "/operasional/monitoring_aturan_akademik/detail",
     MONITORING_UKT: "/operasional/monitoring_ukt",
+    DETAIL_MONITORING_UKT: "/operasional/monitoring_ukt/detail",
   },
 
   // Transaksi

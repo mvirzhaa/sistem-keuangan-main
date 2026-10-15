@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
 import { IoFilter } from "react-icons/io5";
 
-interface FilterDataMonitoringTagihanProps {
+export interface FilterDataMonitoringTagihanProps {
   onFilter?: (filters: FilterValues) => void;
   className?: string;
+  initialFilters?: FilterValues;
 }
 
-interface FilterValues {
+export interface FilterValues {
   periodeTagihan: string;
   periodeMasuk: string;
   unit: string;
@@ -19,29 +20,95 @@ interface FilterValues {
   kelompok: string;
 }
 
-const FilterDataMonitoringTagihanCard: React.FC<FilterDataMonitoringTagihanProps> = ({ onFilter, className = "" }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    periodeTagihan: "2025 Genap",
-    periodeMasuk: "-- Semua --",
-    unit: "Universitas Ibn Khaldun",
-    jalurPendaftaran: "-- Semua --",
-    sistemKuliah: "-- Semua --",
-    gelombang: "-- Semua --",
-    jenisAkun: "-- Semua --",
-    frekuensi: "-- Semua --",
-    kelompok: "-- Semua --",
-  });
+const FilterDataMonitoringTagihanCard: React.FC<FilterDataMonitoringTagihanProps> = ({
+  onFilter,
+  className = "",
+  initialFilters,
+}) => {
+  const [filters, setFilters] = useState<FilterValues>(
+    initialFilters || {
+      periodeTagihan: "2025 Genap",
+      periodeMasuk: "-- Semua --",
+      unit: "Universitas Ibn Khaldun",
+      jalurPendaftaran: "-- Semua --",
+      sistemKuliah: "-- Semua --",
+      gelombang: "-- Semua --",
+      jenisAkun: "-- Semua --",
+      frekuensi: "-- Semua --",
+      kelompok: "-- Semua --",
+    },
+  );
 
   // Options untuk dropdown
-  const periodeTagihanOptions = ["2025 Genap", "2025 Ganjil", "2024 Genap", "2024 Ganjil"];
-  const periodeOptions = ["-- Semua --", "2024 Genap", "2024 Ganjil", "2023 Genap"];
-  const unitOptions = ["Universitas Ibn Khaldun", "Fakultas Teknik", "Fakultas Ekonomi"];
-  const jalurPendaftaranOptions = ["-- Semua --", "SBMPTN", "SNMPTN", "Mandiri"];
-  const sistemKuliahOptions = ["-- Semua --", "Reguler", "Karyawan", "Online"];
-  const gelombangOptions = ["-- Semua --", "Gelombang 1", "Gelombang 2", "Gelombang 3"];
-  const jenisAkunOptions = ["-- Semua --", "Biaya Kuliah", "Biaya Registrasi", "Biaya Wisuda"];
-  const frekuensiOptions = ["-- Semua --", "Harian", "Bulanan", "Semesteran", "Tahunan"];
-  const kelompokOptions = ["-- Semua --", "Kelompok 1", "Kelompok 2", "Kelompok 3"];
+  const periodeTagihanOptions = [
+    "2025 Genap",
+    "2025 Ganjil",
+    "2026 Ganjil",
+    "2026 Genap",
+    "2024 Genap",
+    "2024 Ganjil",
+  ];
+  const periodeOptions = [
+    "-- Semua --",
+    "2017 Ganjil",
+    "2024 Ganjil",
+    "2024 Genap",
+    "2025 Ganjil",
+    "2025 Genap",
+    "2026 Ganjil",
+    "2026 Genap",
+  ];
+  const unitOptions = [
+    "Universitas Ibn Khaldun",
+    "S1 - Akuntansi",
+    "S1 - Ilmu Hukum",
+    "S1 - Teknik Sipil",
+    "S1 - Teknik Informatika",
+    "S1 - Sistem Informasi",
+    "S1 - Manajemen",
+    "S2 - Pendidikan Agama Islam (S2)",
+  ];
+  const jalurPendaftaranOptions = [
+    "-- Semua --",
+    "Seleksi Mandiri PTS",
+    "SBMPTN",
+    "SNMPTN",
+    "BEASISWA KIP",
+    "PRESTASI",
+  ];
+  const sistemKuliahOptions = [
+    "-- Semua --",
+    "Reguler",
+    "Non Reguler",
+    "Karyawan",
+    "Online",
+  ];
+  const gelombangOptions = [
+    "-- Semua --",
+    "Gelombang 1",
+    "Gelombang 2",
+    "Gelombang 3",
+  ];
+  const jenisAkunOptions = [
+    "-- Semua --",
+    "Biaya Kuliah",
+    "Biaya Registrasi",
+    "Biaya Wisuda",
+    "UKT",
+  ];
+  const frekuensiOptions = [
+    "-- Semua --",
+    "Harian",
+    "Bulanan",
+    "Semesteran",
+    "Tahunan",
+  ];
+  const kelompokOptions = [
+    "-- Semua --",
+    "Kelompok 1",
+    "Kelompok 2",
+    "Kelompok 3",
+  ];
 
   // Handle perubahan filter
   const handleFilterChange = (key: keyof FilterValues, value: string) => {

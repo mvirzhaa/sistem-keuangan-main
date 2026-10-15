@@ -3,54 +3,147 @@ import HighlightText from "../../../components/highlightText/HighLightText";
 import AutoComplete from "../../../components/inputs/AutoComplete";
 import IconButton from "../../../components/button/IconButton";
 import { IoMdRefresh, IoMdSearch } from "react-icons/io";
-import InformasiPendaftarCard from "../components/InformasiPendaftarCard";
+import InformasiPendaftarCard, {
+  type PendaftarData,
+} from "../components/InformasiPendaftarCard";
 import TagihanFormulirTable from "../components/TagihanFormulirTable";
 
-// Tipe untuk data mahasiswa
-interface Student {
-  nim: string;
-  name: string;
-  fullName: string; // nama lengkap dengan gelar, dll
+// Tipe data untuk pendaftar
+interface Pendaftar extends PendaftarData {
+  idPendaftar: string;
+  nama: string;
+  periode: string;
+  gelombang: string;
+  jalurPendaftaran: string;
+  sistemKuliah: string;
 }
 
 export default function PembayaranFormulirPage() {
   document.title = "Pembayaran - Formulir";
 
   const [searchValue, setSearchValue] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedPendaftar, setSelectedPendaftar] = useState<Pendaftar | null>(null);
+  const [inquiredPendaftar, setInquiredPendaftar] = useState<Pendaftar | null>(null);
 
-  // Data contoh
-  const students: Student[] = [
-    { nim: "E31E020302", name: "MUHAMMAD RIZAL", fullName: "AGUS MUHAMMAD RIZAL" },
-    { nim: "2410205105", name: "MUHAMMAD RIDWAN", fullName: "AHID MUHAMMAD RIDWAN" },
-    { nim: "2211050313", name: "MUHAMMAD JABAR", fullName: "AL HAFIZ MUHAMMAD JABAR" },
-    { nim: "E21E040081", name: "MUHAMMAD FAJAR", fullName: "ANDI MUHAMMAD FAJAR" },
-    { nim: "2411050121", name: "MUHAMMAD FARID AR", fullName: "ANDI MUHAMMAD FARID AR" },
-    { nim: "1811060113", name: "MUHAMMAD RIFALDI", fullName: "ANDI MUHAMMAD RIFALDI" },
-    { nim: "7001000065", name: "MUHAMMAD YUSHARD", fullName: "ANDI MUHAMMAD YUSHARD" },
-    { nim: "0821541048", name: "MUHAMMAD RAMADHAN", fullName: "ARIA MUHAMMAD RAMADHAN" },
-    { nim: "1711051208", name: "MUHAMMAD BILAL", fullName: "DEWOSONGO MUHAMMAD BILAL" },
+  // Data contoh pendaftar (termasuk referensi DEDE FEBRIANDI sesuai spesifikasi)
+  const pendaftarList: Pendaftar[] = [
+    {
+      idPendaftar: "4102541234",
+      nama: "DEDE FEBRIANDI",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "BEASISWA KIP",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541235",
+      nama: "AGUS MUHAMMAD RIZAL",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "SELEKSI MANDIRI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541236",
+      nama: "AHID MUHAMMAD RIDWAN",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "SELEKSI MANDIRI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541237",
+      nama: "AL HAFIZ MUHAMMAD JABAR",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 2",
+      jalurPendaftaran: "BEASISWA PRESTASI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541238",
+      nama: "ANDI MUHAMMAD FAJAR",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "SELEKSI MANDIRI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541239",
+      nama: "ANDI MUHAMMAD FARID AR",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "SELEKSI MANDIRI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541240",
+      nama: "ANDI MUHAMMAD RIFALDI",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 2",
+      jalurPendaftaran: "SELEKSI MANDIRI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541241",
+      nama: "ARIA MUHAMMAD RAMADHAN",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "SELEKSI MANDIRI",
+      sistemKuliah: "Reguler",
+    },
+    {
+      idPendaftar: "4102541242",
+      nama: "DEWOSONGO MUHAMMAD BILAL",
+      periode: "2025 Ganjil",
+      gelombang: "Gelombang 1",
+      jalurPendaftaran: "BEASISWA KIP",
+      sistemKuliah: "Reguler",
+    },
   ];
 
-  // Handle selection
-  const handleSelectStudent = (student: Student) => {
-    setSelectedStudent(student);
-    setSearchValue(`${student.nim} - ${student.fullName}`);
+  // Handle saat memilih pendaftar dari AutoComplete dropdown
+  // Data TIDAK langsung ditampilkan sampai tombol Inquiry diklik
+  const handleSelectPendaftar = (pendaftar: Pendaftar) => {
+    setSelectedPendaftar(pendaftar);
+    setSearchValue(`${pendaftar.idPendaftar} - ${pendaftar.nama}`);
   };
 
-  // Render opsi dengan format khusus
-  const renderStudentOption = (student: Student, inputValue: string) => {
+  // Handle klik tombol Inquiry: baru menampilkan data pendaftar dan tagihan formulir
+  const handleInquiry = () => {
+    if (selectedPendaftar) {
+      setInquiredPendaftar(selectedPendaftar);
+    } else if (searchValue.trim()) {
+      const found = pendaftarList.find(
+        (p) =>
+          p.idPendaftar.toLowerCase().includes(searchValue.toLowerCase()) ||
+          p.nama.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setInquiredPendaftar(found || pendaftarList[0]);
+    }
+  };
+
+  // Handle klik tombol Batal: mereset / refresh form dan tabel ke kondisi awal
+  const handleReset = () => {
+    setSearchValue("");
+    setSelectedPendaftar(null);
+    setInquiredPendaftar(null);
+  };
+
+  // Render opsi dropdown pendaftar dengan penyorotan (highlight)
+  const renderPendaftarOption = (pendaftar: Pendaftar, inputValue: string) => {
     return (
-      <div>
-        <div className="flex">
-          <span className="mr-2">{student.nim} - </span>
-          <HighlightText text={student.fullName} searchTerm={inputValue} highlightClassName="font-bold text-blue-800" />
-        </div>
+      <div className="flex items-center text-xs sm:text-sm">
+        <span className="mr-1.5 font-medium text-gray-700">{pendaftar.idPendaftar} -</span>
+        <HighlightText
+          text={pendaftar.nama}
+          searchTerm={inputValue}
+          highlightClassName="font-bold text-blue-800"
+        />
       </div>
     );
   };
 
-  // Data contoh
+  // Data contoh tagihan formulir
   const formulirData = [
     {
       id: "1",
@@ -65,39 +158,53 @@ export default function PembayaranFormulirPage() {
     },
   ];
 
-  // Di dalam component
   const handleBayarTagihan = (selectedItems: any, paymentData: any) => {
     console.log("Items yang dibayar:", selectedItems);
     console.log("Data pembayaran:", paymentData);
-    // Kirim ke API
   };
+
   return (
     <>
       <div className="flex items-baseline space-x-3 mb-4">
-        <h1 className="text-2xl font-medium ">Pembayaran</h1>
+        <h1 className="text-2xl font-medium text-gray-800">Pembayaran</h1>
         <p className="text-sm text-gray-500 mb-1">Formulir</p>
       </div>
 
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 p-4 min-h-96">
-        <div className="flex justify-center space-x-1 mb-4">
+      <div className="container shadow-lg rounded border-t-green-800 border-t-4 p-4 min-h-96 bg-white">
+        <div className="flex justify-center items-center space-x-1.5 mb-5">
           <AutoComplete
-            data={students}
+            data={pendaftarList}
             value={searchValue}
             onChange={setSearchValue}
-            onSelect={handleSelectStudent}
-            getOptionLabel={(student) => `${student.nim} ${student.name} ${student.fullName}`}
-            renderOption={renderStudentOption}
-            className="w-lg"
+            onSelect={handleSelectPendaftar}
+            getOptionLabel={(pendaftar) => `${pendaftar.idPendaftar} ${pendaftar.nama}`}
+            renderOption={renderPendaftarOption}
+            className="w-full max-w-lg"
             placeholder="Masukkan kode / nama pendaftar"
           />
-          <IconButton icon={<IoMdSearch />} text="Inquiry" variant="primary" />
-          <IconButton icon={<IoMdRefresh />} text="Batal" variant="warning" onClick={() => console.log("Reset clicked")} />
+          <IconButton
+            icon={<IoMdSearch size={18} />}
+            text="Inquiry"
+            variant="primary"
+            onClick={handleInquiry}
+          />
+          <IconButton
+            icon={<IoMdRefresh size={18} />}
+            text="Batal"
+            variant="warning"
+            onClick={handleReset}
+          />
         </div>
+
         <div className="mb-4">
-          <InformasiPendaftarCard />
+          <InformasiPendaftarCard data={inquiredPendaftar || undefined} />
         </div>
+
         <div className="text-xs">
-          <TagihanFormulirTable data={selectedStudent ? formulirData : []} onBayarTagihan={handleBayarTagihan} />
+          <TagihanFormulirTable
+            data={inquiredPendaftar ? formulirData : []}
+            onBayarTagihan={handleBayarTagihan}
+          />
         </div>
       </div>
     </>

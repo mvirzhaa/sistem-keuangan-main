@@ -35,9 +35,9 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen items-center">
+    <div className="flex flex-col min-h-screen items-center w-full">
       <Navbar />
-      <div className="container px-4 sm:px-[7rem] py-6 flex-grow mb-30">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-16 py-6 flex-grow mb-30 w-full">
         <div>
           <div className="mb-4">
             <Breadcrumb />

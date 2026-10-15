@@ -4,25 +4,41 @@ import { IoMdSearch } from "react-icons/io";
 interface SearchableDropdownProps {
   options: string[];
   defaultValue?: string;
+  value?: string;
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
   searchPlaceholder?: string;
 }
 
-const SearchableDropdown: React.FC<SearchableDropdownProps> = ({ options, defaultValue, onChange, className = "", placeholder = "Pilih opsi", searchPlaceholder = "Cari..." }) => {
+const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
+  options,
+  defaultValue,
+  value,
+  onChange,
+  className = "",
+  placeholder = "Pilih opsi",
+  searchPlaceholder = "Cari...",
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(defaultValue || options[0]);
+  const [selectedOption, setSelectedOption] = useState(
+    value !== undefined ? value : defaultValue || options[0],
+  );
   const [searchValue, setSearchValue] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Filter options berdasarkan search term
-  const filteredOptions = options.filter((option) => option.toLowerCase().includes(searchValue.toLowerCase()));
+  const filteredOptions = options.filter((option) =>
+    option.toLowerCase().includes(searchValue.toLowerCase()),
+  );
 
   useEffect(() => {
     // Handler untuk menutup dropdown jika klik di luar
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setSearchValue("");
       }
@@ -35,11 +51,12 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({ options, defaul
   }, []);
 
   useEffect(() => {
-    // Set nilai default jika diberikan
-    if (defaultValue) {
+    if (value !== undefined) {
+      setSelectedOption(value);
+    } else if (defaultValue) {
       setSelectedOption(defaultValue);
     }
-  }, [defaultValue]);
+  }, [value, defaultValue]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

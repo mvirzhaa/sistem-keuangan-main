@@ -10,6 +10,20 @@ export class DashboardController {
     await this.dashboardStore.getState().fetchDashboardData(periode);
   }
 
+  async loadPeriodeList() {
+    await this.dashboardStore.getState().fetchPeriodeList();
+  }
+
+  getPeriodeList() {
+    return this.dashboardStore.getState().periodeList;
+  }
+
+  getActivePeriode(): string | null {
+    const list = this.getPeriodeList();
+    const active = list.find((p) => p.isActive);
+    return active ? active.nama : list[0]?.nama || null;
+  }
+
   getDashboardData(): DashboardData | null {
     return this.dashboardStore.getState().data;
   }

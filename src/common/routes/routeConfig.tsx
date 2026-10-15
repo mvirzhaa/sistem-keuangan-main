@@ -66,12 +66,32 @@ export const routeConfig: RouteObject[] = [
     ),
   },
   {
+    path: ROUTES.OPERASIONAL.DETAIL_MONITORING_TARIF,
+    element: withSuspense(
+      lazy(
+        () =>
+          import("../../features/operasional/pages/DetailMonitoringTarifPage"),
+      ),
+    ),
+  },
+  {
     path: ROUTES.OPERASIONAL.MONITORING_TAGIHAN,
     element: withSuspense(
       lazy(
         () =>
           import(
             "../../features/operasional/pages/MonitoringTagihanfMahasiswaPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.OPERASIONAL.DETAIL_MONITORING_TAGIHAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/operasional/pages/DetailMonitoringTagihanMahasiswaPage"
           ),
       ),
     ),
@@ -88,9 +108,28 @@ export const routeConfig: RouteObject[] = [
     ),
   },
   {
+    path: ROUTES.OPERASIONAL.DETAIL_MONITORING_ATURAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/operasional/pages/DetailMonitoringMahasiswaTercekalAturanAkademikPage"
+          ),
+      ),
+    ),
+  },
+  {
     path: ROUTES.OPERASIONAL.MONITORING_UKT,
     element: withSuspense(
       lazy(() => import("../../features/operasional/pages/MonitoringUktPage")),
+    ),
+  },
+  {
+    path: ROUTES.OPERASIONAL.DETAIL_MONITORING_UKT,
+    element: withSuspense(
+      lazy(
+        () => import("../../features/operasional/pages/DetailMonitoringUktPage"),
+      ),
     ),
   },
   // Transaksi Routes
@@ -415,4 +454,41 @@ export const routeConfig: RouteObject[] = [
       ),
     ),
   },
+  // Laporan Routes
+  {
+    path: ROUTES.LAPORAN.TAGIHAN.LAPORAN_TAGIHAN,
+    element: withSuspense(
+      lazy(
+        () => import("../../features/laporan/tagihan/pages/LaporanTagihanPage"),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.TAGIHAN.LAPORAN_REKAP_TAGIHAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import("../../features/laporan/tagihan/pages/LaporanRekapTagihanPage"),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.TAGIHAN.TAGIHAN_PERWALIAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import("../../features/laporan/tagihan/pages/TagihanPerwalianPage"),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.TAGIHAN.PIVOT_TAGIHAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import("../../features/laporan/tagihan/pages/LaporanPivotTagihanPage"),
+      ),
+    ),
+  },
 ];
+

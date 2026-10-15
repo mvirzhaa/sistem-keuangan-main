@@ -3,15 +3,33 @@ import React, { useState, useRef, useEffect } from "react";
 interface DropdownProps {
   options: string[];
   defaultValue?: string;
+  value?: string;
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onChange, className = "", placeholder = "Pilih opsi" }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+  options,
+  defaultValue,
+  value,
+  onChange,
+  className = "",
+  placeholder = "Pilih opsi",
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(defaultValue || options[0]);
+  const [selectedOption, setSelectedOption] = useState(
+    value !== undefined ? value : defaultValue || options[0],
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedOption(value);
+    } else if (defaultValue !== undefined) {
+      setSelectedOption(defaultValue);
+    }
+  }, [value, defaultValue]);
 
   useEffect(() => {
     // Handler untuk menutup dropdown jika klik di luar
@@ -42,17 +60,41 @@ const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onChange, cl
 
   return (
     <div ref={dropdownRef} className={`relative ${className}`}>
-      <button type="button" onClick={toggleDropdown} className="w-full flex items-center justify-between px-4 py-1.5 border border-gray-300 rounded bg-white text-left text-sm focus:outline-none">
-        {selectedOption || placeholder}
-        <svg className={`w-4 h-4 ml-2 transition-transform ${isOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+      <button
+        type="button"
+        onClick={toggleDropdown}
+        className="w-full flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded bg-white text-left text-sm whitespace-nowrap focus:outline-none focus:border-blue-500 cursor-pointer"
+      >
+        <span className="truncate mr-1.5">{selectedOption || placeholder}</span>
+        <svg
+          className={`w-4 h-4 shrink-0 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute mt-1 w-full rounded border border-gray-300 bg-white z-10 shadow-lg">
+        <div className="absolute left-0 top-full mt-1 w-full rounded-md border border-gray-200 bg-white z-50 shadow-xl max-h-60 overflow-y-auto">
           {options.map((option) => (
-            <div key={option} className={`px-4 py-1.5 cursor-pointer hover:bg-gray-100 ${option === selectedOption ? "bg-blue-500 text-white" : ""}`} onClick={() => handleSelect(option)}>
+            <div
+              key={option}
+              className={`px-4 py-2 text-sm cursor-pointer transition-colors hover:bg-blue-50 ${
+                option === selectedOption
+                  ? "bg-blue-600 text-white hover:bg-blue-600"
+                  : "text-gray-700"
+              }`}
+              onClick={() => handleSelect(option)}
+            >
               {option}
             </div>
           ))}

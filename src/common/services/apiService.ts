@@ -161,6 +161,16 @@ class ApiService {
     }
   }
 
+  private normalizeResponse<T>(data: any): ApiResponse<T> {
+    if (data && typeof data === "object" && "data" in data) {
+      return data as ApiResponse<T>;
+    }
+    return {
+      message: "Success",
+      data: data as T,
+    };
+  }
+
   // Generic HTTP methods
   async get<T = any>(
     endpoint: string,
@@ -171,7 +181,7 @@ class ApiService {
       params,
       ...config,
     });
-    return response.data;
+    return this.normalizeResponse<T>(response.data);
   }
 
   async post<T = any>(
@@ -184,7 +194,7 @@ class ApiService {
       data,
       config,
     );
-    return response.data;
+    return this.normalizeResponse<T>(response.data);
   }
 
   async put<T = any>(
@@ -193,7 +203,7 @@ class ApiService {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> {
     const response = await this.api.put<ApiResponse<T>>(endpoint, data, config);
-    return response.data;
+    return this.normalizeResponse<T>(response.data);
   }
 
   async patch<T = any>(
@@ -206,7 +216,7 @@ class ApiService {
       data,
       config,
     );
-    return response.data;
+    return this.normalizeResponse<T>(response.data);
   }
 
   async delete<T = any>(
@@ -214,7 +224,7 @@ class ApiService {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> {
     const response = await this.api.delete<ApiResponse<T>>(endpoint, config);
-    return response.data;
+    return this.normalizeResponse<T>(response.data);
   }
 
   // File upload method
@@ -297,12 +307,12 @@ class ApiService {
       params: exportParams,
     });
 
-    const contentType = response.headers["content-type"];
+    const contentType = String(response.headers["content-type"] || "");
     let extension = "xlsx";
 
-    if (contentType?.includes("pdf")) {
+    if (contentType.includes("pdf")) {
       extension = "pdf";
-    } else if (contentType?.includes("csv")) {
+    } else if (contentType.includes("csv")) {
       extension = "csv";
     }
 

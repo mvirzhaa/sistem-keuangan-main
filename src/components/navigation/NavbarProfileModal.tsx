@@ -56,9 +56,9 @@ export default function NavbarProfileModal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+          className="absolute top-4 right-4 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors cursor-pointer"
         >
-          <IoMdClose className="h-6 w-6 text-white" />
+          <IoMdClose className="h-6 w-6 text-white hover:text-red-500" />
         </button>
 
         {/* Profile Section */}

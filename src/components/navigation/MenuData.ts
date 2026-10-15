@@ -42,21 +42,49 @@ const menuList = [
         menu: "Monitoring Tarif",
         route: ROUTES.OPERASIONAL.MONITORING_TARIF,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Monitoring Tarif",
+            route: ROUTES.OPERASIONAL.DETAIL_MONITORING_TARIF,
+            showInNavbar: false,
+          },
+        ],
       },
       {
         menu: "Monitoring Tagihan Mahasiswa",
         route: ROUTES.OPERASIONAL.MONITORING_TAGIHAN,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Monitoring Tagihan Mahasiswa",
+            route: ROUTES.OPERASIONAL.DETAIL_MONITORING_TAGIHAN,
+            showInNavbar: false,
+          },
+        ],
       },
       {
         menu: "Monitoring Aturan Akademik",
         route: ROUTES.OPERASIONAL.MONITORING_ATURAN,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Monitoring Mahasiswa Tercekal Aturan Akademik",
+            route: ROUTES.OPERASIONAL.DETAIL_MONITORING_ATURAN,
+            showInNavbar: false,
+          },
+        ],
       },
       {
         menu: "Monitoring UKT",
         route: ROUTES.OPERASIONAL.MONITORING_UKT,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Monitoring UKT",
+            route: ROUTES.OPERASIONAL.DETAIL_MONITORING_UKT,
+            showInNavbar: false,
+          },
+        ],
       },
     ],
   },

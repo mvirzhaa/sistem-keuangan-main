@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
 import { IoEye } from "react-icons/io5";
 
-interface MonitoringUktData {
+export interface MonitoringUktData {
   id: string;
   programStudi: string;
   kelompokUkt: string;
