@@ -1,10 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
-
-interface CariDataMahasiswaCardProps {
-  onSearch?: (filters: FilterData) => void;
-  className?: string;
-}
+import { IoFilter } from "react-icons/io5";
+import { useReferensiStore } from "../../../common/stores/referensiStore";
 
 export interface FilterData {
   penerima: string;
@@ -28,64 +25,55 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
   onSearch,
   className = "",
 }) => {
-  const [internalFilters, setInternalFilters] = useState<FilterData>({
-    penerima: "Mahasiswa",
-    periodeMasuk: "2026 Ganjil",
-    gelombang: "-- Semua --",
-    jalurPendaftaran: "-- Semua --",
-    sistemKuliah: "-- Semua --",
-    programStudi: "-- Semua --",
-  });
+  const { data: referensi, fetchReferensi } = useReferensiStore();
 
-  const activeFilters = propFilters || internalFilters;
+  useEffect(() => {
+    fetchReferensi();
+  }, [fetchReferensi]);
 
-  // Options untuk dropdown
-  const penerimaOptions = ["Mahasiswa", "Pendaftar"];
-  const periodeOptions = [
-    "2026 Ganjil",
-    "2025 Genap",
-    "2025 Ganjil",
-    "2024 Genap",
-    "2024 Ganjil",
-    "2023 Genap",
-    "2023 Ganjil",
-  ];
-  const gelombangOptions = ["-- Semua --", "Gelombang 1", "Gelombang 2", "Gelombang 3"];
-  const jalurOptions = [
-    "-- Semua --",
-    "BEASISWA KIP",
-    "SELEKSI MANDIRI",
-    "BEASISWA PRESTASI",
-    "PMDK",
-    "Undangan",
-    "Reguler",
-    "Transfer",
-  ];
-  const sistemOptions = ["-- Semua --", "Reguler", "Kelas Karyawan", "Online"];
-  const programOptions = [
-    "-- Semua --",
-    "S2 - Pendidikan Agama Islam (S2)",
-    "S1 - Ilmu Hukum",
-    "S1 - Teknik Informatika",
-    "S1 - Sistem Informasi",
-    "S1 - Manajemen",
-    "S1 - Akuntansi",
-  ];
+  const [internalFilters, setInternalFilters] = useState<FilterData>(
+    propFilters || {
+      penerima: "Mahasiswa",
+      periodeMasuk: "2026 Ganjil",
+      gelombang: "-- Semua --",
+      jalurPendaftaran: "-- Semua --",
+      sistemKuliah: "-- Semua --",
+      programStudi: "-- Semua --",
+    },
+  );
 
-  // Handle perubahan filter
-  const handleFilterChange = (key: keyof FilterData, value: string) => {
-    const updated = {
-      ...activeFilters,
-      [key]: value,
-    };
-    if (!propFilters) {
-      setInternalFilters(updated);
+  // Sinkronisasi state lokal saat propFilters berubah (misal saat reset / refresh)
+  useEffect(() => {
+    if (propFilters) {
+      setInternalFilters(propFilters);
     }
+  }, [propFilters]);
+
+  // Options diambil dari global referensiStore
+  const penerimaOptions = referensi.penerima;
+  const periodeOptions = referensi.periode.includes("-- Semua --")
+    ? referensi.periode
+    : ["-- Semua --", ...referensi.periode];
+  const gelombangOptions = referensi.gelombang;
+  const jalurOptions = referensi.jalurPendaftaran;
+  const sistemOptions = referensi.sistemKuliah;
+  const programOptions = referensi.programStudi;
+
+  // Handle perubahan filter hanya di state lokal card
+  const handleDropdownChange = (key: keyof FilterData, value: string) => {
+    setInternalFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // Handle tombol Simpan Filter: baru memicu aksi filter ke halaman / parent
+  const handleApplyFilter = () => {
     if (onFilterChange) {
-      onFilterChange(updated);
+      onFilterChange(internalFilters);
     }
     if (onSearch) {
-      onSearch(updated);
+      onSearch(internalFilters);
     }
   };
 
@@ -100,9 +88,9 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
             <label className="w-32 font-medium text-amber-600">Penerima</label>
             <SearchableDropdown
               options={penerimaOptions}
-              value={activeFilters.penerima}
-              defaultValue={activeFilters.penerima}
-              onChange={(value) => handleFilterChange("penerima", value)}
+              value={internalFilters.penerima}
+              defaultValue={internalFilters.penerima}
+              onChange={(value) => handleDropdownChange("penerima", value)}
               className="w-72 sm:w-96"
             />
           </div>
@@ -111,9 +99,9 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
             <label className="w-32 font-medium text-amber-600">Gelombang</label>
             <SearchableDropdown
               options={gelombangOptions}
-              value={activeFilters.gelombang}
-              defaultValue={activeFilters.gelombang}
-              onChange={(value) => handleFilterChange("gelombang", value)}
+              value={internalFilters.gelombang}
+              defaultValue={internalFilters.gelombang}
+              onChange={(value) => handleDropdownChange("gelombang", value)}
               className="w-72 sm:w-96"
             />
           </div>
@@ -122,9 +110,9 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
             <label className="w-32 font-medium text-amber-600">Sistem Kuliah</label>
             <SearchableDropdown
               options={sistemOptions}
-              value={activeFilters.sistemKuliah}
-              defaultValue={activeFilters.sistemKuliah}
-              onChange={(value) => handleFilterChange("sistemKuliah", value)}
+              value={internalFilters.sistemKuliah}
+              defaultValue={internalFilters.sistemKuliah}
+              onChange={(value) => handleDropdownChange("sistemKuliah", value)}
               className="w-72 sm:w-96"
             />
           </div>
@@ -136,9 +124,9 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
             <label className="w-32 font-medium text-amber-600">Periode Masuk</label>
             <SearchableDropdown
               options={periodeOptions}
-              value={activeFilters.periodeMasuk}
-              defaultValue={activeFilters.periodeMasuk}
-              onChange={(value) => handleFilterChange("periodeMasuk", value)}
+              value={internalFilters.periodeMasuk}
+              defaultValue={internalFilters.periodeMasuk}
+              onChange={(value) => handleDropdownChange("periodeMasuk", value)}
               className="w-72 sm:w-96"
             />
           </div>
@@ -149,9 +137,9 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
             </label>
             <SearchableDropdown
               options={jalurOptions}
-              value={activeFilters.jalurPendaftaran}
-              defaultValue={activeFilters.jalurPendaftaran}
-              onChange={(value) => handleFilterChange("jalurPendaftaran", value)}
+              value={internalFilters.jalurPendaftaran}
+              defaultValue={internalFilters.jalurPendaftaran}
+              onChange={(value) => handleDropdownChange("jalurPendaftaran", value)}
               className="w-72 sm:w-96"
             />
           </div>
@@ -160,12 +148,24 @@ const CariDataMahasiswaCard: React.FC<CariDataMahasiswaCardProps> = ({
             <label className="w-32 font-medium text-amber-600">Program Studi</label>
             <SearchableDropdown
               options={programOptions}
-              value={activeFilters.programStudi}
-              defaultValue={activeFilters.programStudi}
-              onChange={(value) => handleFilterChange("programStudi", value)}
+              value={internalFilters.programStudi}
+              defaultValue={internalFilters.programStudi}
+              onChange={(value) => handleDropdownChange("programStudi", value)}
               className="w-72 sm:w-96"
             />
           </div>
+        </div>
+
+        {/* Tombol Simpan Filter */}
+        <div className="md:col-span-2 flex justify-end items-center pt-2">
+          <button
+            type="button"
+            onClick={handleApplyFilter}
+            className="bg-amber-500 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-md flex items-center transition-colors cursor-pointer shadow-sm text-xs"
+          >
+            <IoFilter className="mr-2 text-sm" />
+            Simpan Filter
+          </button>
         </div>
       </div>
     </div>

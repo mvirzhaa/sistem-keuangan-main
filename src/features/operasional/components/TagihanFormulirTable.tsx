@@ -252,6 +252,7 @@ const TagihanFormulirTable: React.FC<TagihanFormulirTableProps> = ({ data = [], 
         columns={columns}
         data={loading ? [] : tableData}
         isSelectable={false}
+        headerClassName="text-xs bg-[#004e82] text-white font-semibold py-2.5"
         emptyMessage={loading ? "Memuat data..." : "Tidak ada data tagihan formulir"}
         footer={!isEmpty ? footer : []}
         additionalContent={!isEmpty ? additionalContent : null}

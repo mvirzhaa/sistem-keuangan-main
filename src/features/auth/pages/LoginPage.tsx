@@ -11,6 +11,8 @@ import {
 import TextField from "../../../components/inputs/TextField";
 import { useAuthStore } from "../../../common/stores/authStore";
 import { authController } from "../controllers/authController";
+import logoUika from "../../../assets/logo-uika.png";
+import bgImage from "../../../assets/background-uika.jpg";
 
 export default function LoginPage() {
   document.title = "Login - Sistem Keuangan";
@@ -30,16 +32,6 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-
-  const bgImageUrl = `${import.meta.env.BASE_URL}background-uika.jpg`.replace(
-    /\/\//g,
-    "/",
-  );
-
-  const bgImageLogoUrl = `${import.meta.env.BASE_URL}logo-uika.png`.replace(
-    /\/\//g,
-    "/",
-  );
 
   // Redirect jika sudah login
   useEffect(() => {
@@ -110,7 +102,7 @@ export default function LoginPage() {
             {/* Logo / Portal Badge */}
             <div className="flex items-center space-x-3 mb-8">
               <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0">
-                <img src={bgImageLogoUrl} alt="Logo Sistem Keuangan UIKA" />
+                <img src={logoUika} alt="Logo Sistem Keuangan UIKA" />
               </div>
               <div className="flex flex-col">
                 <span className="text-[11px] font-bold tracking-wider text-[#0b5e42] uppercase">
@@ -255,7 +247,7 @@ export default function LoginPage() {
           <div className="hidden lg:flex relative rounded-2xl overflow-hidden min-h-[540px] flex-col justify-end p-5 bg-slate-900 border border-slate-800 shadow-inner">
             {/* Background Image */}
             <img
-              src={bgImageUrl}
+              src={bgImage}
               alt="Sistem Keuangan UIKA"
               className="absolute inset-0 w-full h-full object-cover object-center"
             />

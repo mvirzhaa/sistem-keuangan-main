@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoMdRefresh, IoMdSearch } from "react-icons/io";
 import IconButton from "../../../components/button/IconButton";
@@ -11,433 +11,64 @@ import FilterDataMonitoringTarifCard, {
 import MonitoringTarifTable, {
   type MonitoringTarifData,
 } from "../components/MonitoringTarifTable";
-
-// Mock dataset kaya untuk Monitoring Tarif
-const initialMonitoringData: MonitoringTarifData[] = [
-  {
-    id: "km-1",
-    unit: "S1 - Kesehatan Masyarakat",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 8,
-    sudahDiatur: 3,
-    belumDiatur: 5,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "UKT",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "1",
-    unit: "86205",
-    periode: "1994 Ganjil",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 182,
-    sudahDiatur: 0,
-    belumDiatur: 182,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "2",
-    unit: "S1 - Teknik Sipil",
-    periode: "1994 Ganjil",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 182,
-    sudahDiatur: 0,
-    belumDiatur: 182,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  // Data 2026 Ganjil & Genap
-  {
-    id: "3",
-    unit: "S1 - Teknik Informatika",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 240,
-    sudahDiatur: 180,
-    belumDiatur: 60,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "UKT",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "4",
-    unit: "S1 - Teknik Informatika",
-    periode: "2026 Genap",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 210,
-    sudahDiatur: 210,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "UKT",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "5",
-    unit: "S1 - Sistem Informasi",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SNMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 150,
-    sudahDiatur: 120,
-    belumDiatur: 30,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "6",
-    unit: "S1 - Sistem Informasi",
-    periode: "2026 Genap",
-    jalurPendaftaran: "SNMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 145,
-    sudahDiatur: 145,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "7",
-    unit: "S1 - Ilmu Hukum",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 310,
-    sudahDiatur: 250,
-    belumDiatur: 60,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 3",
-  },
-  {
-    id: "8",
-    unit: "S1 - Ilmu Hukum",
-    periode: "2026 Genap",
-    jalurPendaftaran: "BEASISWA KIP",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 85,
-    sudahDiatur: 85,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Registrasi",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "9",
-    unit: "S1 - Manajemen",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Non Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 190,
-    sudahDiatur: 100,
-    belumDiatur: 90,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Bulanan",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "10",
-    unit: "S1 - Manajemen",
-    periode: "2026 Genap",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Karyawan",
-    gelombang: "Gelombang 3",
-    totalAkun: 130,
-    sudahDiatur: 65,
-    belumDiatur: 65,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Bulanan",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "11",
-    unit: "S1 - Akuntansi",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SNMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 175,
-    sudahDiatur: 175,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "12",
-    unit: "S1 - Akuntansi",
-    periode: "2026 Genap",
-    jalurPendaftaran: "PRESTASI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 95,
-    sudahDiatur: 90,
-    belumDiatur: 5,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "13",
-    unit: "S2 - Pendidikan Agama Islam (S2)",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Non Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 60,
-    sudahDiatur: 40,
-    belumDiatur: 20,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Wisuda",
-    frekuensi: "Tahunan",
-    kelompok: "Kelompok 3",
-  },
-  {
-    id: "14",
-    unit: "S2 - Pendidikan Agama Islam (S2)",
-    periode: "2026 Genap",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 55,
-    sudahDiatur: 55,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 3",
-  },
-  {
-    id: "15",
-    unit: "S1 - Teknik Sipil",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 160,
-    sudahDiatur: 140,
-    belumDiatur: 20,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "16",
-    unit: "S1 - Teknik Sipil",
-    periode: "2026 Genap",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 155,
-    sudahDiatur: 155,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "17",
-    unit: "86205",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "BEASISWA KIP",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 90,
-    sudahDiatur: 90,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Registrasi",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "18",
-    unit: "86205",
-    periode: "2026 Genap",
-    jalurPendaftaran: "SNMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 120,
-    sudahDiatur: 110,
-    belumDiatur: 10,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  // Data 2025
-  {
-    id: "19",
-    unit: "86205",
-    periode: "2025 Ganjil",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 195,
-    sudahDiatur: 195,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "20",
-    unit: "86205",
-    periode: "2025 Genap",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 180,
-    sudahDiatur: 170,
-    belumDiatur: 10,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 1",
-  },
-  {
-    id: "21",
-    unit: "S1 - Teknik Informatika",
-    periode: "2025 Ganjil",
-    jalurPendaftaran: "SNMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 220,
-    sudahDiatur: 220,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "UKT",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "22",
-    unit: "S1 - Teknik Informatika",
-    periode: "2025 Genap",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 2",
-    totalAkun: 205,
-    sudahDiatur: 200,
-    belumDiatur: 5,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "UKT",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 2",
-  },
-  // Data 2024
-  {
-    id: "23",
-    unit: "S1 - Ilmu Hukum",
-    periode: "2024 Ganjil",
-    jalurPendaftaran: "SBMPTN",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 290,
-    sudahDiatur: 290,
-    belumDiatur: 0,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Semesteran",
-    kelompok: "Kelompok 3",
-  },
-  {
-    id: "24",
-    unit: "S1 - Manajemen",
-    periode: "2024 Genap",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Non Reguler",
-    gelombang: "Gelombang 3",
-    totalAkun: 120,
-    sudahDiatur: 110,
-    belumDiatur: 10,
-    penerima: "Mahasiswa",
-    status: "Aktif",
-    jenisAkun: "Biaya Kuliah",
-    frekuensi: "Bulanan",
-    kelompok: "Kelompok 2",
-  },
-  {
-    id: "25",
-    unit: "Pendaftar Baru",
-    periode: "2026 Ganjil",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    gelombang: "Gelombang 1",
-    totalAkun: 50,
-    sudahDiatur: 0,
-    belumDiatur: 50,
-    penerima: "Pendaftar",
-    status: "Aktif",
-    jenisAkun: "Biaya Registrasi",
-    frekuensi: "Harian",
-    kelompok: "Kelompok 1",
-  },
-];
+import operasionalApi from "../services/operasional.api";
 
 export default function MonitoringTarifPage() {
   document.title = "Monitoring Tarif";
   const navigate = useNavigate();
+
+  // State data monitoring tarif dari mock json (dengan cache agar selalu tampil instan)
+  const [monitoringData, setMonitoringData] = useState<MonitoringTarifData[]>(
+    () => {
+      try {
+        const cached = localStorage.getItem("cached_monitoring_tarif");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {}
+      return [];
+    },
+  );
+  const [loading, setLoading] = useState(false);
+
+  // Ambil data monitoring tarif dari backend / mock json dengan auto-retry
+  const fetchMonitoringTarif = useCallback(async (retryCount = 0) => {
+    setLoading(true);
+    try {
+      const response = await operasionalApi.getMonitoringTarif();
+      const list = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray((response as any)?.data?.data)
+        ? (response as any).data.data
+        : [];
+
+      if (list.length > 0) {
+        setMonitoringData(list);
+        try {
+          localStorage.setItem("cached_monitoring_tarif", JSON.stringify(list));
+        } catch {}
+      } else if (retryCount < 2) {
+        // Jika data masih kosong karena server baru restart, auto-retry
+        setTimeout(() => fetchMonitoringTarif(retryCount + 1), 600);
+      }
+    } catch (error) {
+      console.error("Gagal memuat data monitoring tarif:", error);
+      if (retryCount < 2) {
+        // Auto-retry jika terjadi transient error
+        setTimeout(() => fetchMonitoringTarif(retryCount + 1), 800);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Langsung hit by default saat halaman dimuat
+  useEffect(() => {
+    fetchMonitoringTarif();
+  }, [fetchMonitoringTarif]);
 
   // State untuk Filter Atas (Card Filter)
   const [activeFilters, setActiveFilters] = useState<FilterValues | null>(null);
@@ -487,11 +118,12 @@ export default function MonitoringTarifPage() {
     });
     setActiveFilters(null);
     setFilterCardKey((prev) => prev + 1);
+    fetchMonitoringTarif();
   };
 
   // Filter Data berdasarkan activeFilters dan activeSearch
   const filteredData = useMemo(() => {
-    return initialMonitoringData.filter((item) => {
+    return monitoringData.filter((item) => {
       // 1. Filter dari Card Atas jika sudah ada yang disimpan
       if (activeFilters) {
         if (
@@ -646,6 +278,7 @@ export default function MonitoringTarifPage() {
         <div className="mb-4">
           <MonitoringTarifTable
             data={filteredData}
+            loading={loading}
             onView={(item) => {
               navigate(ROUTES.OPERASIONAL.DETAIL_MONITORING_TARIF, {
                 state: { item },

@@ -14,7 +14,7 @@ class ApiService {
 
   constructor() {
     this.baseURL =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
     this.timeout = parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000;
 
     this.api = axios.create({

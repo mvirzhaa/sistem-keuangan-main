@@ -13,14 +13,20 @@ export interface StudentDetailItem {
 interface DetailMonitoringTagihanMahasiswaTableProps {
   data: StudentDetailItem[];
   accountColumns: string[];
+  loading?: boolean;
 }
 
 const DetailMonitoringTagihanMahasiswaTable: React.FC<
   DetailMonitoringTagihanMahasiswaTableProps
-> = ({ data, accountColumns }) => {
+> = ({ data, accountColumns, loading = false }) => {
   return (
-    <div className="w-full overflow-x-auto">
-      <table className="w-full border-collapse border border-gray-200 text-xs text-left">
+    <div className="w-full overflow-x-auto relative">
+      {loading && (
+        <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+        </div>
+      )}
+      <table className="w-full border-collapse border border-gray-200 text-[13px] text-left">
         <thead>
           <tr className="bg-[#004e82] text-white">
             <th

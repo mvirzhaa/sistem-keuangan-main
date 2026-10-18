@@ -233,7 +233,7 @@ function NavbarMenu() {
   }, []);
 
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} className="relative print:hidden">
       <DropdownMenu
         items={filteredMenuList}
         openPath={openPath}

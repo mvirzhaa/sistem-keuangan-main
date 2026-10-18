@@ -7,6 +7,7 @@ interface DropdownProps {
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
+  error?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -16,6 +17,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   onChange,
   className = "",
   placeholder = "Pilih opsi",
+  error = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(
@@ -63,7 +65,11 @@ const Dropdown: React.FC<DropdownProps> = ({
       <button
         type="button"
         onClick={toggleDropdown}
-        className="w-full flex items-center justify-between px-3 py-1.5 border border-gray-300 rounded bg-white text-left text-sm whitespace-nowrap focus:outline-none focus:border-blue-500 cursor-pointer"
+        className={`w-full flex items-center justify-between px-3 py-1.5 rounded bg-white text-left text-sm whitespace-nowrap focus:outline-none cursor-pointer transition-colors ${
+          error
+            ? "border border-red-500 ring-1 ring-red-500"
+            : "border border-gray-300 focus:border-blue-500"
+        }`}
       >
         <span className="truncate mr-1.5">{selectedOption || placeholder}</span>
         <svg

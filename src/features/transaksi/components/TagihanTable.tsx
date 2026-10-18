@@ -1,23 +1,9 @@
 import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
 import { IoEye, IoTrash, IoCheckmark, IoClose, IoWarning } from "react-icons/io5";
+import type { TagihanItemData } from "../services/transaksi.api";
 
-export interface TagihanData {
-  id: string;
-  kodeTagihan: string;
-  nim: string;
-  nama: string;
-  jenis: string;
-  cicilan: number;
-  bulan: string;
-  nominal: number;
-  denda: number;
-  potongan: number;
-  bayar: number;
-  lunas: boolean;
-  tglAkhirDispensasi: string;
-  statusPembayaran: "lunas" | "belum_lunas" | "potongan_penuh";
-}
+export type TagihanData = TagihanItemData;
 
 interface TagihanTableProps {
   data: TagihanData[];
@@ -28,7 +14,14 @@ interface TagihanTableProps {
   onSelectionChange?: (selectedItems: TagihanData[]) => void;
 }
 
-const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onView, onDelete, onWarning, onSelectionChange }) => {
+const TagihanTable: React.FC<TagihanTableProps> = ({
+  data,
+  loading = false,
+  onView,
+  onDelete,
+  onWarning,
+  onSelectionChange,
+}) => {
   const [selectedItems, setSelectedItems] = useState<TagihanData[]>([]);
 
   const handleSelectionChange = (items: TagihanData[]) => {
@@ -39,8 +32,8 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
   };
 
   // Format number to currency
-  const formatCurrency = (value: number | null) => {
-    if (value === null || value === 0) return "0";
+  const formatCurrency = (value: number | null | undefined) => {
+    if (value === null || value === undefined || value === 0) return "0";
     return value.toLocaleString("id-ID");
   };
 
@@ -49,16 +42,19 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
       key: "kodeTagihan",
       header: "Kode Tagihan",
       sortable: true,
+      className: "font-medium text-gray-800",
     },
     {
       key: "nim",
       header: "NIM",
       sortable: true,
+      className: "text-center",
     },
     {
       key: "nama",
       header: "Nama",
       sortable: true,
+      className: "font-medium text-gray-800",
     },
     {
       key: "jenis",
@@ -77,6 +73,7 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
       header: "Bulan",
       sortable: true,
       className: "text-center",
+      render: (item) => item.bulan || "-",
     },
     {
       key: "nominal",
@@ -112,10 +109,14 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
       sortable: true,
       className: "text-center",
       render: (item) => {
-        if (item.statusPembayaran === "lunas" || item.statusPembayaran === "potongan_penuh") {
+        if (
+          item.lunas ||
+          item.statusPembayaran === "lunas" ||
+          item.statusPembayaran === "potongan_penuh"
+        ) {
           return (
             <div className="flex justify-center">
-              <IoCheckmark className="text-green-500" size={18} />
+              <IoCheckmark className="text-green-500 font-bold" size={18} />
             </div>
           );
         }
@@ -131,6 +132,7 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
       header: "Tgl Akhir Dispensasi",
       sortable: true,
       className: "text-center",
+      render: (item) => item.tglAkhirDispensasi || "-",
     },
     {
       key: "actions",
@@ -142,10 +144,10 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
               e.stopPropagation();
               onView && onView(item);
             }}
-            className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600"
+            className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600 cursor-pointer transition-colors"
             title="Lihat detail"
           >
-            <IoEye />
+            <IoEye size={16} />
           </button>
 
           {item.statusPembayaran === "potongan_penuh" && (
@@ -154,23 +156,23 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
                 e.stopPropagation();
                 onWarning && onWarning(item);
               }}
-              className="p-1.5 bg-amber-500 text-white rounded hover:bg-amber-600"
+              className="p-1.5 bg-amber-500 text-white rounded hover:bg-amber-600 cursor-pointer transition-colors"
               title="Catatan potongan"
             >
-              <IoWarning />
+              <IoWarning size={16} />
             </button>
           )}
 
-          {item.statusPembayaran === "belum_lunas" && (
+          {(item.statusPembayaran === "belum_lunas" || !item.lunas) && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete && onDelete(item);
               }}
-              className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600"
+              className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer transition-colors"
               title="Hapus tagihan"
             >
-              <IoTrash />
+              <IoTrash size={16} />
             </button>
           )}
         </div>
@@ -181,21 +183,23 @@ const TagihanTable: React.FC<TagihanTableProps> = ({ data, loading = false, onVi
   ];
 
   return (
-    <ListTable
-      data={data}
-      columns={columns}
-      rowKey={(item) => item.id}
-      initialSortColumn="kodeTagihan"
-      initialSortDirection="asc"
-      pageSize={10}
-      pageSizeOptions={[10, 25, 50, 100]}
-      selectable={true}
-      onSelectionChange={handleSelectionChange}
-      className="w-full text-xs"
-      headerClassName="text-xs"
-      loading={loading}
-      emptyMessage="Tidak ada data tagihan"
-    />
+    <div className="w-full bg-white rounded-md overflow-hidden">
+      <ListTable
+        data={data}
+        columns={columns}
+        rowKey={(item) => item.id}
+        initialSortColumn="kodeTagihan"
+        initialSortDirection="asc"
+        pageSize={10}
+        pageSizeOptions={[10, 25, 50, 100]}
+        selectable={true}
+        onSelectionChange={handleSelectionChange}
+        className="w-full text-xs bg-white"
+        headerClassName="text-xs"
+        loading={loading}
+        emptyMessage="Tidak ada data tagihan"
+      />
+    </div>
   );
 };
 

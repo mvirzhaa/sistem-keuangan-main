@@ -29,6 +29,7 @@ interface ListTableProps<T> {
   selectable?: boolean;
   onSelectionChange?: (selectedItems: T[]) => void;
   showFooter?: boolean;
+  footerRow?: React.ReactNode;
   className?: string;
   headerClassName?: string;
   rowClassName?: (item: T, index: number) => string;
@@ -48,6 +49,7 @@ function ListTable<T>({
   selectable = false,
   onSelectionChange,
   showFooter = true,
+  footerRow,
   className = "",
   headerClassName = "",
   rowClassName,
@@ -191,7 +193,7 @@ function ListTable<T>({
       <div className="overflow-x-auto">
         <table className={`min-w-full border-collapse ${className}`}>
           <thead>
-            <tr className={`bg-blue-900 text-white ${headerClassName}`}>
+            <tr className={`bg-[#004e82] text-white ${headerClassName}`}>
               {selectable && (
                 <th className="p-2 text-center border border-slate-300 w-12">
                   <input
@@ -294,6 +296,7 @@ function ListTable<T>({
               })
             )}
           </tbody>
+          {footerRow && <tfoot>{footerRow}</tfoot>}
         </table>
       </div>
 

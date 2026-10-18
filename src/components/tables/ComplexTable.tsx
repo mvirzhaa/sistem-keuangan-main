@@ -65,7 +65,7 @@ const ComplexTable: React.FC<ComplexTableProps> = ({
     if (!complexHeader) return null;
 
     return (
-      <thead className={`bg-blue-900 text-white text-xs ${headerClassName}`}>
+      <thead className={`bg-[#004e82] text-white text-xs ${headerClassName}`}>
         {complexHeader.rows.map((row, rowIndex) => (
           <tr key={`complex-header-row-${rowIndex}`}>
             {row.map((cell, cellIndex) => (
@@ -90,7 +90,7 @@ const ComplexTable: React.FC<ComplexTableProps> = ({
   // Render header standar
   const renderStandardHeader = () => {
     return (
-      <thead className={`bg-blue-800 text-white text-xs ${headerClassName}`}>
+      <thead className={`bg-[#004e82] text-white text-xs ${headerClassName}`}>
         <tr>
           {isSelectable && (
             <th className="p-2 border-b border-r border-gray-300 w-10">

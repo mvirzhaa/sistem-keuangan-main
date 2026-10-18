@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import CariDataMahasiswaCard, {
   type FilterData,
 } from "../components/CariDataMahasiswaCard";
@@ -13,224 +13,11 @@ import TextField from "../../../components/inputs/TextField";
 import IconButton from "../../../components/button/IconButton";
 import { IoMdCloudUpload, IoMdRefresh, IoMdSearch } from "react-icons/io";
 import { MdEdit } from "react-icons/md";
-
-// Data awal mahasiswa / pendaftar UKT
-const initialMahasiswaData: UktMahasiswaData[] = [
-  {
-    id: "1",
-    nim: "14210717135",
-    nama: "A ALI AKBAR K",
-    programStudi: "S2 - Pendidikan Agama Islam (S2)",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "BEASISWA KIP",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "2",
-    nim: "1022211091",
-    nama: "A ARMIN MUTTAQIN MAHULETTE",
-    programStudi: "S1 - Ilmu Hukum",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "3",
-    nim: "231106040904",
-    nama: "RIANDI SIDDIK HARAHAP",
-    programStudi: "S1 - Teknik Informatika",
-    kelompokUkt: "Kelompok 2",
-    nominalUkt: 4500000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "4",
-    nim: "4102541234",
-    nama: "DEDE FEBRIANDI",
-    programStudi: "S1 - Teknik Informatika",
-    kelompokUkt: "Kelompok 1",
-    nominalUkt: 2500000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "BEASISWA KIP",
-    sistemKuliah: "Reguler",
-    penerima: "Pendaftar",
-  },
-  {
-    id: "5",
-    nim: "E31E020302",
-    nama: "AGUS MUHAMMAD RIZAL",
-    programStudi: "S1 - Teknik Informatika",
-    kelompokUkt: "Kelompok 3",
-    nominalUkt: 6000000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "6",
-    nim: "2410205105",
-    nama: "AHID MUHAMMAD RIDWAN",
-    programStudi: "S1 - Manajemen",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "7",
-    nim: "2211050313",
-    nama: "AL HAFIZ MUHAMMAD JABAR",
-    programStudi: "S2 - Pendidikan Agama Islam (S2)",
-    kelompokUkt: "Kelompok 2",
-    nominalUkt: 5000000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 2",
-    jalurPendaftaran: "BEASISWA PRESTASI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "8",
-    nim: "E21E040081",
-    nama: "ANDI MUHAMMAD FAJAR",
-    programStudi: "S1 - Teknik Informatika",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "PMDK",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "9",
-    nim: "2411050121",
-    nama: "ANDI MUHAMMAD FARID AR",
-    programStudi: "S1 - Sistem Informasi",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "10",
-    nim: "1811060113",
-    nama: "ANDI MUHAMMAD RIFALDI",
-    programStudi: "S1 - Ilmu Hukum",
-    kelompokUkt: "Kelompok 1",
-    nominalUkt: 2500000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 2",
-    jalurPendaftaran: "Undangan",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "11",
-    nim: "7001000065",
-    nama: "ANDI MUHAMMAD YUSHARD",
-    programStudi: "S1 - Manajemen",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 2",
-    jalurPendaftaran: "Transfer",
-    sistemKuliah: "Kelas Karyawan",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "12",
-    nim: "0821541048",
-    nama: "ARIA MUHAMMAD RAMADHAN",
-    programStudi: "S1 - Akuntansi",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "SELEKSI MANDIRI",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "13",
-    nim: "1711051208",
-    nama: "DEWOSONGO MUHAMMAD BILAL",
-    programStudi: "S1 - Teknik Informatika",
-    kelompokUkt: "Kelompok 1",
-    nominalUkt: 2500000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "BEASISWA KIP",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "14",
-    nim: "14210717136",
-    nama: "BAGUS PRASETYO",
-    programStudi: "S2 - Pendidikan Agama Islam (S2)",
-    kelompokUkt: "",
-    nominalUkt: 0,
-    valid: false,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "Reguler",
-    sistemKuliah: "Reguler",
-    penerima: "Mahasiswa",
-  },
-  {
-    id: "15",
-    nim: "1022211092",
-    nama: "CITRA LESTARI",
-    programStudi: "S1 - Ilmu Hukum",
-    kelompokUkt: "Kelompok 2",
-    nominalUkt: 4000000,
-    valid: true,
-    periode: "2026 Ganjil",
-    gelombang: "Gelombang 3",
-    jalurPendaftaran: "Reguler",
-    sistemKuliah: "Online",
-    penerima: "Mahasiswa",
-  },
-];
+import { operasionalApi } from "../services/operasional.api";
 
 const defaultFilters: FilterData = {
   penerima: "Mahasiswa",
-  periodeMasuk: "2026 Ganjil",
+  periodeMasuk: "-- Semua --",
   gelombang: "-- Semua --",
   jalurPendaftaran: "-- Semua --",
   sistemKuliah: "-- Semua --",
@@ -241,14 +28,31 @@ export default function UktMahasiswaPage() {
   document.title = "UKT Mahasiswa / Pendaftar";
 
   // Data state
-  const [mahasiswaList, setMahasiswaList] = useState<UktMahasiswaData[]>(
-    initialMahasiswaData,
-  );
+  const [mahasiswaList, setMahasiswaList] = useState<UktMahasiswaData[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedItems, setSelectedItems] = useState<UktMahasiswaData[]>([]);
 
-  // Filter state dari card atas
+  // Filter state dari card atas (hanya berubah saat tombol Simpan Filter diklik)
   const [filters, setFilters] = useState<FilterData>(defaultFilters);
+
+  // Ambil data UKT Mahasiswa / Pendaftar dari server / database json
+  const fetchUktMahasiswa = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await operasionalApi.getUktMahasiswa();
+      if (res && res.data && Array.isArray(res.data)) {
+        setMahasiswaList(res.data);
+      }
+    } catch (err) {
+      console.error("Gagal memuat data UKT Mahasiswa:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUktMahasiswa();
+  }, [fetchUktMahasiswa]);
 
   // Search state dari bar tengah
   const [searchField, setSearchField] = useState<string>("-- Semua --");
@@ -350,16 +154,12 @@ export default function UktMahasiswaPage() {
 
   // Handle Refresh click
   const handleRefresh = () => {
-    setLoading(true);
     setSearchInput("");
     setSearchField("-- Semua --");
     setAppliedSearchQuery("");
     setAppliedSearchField("-- Semua --");
     setFilters(defaultFilters);
-    setMahasiswaList(initialMahasiswaData);
-    setTimeout(() => {
-      setLoading(false);
-    }, 150);
+    fetchUktMahasiswa();
   };
 
   // Handle Tombol "Edit Kelompok" di atas tabel (sesuai Gambar 3)
@@ -386,54 +186,59 @@ export default function UktMahasiswaPage() {
   };
 
   // Handle simpan perubahan dari inline edit langsung di tabel
-  const handleSaveRow = (updatedStudent: UktMahasiswaData) => {
+  const handleSaveRow = async (updatedStudent: UktMahasiswaData) => {
+    // Optimistic UI update
     setMahasiswaList((prev) =>
       prev.map((item) => (item.id === updatedStudent.id ? updatedStudent : item)),
     );
+
+    try {
+      await operasionalApi.updateUktMahasiswa(updatedStudent.id, updatedStudent);
+    } catch (err) {
+      console.error("Gagal menyimpan perubahan ke database:", err);
+      fetchUktMahasiswa();
+    }
   };
 
   // Handle Simpan perubahan kelompok UKT dari modal
-  const handleSaveKelompok = (data: {
+  const handleSaveKelompok = async (data: {
     kelompokUkt: string;
     nominalUkt: number;
     valid: boolean;
   }) => {
-    if (editingStudent) {
-      // Edit baris tunggal
-      setMahasiswaList((prev) =>
-        prev.map((item) =>
-          item.id === editingStudent.id
-            ? {
-                ...item,
-                kelompokUkt: data.kelompokUkt,
-                nominalUkt: data.nominalUkt,
-                valid: data.valid,
-              }
-            : item,
-        ),
-      );
-    } else {
-      // Edit kelompok batch untuk data yang terfilter / terpilih
-      const targetIds =
-        selectedItems.length > 0
-          ? new Set(selectedItems.map((s) => s.id))
-          : new Set(filteredData.map((s) => s.id));
-
-      setMahasiswaList((prev) =>
-        prev.map((item) =>
-          targetIds.has(item.id)
-            ? {
-                ...item,
-                kelompokUkt: data.kelompokUkt,
-                nominalUkt: data.nominalUkt,
-                valid: data.valid,
-              }
-            : item,
-        ),
-      );
-    }
-
     setIsEditModalOpen(false);
+    setLoading(true);
+
+    try {
+      if (editingStudent) {
+        // Edit baris tunggal
+        await operasionalApi.updateUktMahasiswa(editingStudent.id, {
+          kelompokUkt: data.kelompokUkt,
+          nominalUkt: data.nominalUkt,
+          valid: data.valid,
+        });
+      } else {
+        // Edit kelompok batch untuk data yang terfilter / terpilih
+        const targetIds =
+          selectedItems.length > 0
+            ? selectedItems.map((s) => s.id)
+            : filteredData.map((s) => s.id);
+
+        await operasionalApi.batchUpdateUktMahasiswa(targetIds, {
+          kelompokUkt: data.kelompokUkt,
+          nominalUkt: data.nominalUkt,
+          valid: data.valid,
+        });
+      }
+
+      // Re-fetch data terbaru dari database json
+      await fetchUktMahasiswa();
+    } catch (err) {
+      console.error("Gagal menyimpan data kelompok UKT:", err);
+      fetchUktMahasiswa();
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle proses Unggah Excel
@@ -463,7 +268,7 @@ export default function UktMahasiswaPage() {
       </div>
 
       {/* Card Tabel UKT Mahasiswa */}
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 p-4 bg-white">
+      <div className="container shadow-lg rounded border-t-emerald-600 border-t-4 p-4 bg-white">
         {/* Bar Filter Pencarian & Tombol Aksi */}
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 justify-between items-stretch sm:items-center mb-4">
           {/* Sisi Kiri: Filter Dropdown + Input Search + Tombol Cari & Refresh */}

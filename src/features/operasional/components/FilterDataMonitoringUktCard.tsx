@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
 import { IoFilter } from "react-icons/io5";
+import { useReferensiStore } from "../../../common/stores/referensiStore";
 
 interface FilterDataMonitoringUktProps {
+  initialFilters?: FilterValues;
   onFilter?: (filters: FilterValues) => void;
   className?: string;
 }
@@ -18,63 +20,61 @@ export interface FilterValues {
 }
 
 const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
+  initialFilters,
   onFilter,
   className = "",
 }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    penerima: "Mahasiswa",
-    periodeMasuk: "2025 Genap",
-    gelombang: "Gelombang 1",
-    jalurPendaftaran: "-- Semua Jalur Pendaftaran --",
-    sistemKuliah: "Reguler Sore",
-    programStudi: "Universitas Ibn Khaldun",
-    kelompokUkt: "-- Semua Kelompok UKT --",
-  });
+  const { data: referensi, fetchReferensi } = useReferensiStore();
 
-  // Options untuk dropdown
-  const penerimaOptions = ["Mahasiswa", "Dosen", "Tenaga Pendidik"];
+  useEffect(() => {
+    fetchReferensi();
+  }, [fetchReferensi]);
 
-  const periodeMasukOptions = [
-    "2025 Genap",
-    "2025 Ganjil",
-    "2024 Genap",
-    "2024 Ganjil",
+  const [filters, setFilters] = useState<FilterValues>(
+    initialFilters || {
+      penerima: "Mahasiswa",
+      periodeMasuk: "-- Semua --",
+      gelombang: "-- Semua Gelombang --",
+      jalurPendaftaran: "-- Semua Jalur Pendaftaran --",
+      sistemKuliah: "-- Semua Sistem Kuliah --",
+      programStudi: "Universitas Ibn Khaldun",
+      kelompokUkt: "-- Semua Kelompok UKT --",
+    },
+  );
+
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters]);
+
+  // Options diambil dari global referensiStore
+  const penerimaOptions = referensi.penerima;
+  const periodeMasukOptions = referensi.periode.includes("-- Semua --")
+    ? referensi.periode
+    : ["-- Semua --", ...referensi.periode];
+  const gelombangOptions = [
+    "-- Semua Gelombang --",
+    ...referensi.gelombang.filter(
+      (g) => g !== "-- Semua --" && g !== "-- Semua Gelombang --",
+    ),
   ];
-
-  const gelombangOptions = ["Gelombang 1", "Gelombang 2", "Gelombang 3"];
-
   const jalurPendaftaranOptions = [
     "-- Semua Jalur Pendaftaran --",
-    "SNMPTN",
-    "SBMPTN",
-    "Seleksi Mandiri",
+    ...referensi.jalurPendaftaran.filter(
+      (j) => j !== "-- Semua --" && j !== "-- Semua Jalur Pendaftaran --",
+    ),
   ];
-
   const sistemKuliahOptions = [
-    "Reguler Sore",
-    "Reguler Pagi",
-    "Kelas Karyawan",
+    "-- Semua Sistem Kuliah --",
+    ...referensi.sistemKuliah.filter(
+      (s) => s !== "-- Semua --" && s !== "-- Semua Sistem Kuliah --",
+    ),
   ];
-
-  const programStudiOptions = [
-    "Universitas Ibn Khaldun",
-    "S1 - Teknik Informatika",
-    "S1 - Sistem Informasi",
-    "S1 - Teknik Sipil",
-    "S1 - Teknik Mesin",
-    "S1 - Akuntansi",
-    "S1 - Manajemen",
-    "S1 - Ilmu Hukum",
-  ];
-
-  const kelompokUktOptions = [
-    "-- Semua Kelompok UKT --",
-    "Kelompok UKT 1",
-    "Kelompok UKT 2",
-    "Kelompok UKT 3",
-    "Kelompok UKT 4",
-    "Kelompok UKT 5",
-  ];
+  const programStudiOptions = referensi.programStudi.filter(
+    (p) => p !== "-- Semua --",
+  );
+  const kelompokUktOptions = referensi.kelompokUkt;
 
   // Handle perubahan filter
   const handleFilterChange = (key: keyof FilterValues, value: string) => {
@@ -93,12 +93,12 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
   return (
     <div
-      className={`border-t-4 border-t-amber-500 bg-white rounded-md shadow-md p-5 text-xs ${className}`}
+      className={`border-t-4 border-t-amber-500 shadow-md rounded-md p-4 text-xs sm:text-sm bg-white ${className}`}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         {/* Baris 1: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Penerima
           </label>
           <SearchableDropdown
@@ -112,7 +112,7 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
         {/* Baris 1: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Periode Masuk
           </label>
           <SearchableDropdown
@@ -126,7 +126,7 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
         {/* Baris 2: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Gelombang
           </label>
           <SearchableDropdown
@@ -140,7 +140,7 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
         {/* Baris 2: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Jalur Pendaftaran
           </label>
           <SearchableDropdown
@@ -154,7 +154,7 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
         {/* Baris 3: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Sistem Kuliah
           </label>
           <SearchableDropdown
@@ -168,7 +168,7 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
         {/* Baris 3: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Program Studi
           </label>
           <SearchableDropdown
@@ -182,7 +182,7 @@ const FilterDataMonitoringUktCard: React.FC<FilterDataMonitoringUktProps> = ({
 
         {/* Baris 4: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Kelompok UKT
           </label>
           <SearchableDropdown

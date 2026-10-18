@@ -4,6 +4,8 @@ import InformationCard, { type FieldItem } from "../../../components/card/Inform
 export interface MahasiswaData {
   nim?: string;
   nama?: string;
+  name?: string;
+  fullName?: string;
   periode?: string;
   gelombang?: string;
   jalurPendaftaran?: string;
@@ -28,7 +30,7 @@ const InformasiMahasiswaCard: React.FC<InformasiMahasiswaCardProps> = ({ data, i
     { label: "Jalur Pendaftaran", value: data?.jalurPendaftaran, position: "left" },
     { label: "Fakultas", value: data?.fakultas, position: "left" },
 
-    { label: "Nama", value: data?.nama, position: "right" },
+    { label: "Nama", value: data?.nama || data?.fullName || data?.name, position: "right" },
     { label: "Gelombang", value: data?.gelombang, position: "right" },
     { label: "Sistem Kuliah", value: data?.sistemKuliah, position: "right" },
     { label: "Program Studi", value: data?.programStudi, position: "right" },

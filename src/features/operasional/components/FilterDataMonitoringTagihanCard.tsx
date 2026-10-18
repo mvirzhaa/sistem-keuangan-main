@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
 import { IoFilter } from "react-icons/io5";
+import { useReferensiStore } from "../../../common/stores/referensiStore";
 
 export interface FilterDataMonitoringTagihanProps {
   onFilter?: (filters: FilterValues) => void;
@@ -25,9 +26,15 @@ const FilterDataMonitoringTagihanCard: React.FC<FilterDataMonitoringTagihanProps
   className = "",
   initialFilters,
 }) => {
+  const { data: referensi, fetchReferensi } = useReferensiStore();
+
+  useEffect(() => {
+    fetchReferensi();
+  }, [fetchReferensi]);
+
   const [filters, setFilters] = useState<FilterValues>(
     initialFilters || {
-      periodeTagihan: "2025 Genap",
+      periodeTagihan: "-- Semua --",
       periodeMasuk: "-- Semua --",
       unit: "Universitas Ibn Khaldun",
       jalurPendaftaran: "-- Semua --",
@@ -39,76 +46,22 @@ const FilterDataMonitoringTagihanCard: React.FC<FilterDataMonitoringTagihanProps
     },
   );
 
-  // Options untuk dropdown
+  // Options diambil dari global referensiStore
   const periodeTagihanOptions = [
-    "2025 Genap",
-    "2025 Ganjil",
-    "2026 Ganjil",
-    "2026 Genap",
-    "2024 Genap",
-    "2024 Ganjil",
+    "-- Semua --",
+    ...referensi.periode.filter((p) => p !== "-- Semua --"),
   ];
   const periodeOptions = [
     "-- Semua --",
-    "2017 Ganjil",
-    "2024 Ganjil",
-    "2024 Genap",
-    "2025 Ganjil",
-    "2025 Genap",
-    "2026 Ganjil",
-    "2026 Genap",
+    ...referensi.periode.filter((p) => p !== "-- Semua --"),
   ];
-  const unitOptions = [
-    "Universitas Ibn Khaldun",
-    "S1 - Akuntansi",
-    "S1 - Ilmu Hukum",
-    "S1 - Teknik Sipil",
-    "S1 - Teknik Informatika",
-    "S1 - Sistem Informasi",
-    "S1 - Manajemen",
-    "S2 - Pendidikan Agama Islam (S2)",
-  ];
-  const jalurPendaftaranOptions = [
-    "-- Semua --",
-    "Seleksi Mandiri PTS",
-    "SBMPTN",
-    "SNMPTN",
-    "BEASISWA KIP",
-    "PRESTASI",
-  ];
-  const sistemKuliahOptions = [
-    "-- Semua --",
-    "Reguler",
-    "Non Reguler",
-    "Karyawan",
-    "Online",
-  ];
-  const gelombangOptions = [
-    "-- Semua --",
-    "Gelombang 1",
-    "Gelombang 2",
-    "Gelombang 3",
-  ];
-  const jenisAkunOptions = [
-    "-- Semua --",
-    "Biaya Kuliah",
-    "Biaya Registrasi",
-    "Biaya Wisuda",
-    "UKT",
-  ];
-  const frekuensiOptions = [
-    "-- Semua --",
-    "Harian",
-    "Bulanan",
-    "Semesteran",
-    "Tahunan",
-  ];
-  const kelompokOptions = [
-    "-- Semua --",
-    "Kelompok 1",
-    "Kelompok 2",
-    "Kelompok 3",
-  ];
+  const unitOptions = referensi.programStudi;
+  const jalurPendaftaranOptions = referensi.jalurPendaftaran;
+  const sistemKuliahOptions = referensi.sistemKuliah;
+  const gelombangOptions = referensi.gelombang;
+  const jenisAkunOptions = referensi.jenisAkun;
+  const frekuensiOptions = referensi.frekuensi;
+  const kelompokOptions = referensi.kelompok;
 
   // Handle perubahan filter
   const handleFilterChange = (key: keyof FilterValues, value: string) => {
@@ -126,73 +79,126 @@ const FilterDataMonitoringTagihanCard: React.FC<FilterDataMonitoringTagihanProps
   };
 
   return (
-    <div className={`border-t-4 border-t-amber-500 rounded-md shadow-md p-5 text-xs ${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 ">
+    <div
+      className={`border-t-4 border-t-amber-500 shadow-md rounded-md p-4 text-xs sm:text-sm bg-white ${className}`}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
         {/* Baris 1 */}
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Periode Tagihan</label>
-          <SearchableDropdown options={periodeTagihanOptions} defaultValue={filters.periodeTagihan} onChange={(value) => handleFilterChange("periodeTagihan", value)} className="w-full" />
+          <SearchableDropdown
+            options={periodeTagihanOptions}
+            defaultValue={filters.periodeTagihan}
+            onChange={(value) => handleFilterChange("periodeTagihan", value)}
+            className="w-full"
+          />
         </div>
 
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Periode Masuk</label>
-          <SearchableDropdown options={periodeOptions} defaultValue={filters.periodeMasuk} onChange={(value) => handleFilterChange("periodeMasuk", value)} className="w-full" />
+          <SearchableDropdown
+            options={periodeOptions}
+            defaultValue={filters.periodeMasuk}
+            onChange={(value) => handleFilterChange("periodeMasuk", value)}
+            className="w-full"
+          />
         </div>
 
         {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
+        <div className="md:col-span-2 border-b border-gray-200"></div>
 
         {/* Baris 2 */}
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Unit</label>
-          <SearchableDropdown options={unitOptions} defaultValue={filters.unit} onChange={(value) => handleFilterChange("unit", value)} className="w-full" />
+          <SearchableDropdown
+            options={unitOptions}
+            defaultValue={filters.unit}
+            onChange={(value) => handleFilterChange("unit", value)}
+            className="w-full"
+          />
         </div>
 
         <div className="flex items-center">
-          <label className="w-32 font-medium text-amber-600">Jalur Pendaftaran</label>
-          <SearchableDropdown options={jalurPendaftaranOptions} defaultValue={filters.jalurPendaftaran} onChange={(value) => handleFilterChange("jalurPendaftaran", value)} className="w-full" />
+          <label className="w-32 font-medium text-amber-600">
+            Jalur Pendaftaran
+          </label>
+          <SearchableDropdown
+            options={jalurPendaftaranOptions}
+            defaultValue={filters.jalurPendaftaran}
+            onChange={(value) => handleFilterChange("jalurPendaftaran", value)}
+            className="w-full"
+          />
         </div>
 
         {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
+        <div className="md:col-span-2 border-b border-gray-200"></div>
 
         {/* Baris 3 */}
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Sistem Kuliah</label>
-          <SearchableDropdown options={sistemKuliahOptions} defaultValue={filters.sistemKuliah} onChange={(value) => handleFilterChange("sistemKuliah", value)} className="w-full" />
+          <SearchableDropdown
+            options={sistemKuliahOptions}
+            defaultValue={filters.sistemKuliah}
+            onChange={(value) => handleFilterChange("sistemKuliah", value)}
+            className="w-full"
+          />
         </div>
 
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Gelombang</label>
-          <SearchableDropdown options={gelombangOptions} defaultValue={filters.gelombang} onChange={(value) => handleFilterChange("gelombang", value)} className="w-full" />
+          <SearchableDropdown
+            options={gelombangOptions}
+            defaultValue={filters.gelombang}
+            onChange={(value) => handleFilterChange("gelombang", value)}
+            className="w-full"
+          />
         </div>
 
         {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
+        <div className="md:col-span-2 border-b border-gray-200"></div>
 
         {/* Baris 4 */}
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Jenis Akun</label>
-          <SearchableDropdown options={jenisAkunOptions} defaultValue={filters.jenisAkun} onChange={(value) => handleFilterChange("jenisAkun", value)} className="w-full" />
+          <SearchableDropdown
+            options={jenisAkunOptions}
+            defaultValue={filters.jenisAkun}
+            onChange={(value) => handleFilterChange("jenisAkun", value)}
+            className="w-full"
+          />
         </div>
 
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Frekuensi</label>
-          <SearchableDropdown options={frekuensiOptions} defaultValue={filters.frekuensi} onChange={(value) => handleFilterChange("frekuensi", value)} className="w-full" />
+          <SearchableDropdown
+            options={frekuensiOptions}
+            defaultValue={filters.frekuensi}
+            onChange={(value) => handleFilterChange("frekuensi", value)}
+            className="w-full"
+          />
         </div>
 
         {/* Divider */}
-        <div className="md:col-span-2 border-b border-gray-200 my-2"></div>
+        <div className="md:col-span-2 border-b border-gray-200"></div>
 
         {/* Baris 5 */}
         <div className="flex items-center">
           <label className="w-32 font-medium text-amber-600">Kelompok</label>
-          <SearchableDropdown options={kelompokOptions} defaultValue={filters.kelompok} onChange={(value) => handleFilterChange("kelompok", value)} className="w-full" />
+          <SearchableDropdown
+            options={kelompokOptions}
+            defaultValue={filters.kelompok}
+            onChange={(value) => handleFilterChange("kelompok", value)}
+            className="w-full"
+          />
         </div>
 
         <div className="flex justify-end items-center">
-          <button onClick={handleSubmit} className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors">
-            <IoFilter className="mr-2" />
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="bg-amber-500 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-md flex items-center transition-colors cursor-pointer shadow-sm text-xs"
+          >
+            <IoFilter className="mr-2 text-sm" />
             Simpan Filter
           </button>
         </div>

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { apiService } from "../../common/services/apiService";
 import { type ApiError } from "../../common/types/apiTypes";
+import { authApi } from "../../features/auth/services/auth.api";
 
 // Types untuk Auth berdasarkan API response Anda
 export interface User {
@@ -70,10 +71,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoginLoading: true, error: null });
 
         try {
-          const response = await apiService.post<LoginResponse>(
-            "/auth/login",
-            credentials,
-          );
+          const response = await authApi.login(credentials);
 
           const { user, token } = response.data;
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
-import { IoEye } from "react-icons/io5";
+import { IoEye, IoTrash } from "react-icons/io5";
 
 export interface DepositData {
   id: string;
@@ -13,16 +13,24 @@ export interface DepositData {
   channel: string;
   masuk: number | null;
   keluar: number | null;
+  posisiTransaksi?: string;
 }
 
 interface DepositTableProps {
   data: DepositData[];
   loading?: boolean;
   onView?: (item: DepositData) => void;
+  onDelete?: (item: DepositData) => void;
   onSelectionChange?: (selectedItems: DepositData[]) => void;
 }
 
-const DepositTable: React.FC<DepositTableProps> = ({ data, loading = false, onView, onSelectionChange }) => {
+const DepositTable: React.FC<DepositTableProps> = ({
+  data,
+  loading = false,
+  onView,
+  onDelete,
+  onSelectionChange,
+}) => {
   const [selectedItems, setSelectedItems] = useState<DepositData[]>([]);
 
   const handleSelectionChange = (items: DepositData[]) => {
@@ -34,8 +42,8 @@ const DepositTable: React.FC<DepositTableProps> = ({ data, loading = false, onVi
 
   // Format number to currency
   const formatCurrency = (value: number | null) => {
-    if (value === null || value === 0) return "";
-    return value.toLocaleString("id-ID");
+    if (value === null || value === undefined) return "";
+    return `${value.toLocaleString("id-ID")},00`;
   };
 
   const columns: Column<DepositData>[] = [
@@ -94,23 +102,37 @@ const DepositTable: React.FC<DepositTableProps> = ({ data, loading = false, onVi
       key: "actions",
       header: "Aksi",
       render: (item) => (
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center space-x-1.5">
           {onView && (
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onView(item);
               }}
-              className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600"
+              className="p-1.5 bg-[#00c0ef] hover:bg-[#00acd6] active:bg-[#0097bc] text-white rounded cursor-pointer transition-colors"
               title="Lihat detail"
             >
-              <IoEye />
+              <IoEye size={13} />
+            </button>
+          )}
+          {onDelete && (item.masuk || item.posisiTransaksi === "Masuk") && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(item);
+              }}
+              className="p-1.5 bg-[#f4543c] hover:bg-[#dc4232] active:bg-[#c9302c] text-white rounded cursor-pointer transition-colors"
+              title="Hapus deposit"
+            >
+              <IoTrash size={13} />
             </button>
           )}
         </div>
       ),
       className: "text-center",
-      width: "70px",
+      width: "85px",
     },
   ];
 

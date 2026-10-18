@@ -10,6 +10,10 @@ export interface MonitoringAturanAkademikData {
   jumlahMahasiswa: number;
   jumlahMahasiswaAktif: number;
   jumlahMahasiswaTercekal: number;
+  periodeAkademik?: string;
+  aturanAkademik?: string;
+  unitKerja?: string;
+  statusSemester?: string;
 }
 
 interface MonitoringAturanAkademikTableProps {

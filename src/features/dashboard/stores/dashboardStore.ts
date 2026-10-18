@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { apiService } from "../../../common/services/apiService";
+import { dashboardApi } from "../services/dashboard.api";
 
 export interface PeriodeItem {
   id: string;
@@ -45,7 +45,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
 
   fetchPeriodeList: async () => {
     try {
-      const response = await apiService.get<PeriodeItem[]>("/periode");
+      const response = await dashboardApi.getPeriodeList();
       set({ periodeList: response.data || [] });
     } catch (error: any) {
       console.error("Gagal memuat list periode:", error);
@@ -57,11 +57,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const params = periode ? { periode } : {};
-      const response = await apiService.get<DashboardData>(
-        "/dashboard",
-        params,
-      );
+      const response = await dashboardApi.getDashboardData(periode);
 
       set({
         data: response.data,

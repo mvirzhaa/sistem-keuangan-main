@@ -80,7 +80,7 @@ export const routeConfig: RouteObject[] = [
       lazy(
         () =>
           import(
-            "../../features/operasional/pages/MonitoringTagihanfMahasiswaPage"
+            "../../features/operasional/pages/MonitoringTagihanMahasiswaPage"
           ),
       ),
     ),
@@ -132,6 +132,17 @@ export const routeConfig: RouteObject[] = [
       ),
     ),
   },
+  {
+    path: ROUTES.OPERASIONAL.MONITORING_TAGIHAN_SEMESTER,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/operasional/pages/MonitoringTagihanSemesterPage"
+          ),
+      ),
+    ),
+  },
   // Transaksi Routes
   {
     path: ROUTES.TRANSAKSI.KEUANGAN,
@@ -152,9 +163,27 @@ export const routeConfig: RouteObject[] = [
     ),
   },
   {
+    path: ROUTES.TRANSAKSI.DATA_TAGIHAN,
+    element: withSuspense(
+      lazy(() => import("../../features/transaksi/pages/DataTagihanPage")),
+    ),
+  },
+  {
     path: ROUTES.TRANSAKSI.PEMBAYARAN,
     element: withSuspense(
       lazy(() => import("../../features/transaksi/pages/PembayaranPage")),
+    ),
+  },
+  {
+    path: ROUTES.TRANSAKSI.DETAIL_PEMBAYARAN,
+    element: withSuspense(
+      lazy(() => import("../../features/transaksi/pages/DetailPembayaranPage")),
+    ),
+  },
+  {
+    path: ROUTES.TRANSAKSI.KWITANSI_PEMBAYARAN,
+    element: withSuspense(
+      lazy(() => import("../../features/transaksi/pages/KwitansiPembayaranPage")),
     ),
   },
   {
@@ -179,6 +208,14 @@ export const routeConfig: RouteObject[] = [
     path: ROUTES.TRANSAKSI.DATA_TRANSAKSI_VA,
     element: withSuspense(
       lazy(() => import("../../features/transaksi/pages/DataTransaksiVAPage")),
+    ),
+  },
+  {
+    path: ROUTES.TRANSAKSI.DETAIL_DATA_TRANSAKSI_VA,
+    element: withSuspense(
+      lazy(
+        () => import("../../features/transaksi/pages/DetailDataTransaksiVAPage"),
+      ),
     ),
   },
   {

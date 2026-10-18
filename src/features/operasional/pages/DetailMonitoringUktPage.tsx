@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { IoMdArrowBack, IoMdPrint } from "react-icons/io";
 import IconButton from "../../../components/button/IconButton";
 import InformationCard, { type FieldItem } from "../../../components/card/InformationCard";
+import operasionalApi from "../services/operasional.api";
 
 export interface MahasiswaUktItem {
   id: string;
@@ -69,90 +70,55 @@ export default function DetailMonitoringUktPage() {
     };
   }, [stateItem, stateFilters, paramId]);
 
-  // Daftar data mahasiswa penerima UKT
-  const studentList: MahasiswaUktItem[] = useMemo(() => {
-    const isKelompok2 = detail.kelompokUkt.includes("2");
+  // State data mahasiswa penerima UKT dari JSON backend
+  const cacheKey = "cached_detail_monitoring_ukt_" + detail.kelompokUkt;
+  const [studentList, setStudentList] = useState<MahasiswaUktItem[]>(() => {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [];
+  });
+  const [loading, setLoading] = useState<boolean>(false);
 
-    if (isKelompok2) {
-      return [
-        {
-          id: "1",
-          nim: "241105010021",
-          nama: "DIMAS PRAYOGA",
-          kelompokUkt: "Kelompok UKT 2",
-          nominalUkt: "Rp 3.500.000",
-          status: "Aktif",
-        },
-        {
-          id: "2",
-          nim: "241105010034",
-          nama: "ANISA MAHARANI",
-          kelompokUkt: "Kelompok UKT 2",
-          nominalUkt: "Rp 3.500.000",
-          status: "Aktif",
-        },
-        {
-          id: "3",
-          nim: "241105010056",
-          nama: "BAGAS WICAKSONO",
-          kelompokUkt: "Kelompok UKT 2",
-          nominalUkt: "Rp 3.500.000",
-          status: "Aktif",
-        },
-        {
-          id: "4",
-          nim: "241105010072",
-          nama: "CINTIA BELLA",
-          kelompokUkt: "Kelompok UKT 2",
-          nominalUkt: "Rp 3.500.000",
-          status: "Aktif",
-        },
-      ];
+  const fetchStudentList = useCallback(async (retryCount = 0) => {
+    setLoading(true);
+    try {
+      const response = await operasionalApi.getDetailMonitoringUkt({
+        kelompokUkt: detail.kelompokUkt,
+      });
+      const list = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray((response as any)?.data?.data)
+        ? (response as any).data.data
+        : [];
+
+      if (list.length > 0) {
+        setStudentList(list);
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(list));
+        } catch {}
+      } else {
+        setStudentList(list);
+      }
+    } catch (err) {
+      console.error("Gagal memuat detail monitoring UKT:", err);
+      if (retryCount < 2) {
+        setTimeout(() => fetchStudentList(retryCount + 1), 800);
+      }
+    } finally {
+      setLoading(false);
     }
+  }, [detail.kelompokUkt, cacheKey]);
 
-    return [
-      {
-        id: "1",
-        nim: "241105010001",
-        nama: "ADITYA PRATAMA",
-        kelompokUkt: "Kelompok UKT 1",
-        nominalUkt: "Rp 2.500.000",
-        status: "Aktif",
-      },
-      {
-        id: "2",
-        nim: "241105010004",
-        nama: "BELLA SAFITRI",
-        kelompokUkt: "Kelompok UKT 1",
-        nominalUkt: "Rp 2.500.000",
-        status: "Aktif",
-      },
-      {
-        id: "3",
-        nim: "241105010009",
-        nama: "DANIEL KURNIAWAN",
-        kelompokUkt: "Kelompok UKT 1",
-        nominalUkt: "Rp 2.500.000",
-        status: "Aktif",
-      },
-      {
-        id: "4",
-        nim: "241105010015",
-        nama: "ELVIRA ROSALINA",
-        kelompokUkt: "Kelompok UKT 1",
-        nominalUkt: "Rp 2.500.000",
-        status: "Aktif",
-      },
-      {
-        id: "5",
-        nim: "241105010018",
-        nama: "FAJAR HIDAYAT",
-        kelompokUkt: "Kelompok UKT 1",
-        nominalUkt: "Rp 2.500.000",
-        status: "Aktif",
-      },
-    ];
-  }, [detail.kelompokUkt]);
+  useEffect(() => {
+    fetchStudentList();
+  }, [fetchStudentList]);
 
   // Field InformationCard
   const infoFields: FieldItem[] = [
@@ -206,15 +172,15 @@ export default function DetailMonitoringUktPage() {
     <div className="w-full">
       {/* Judul Halaman */}
       <div className="flex items-baseline space-x-3 mb-4">
-        <h1 className="text-2xl font-medium text-gray-800">
+        <h1 className="text-xl sm:text-2xl font-medium text-gray-800">
           Detail Monitoring UKT
         </h1>
       </div>
 
       {/* Card Utama */}
-      <div className="bg-white rounded-md shadow-md border-t-4 border-t-emerald-600 p-5 sm:p-6 mb-8">
+      <div className="bg-white rounded-md shadow-md border-t-4 border-t-emerald-600 p-4 sm:p-5 mb-8">
         {/* Header Action Buttons (Kembali ke Daftar & Cetak) */}
-        <div className="flex justify-end items-center gap-2 mb-6">
+        <div className="flex justify-end items-center gap-2 mb-4">
           <IconButton
             icon={<IoMdArrowBack size={16} />}
             text="Kembali ke Daftar"
@@ -232,19 +198,24 @@ export default function DetailMonitoringUktPage() {
         </div>
 
         {/* Informasi Monitoring UKT */}
-        <div className="mb-6">
+        <div className="mb-5">
           <InformationCard
             fields={infoFields}
             bgColorClass="bg-[#f0f6fe]"
             borderColorClass="border-[#84b5ea]"
             labelColorClass="text-[#517fa4]"
-            className="rounded-sm"
+            className="rounded-sm text-[13px]"
           />
         </div>
 
         {/* Tabel Penerima UKT */}
-        <div className="w-full overflow-x-auto border border-gray-200 rounded-sm">
-          <table className="w-full border-collapse text-xs text-left">
+        <div className="w-full overflow-x-auto border border-gray-200 rounded-sm relative">
+          {loading && (
+            <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+            </div>
+          )}
+          <table className="w-full border-collapse text-[13px] text-left">
             <thead>
               <tr className="bg-[#004e82] text-white">
                 <th className="py-2.5 px-3 border border-[#14568e] text-center w-12 font-bold">
@@ -301,7 +272,7 @@ export default function DetailMonitoringUktPage() {
                       {item.nominalUkt}
                     </td>
                     <td className="py-2.5 px-3 text-center">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-100 text-emerald-800">
+                      <span className="px-2.5 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
                         {item.status}
                       </span>
                     </td>

@@ -1,19 +1,8 @@
 import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
+import type { TransaksiKeuanganData } from "../services/transaksi.api";
 
-interface KeuanganData {
-  id: string;
-  no: number;
-  kodeTransaksi: string;
-  jenisTransaksi: string;
-  periode: string;
-  tanggal: string;
-  idPengguna: string;
-  nama: string;
-  uraian: string;
-  debet: number | null;
-  kredit: number | null;
-}
+export type KeuanganData = TransaksiKeuanganData;
 
 interface KeuanganTableProps {
   data: KeuanganData[];
@@ -22,7 +11,12 @@ interface KeuanganTableProps {
   onSelectionChange?: (selectedItems: KeuanganData[]) => void;
 }
 
-const KeuanganTable: React.FC<KeuanganTableProps> = ({ data, loading = false, onView, onSelectionChange }) => {
+const KeuanganTable: React.FC<KeuanganTableProps> = ({
+  data,
+  loading = false,
+  onView,
+  onSelectionChange,
+}) => {
   const [selectedItems, setSelectedItems] = useState<KeuanganData[]>([]);
 
   const handleSelectionChange = (items: KeuanganData[]) => {
@@ -34,28 +28,47 @@ const KeuanganTable: React.FC<KeuanganTableProps> = ({ data, loading = false, on
 
   // Format number to currency
   const formatCurrency = (value: number | null) => {
-    if (value === null) return "";
+    if (value === null || value === undefined) return "";
     return value.toLocaleString("id-ID");
+  };
+
+  const getJenisBadge = (jenis: string) => {
+    switch (jenis?.toUpperCase()) {
+      case "INV":
+        return "text-blue-600 font-semibold";
+      case "DEP":
+        return "text-purple-600 font-semibold";
+      case "PAY":
+        return "text-emerald-600 font-semibold";
+      default:
+        return "text-gray-700 font-medium";
+    }
   };
 
   const columns: Column<KeuanganData>[] = [
     {
       key: "no",
       header: "No.",
-      width: "60px",
+      width: "50px",
       className: "text-center",
+      render: (_item, index) => index + 1,
     },
     {
       key: "kodeTransaksi",
       header: "Kode Transaksi",
       sortable: true,
+      className: "text-center",
     },
     {
       key: "jenisTransaksi",
       header: "Jenis Transaksi",
       sortable: true,
       className: "text-center",
-      render: (item) => <span className={`font-medium ${item.jenisTransaksi === "INV" ? "text-blue-600" : "text-green-600"}`}>{item.jenisTransaksi}</span>,
+      render: (item) => (
+        <span className={getJenisBadge(item.jenisTransaksi)}>
+          {item.jenisTransaksi}
+        </span>
+      ),
       width: "120px",
     },
     {
@@ -70,22 +83,25 @@ const KeuanganTable: React.FC<KeuanganTableProps> = ({ data, loading = false, on
       header: "Tanggal",
       sortable: true,
       className: "text-center",
-      width: "150px",
+      width: "160px",
     },
     {
       key: "idPengguna",
       header: "ID",
       sortable: true,
+      className: "text-center",
     },
     {
       key: "nama",
       header: "Nama",
       sortable: true,
+      className: "text-left font-medium",
     },
     {
       key: "uraian",
       header: "Uraian",
       sortable: true,
+      className: "text-left",
     },
     {
       key: "debet",
@@ -104,21 +120,23 @@ const KeuanganTable: React.FC<KeuanganTableProps> = ({ data, loading = false, on
   ];
 
   return (
-    <ListTable
-      data={data}
-      columns={columns}
-      rowKey={(item) => item.id}
-      initialSortColumn="tanggal"
-      initialSortDirection="desc"
-      pageSize={10}
-      pageSizeOptions={[10, 25, 50, 100]}
-      selectable={false}
-      onSelectionChange={handleSelectionChange}
-      className="w-full text-xs"
-      headerClassName="text-xs"
-      loading={loading}
-      emptyMessage="Tidak ada data transaksi keuangan"
-    />
+    <div className="w-full bg-white rounded-md overflow-hidden">
+      <ListTable
+        data={data}
+        columns={columns}
+        rowKey={(item) => item.id}
+        initialSortColumn="tanggal"
+        initialSortDirection="desc"
+        pageSize={10}
+        pageSizeOptions={[10, 25, 50, 100]}
+        selectable={false}
+        onSelectionChange={handleSelectionChange}
+        className="w-full text-xs bg-white"
+        headerClassName="text-xs"
+        loading={loading}
+        emptyMessage="Tidak ada data transaksi keuangan"
+      />
+    </div>
   );
 };
 

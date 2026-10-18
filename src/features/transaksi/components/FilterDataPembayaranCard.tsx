@@ -1,121 +1,293 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
-import Dropdown from "../../../components/inputs/Dropdown";
 import { IoFilter } from "react-icons/io5";
+import { useReferensiStore } from "../../../common/stores/referensiStore";
 
-interface FilterDataPembayaranProps {
-  onFilter?: (filters: FilterValues) => void;
-  className?: string;
-}
-
-interface FilterValues {
+export interface FilterPembayaranValues {
   penerima: string;
-  metodePembayaran: string;
-  angkatan: string;
-  gelombang: string;
-  sistemKuliah: string;
   periodePembayaran: string;
+  metodePembayaran: string;
   channel: string;
+  angkatan: string;
   programStudi: string;
+  gelombang: string;
   jalurPendaftaran: string;
+  sistemKuliah: string;
 }
 
-const FilterDataPembayaranCard: React.FC<FilterDataPembayaranProps> = ({ onFilter, className = "" }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    penerima: "Mahasiswa",
-    metodePembayaran: "-- Semua Metode Pembayaran --",
-    angkatan: "-- Semua Angkatan --",
-    gelombang: "-- Semua Gelombang --",
-    sistemKuliah: "-- Semua Sistem Kuliah --",
-    periodePembayaran: "2024 Genap",
-    channel: "-- Semua Channel --",
-    programStudi: "-- Semua Program Studi --",
-    jalurPendaftaran: "-- Semua Jalur Pendaftaran --",
-  });
+export interface FilterDataPembayaranProps {
+  onFilter?: (filters: FilterPembayaranValues) => void;
+  className?: string;
+  initialFilters?: FilterPembayaranValues;
+}
 
-  // Options untuk dropdown
-  const penerimaOptions = ["Mahasiswa", "Dosen", "Tenaga Pendidik"];
-  const metodePembayaranOptions = ["-- Semua Metode Pembayaran --", "Transfer", "Virtual Account", "Cash", "QRIS"];
-  const angkatanOptions = ["-- Semua Angkatan --", "2024", "2023", "2022", "2021"];
-  const gelombangOptions = ["-- Semua Gelombang --", "Gelombang 1", "Gelombang 2", "Gelombang 3"];
-  const sistemKuliahOptions = ["-- Semua Sistem Kuliah --", "Reguler Pagi", "Reguler Sore", "Kelas Karyawan"];
-  const periodePembayaranOptions = ["2024 Genap", "2024 Ganjil", "2023 Genap", "2023 Ganjil"];
-  const channelOptions = ["-- Semua Channel --", "Bank BNI", "Bank Mandiri", "Bank BSI", "Bank BRI"];
-  const programStudiOptions = ["-- Semua Program Studi --", "Teknik Informatika", "Sistem Informasi", "Teknik Elektro"];
-  const jalurPendaftaranOptions = ["-- Semua Jalur Pendaftaran --", "SNMPTN", "SBMPTN", "Mandiri"];
+export const defaultFilterPembayaranValues: FilterPembayaranValues = {
+  penerima: "Mahasiswa",
+  periodePembayaran: "-- Semua Periode --",
+  metodePembayaran: "-- Semua Metode Pembayaran --",
+  channel: "-- Semua Channel --",
+  angkatan: "-- Semua Angkatan --",
+  programStudi: "-- Semua Program Studi --",
+  gelombang: "-- Semua Gelombang --",
+  jalurPendaftaran: "-- Semua Jalur Pendaftaran --",
+  sistemKuliah: "-- Semua Sistem Kuliah --",
+};
 
-  // Handle perubahan filter
-  const handleFilterChange = (key: keyof FilterValues, value: string) => {
+const FilterDataPembayaranCard: React.FC<FilterDataPembayaranProps> = ({
+  onFilter,
+  className = "",
+  initialFilters,
+}) => {
+  const { data: referensi, fetchReferensi } = useReferensiStore();
+
+  useEffect(() => {
+    fetchReferensi();
+  }, [fetchReferensi]);
+
+  const [filters, setFilters] = useState<FilterPembayaranValues>(
+    initialFilters || defaultFilterPembayaranValues
+  );
+
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters]);
+
+  // Options dari referensi store dengan fallback konsisten
+  const penerimaOptions = referensi.penerima.length
+    ? referensi.penerima
+    : ["Mahasiswa", "Dosen", "Tenaga Pendidik"];
+
+  const periodePembayaranOptions = [
+    "-- Semua Periode --",
+    ...(referensi.periode.length
+      ? referensi.periode.filter(
+          (p) => p !== "-- Semua --" && p !== "-- Semua Periode --"
+        )
+      : [
+          "2024 Genap",
+          "2024 Ganjil",
+          "2023 Genap",
+          "2023 Ganjil",
+          "2025 Genap",
+          "2025 Ganjil",
+          "2026 Genap",
+          "2026 Ganjil",
+        ]),
+  ];
+
+  const metodePembayaranOptions = [
+    "-- Semua Metode Pembayaran --",
+    "SevimaPay",
+    "Transfer",
+    "Virtual Account",
+    "Cash",
+    "QRIS",
+  ];
+
+  const channelOptions = [
+    "-- Semua Channel --",
+    "Shopee",
+    "Bank Muamalat",
+    "Bank BNI",
+    "Bank Mandiri",
+    "Bank BSI",
+    "Bank BRI",
+    "Tokopedia",
+  ];
+
+  const angkatanOptions = [
+    "-- Semua Angkatan --",
+    ...referensi.angkatan.filter(
+      (a) => a !== "-- Semua --" && a !== "-- Semua Angkatan --"
+    ),
+  ];
+
+  const programStudiOptions = [
+    "-- Semua Program Studi --",
+    ...referensi.programStudi.filter(
+      (p) => p !== "-- Semua --" && p !== "-- Semua Program Studi --"
+    ),
+  ];
+
+  const gelombangOptions = [
+    "-- Semua Gelombang --",
+    ...referensi.gelombang.filter(
+      (g) => g !== "-- Semua --" && g !== "-- Semua Gelombang --"
+    ),
+  ];
+
+  const jalurPendaftaranOptions = [
+    "-- Semua Jalur Pendaftaran --",
+    ...referensi.jalurPendaftaran.filter(
+      (j) => j !== "-- Semua --" && j !== "-- Semua Jalur Pendaftaran --"
+    ),
+  ];
+
+  const sistemKuliahOptions = [
+    "-- Semua Sistem Kuliah --",
+    ...referensi.sistemKuliah.filter(
+      (s) => s !== "-- Semua --" && s !== "-- Semua Sistem Kuliah --"
+    ),
+  ];
+
+  // Handle perubahan filter di state lokal (tidak langsung trigger onFilter)
+  const handleFilterChange = (
+    key: keyof FilterPembayaranValues,
+    value: string
+  ) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,
     }));
+  };
 
+  // Tombol Simpan Filter: baru eksekusi filter ke parent
+  const handleSaveFilter = () => {
     if (onFilter) {
-      onFilter({ ...filters, [key]: value });
+      onFilter(filters);
     }
   };
 
   return (
-    <div className={`border-t-4 border-t-amber-500 rounded-md shadow-md p-5 text-xs ${className}`}>
+    <div
+      className={`w-full bg-white border-t-4 border-t-amber-500 rounded-md shadow-md p-5 ${className}`}
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Baris 1 */}
+        {/* Baris 1: Penerima & Periode Pembayaran */}
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Penerima</label>
-          <SearchableDropdown options={penerimaOptions} defaultValue={filters.penerima} onChange={(value) => handleFilterChange("penerima", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Penerima
+          </label>
+          <SearchableDropdown
+            options={penerimaOptions}
+            value={filters.penerima}
+            defaultValue={filters.penerima}
+            onChange={(value) => handleFilterChange("penerima", value)}
+            className="w-full text-xs"
+          />
         </div>
 
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Periode Pembayaran</label>
-          <SearchableDropdown options={periodePembayaranOptions} defaultValue={filters.periodePembayaran} onChange={(value) => handleFilterChange("periodePembayaran", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Periode Pembayaran
+          </label>
+          <SearchableDropdown
+            options={periodePembayaranOptions}
+            value={filters.periodePembayaran}
+            defaultValue={filters.periodePembayaran}
+            onChange={(value) => handleFilterChange("periodePembayaran", value)}
+            className="w-full text-xs"
+          />
         </div>
 
-        {/* Baris 2 */}
+        {/* Baris 2: Metode Pembayaran & Channel */}
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Metode Pembayaran</label>
-          <SearchableDropdown options={metodePembayaranOptions} defaultValue={filters.metodePembayaran} onChange={(value) => handleFilterChange("metodePembayaran", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Metode Pembayaran
+          </label>
+          <SearchableDropdown
+            options={metodePembayaranOptions}
+            value={filters.metodePembayaran}
+            defaultValue={filters.metodePembayaran}
+            onChange={(value) => handleFilterChange("metodePembayaran", value)}
+            className="w-full text-xs"
+          />
         </div>
 
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Channel</label>
-          <SearchableDropdown options={channelOptions} defaultValue={filters.channel} onChange={(value) => handleFilterChange("channel", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Channel
+          </label>
+          <SearchableDropdown
+            options={channelOptions}
+            value={filters.channel}
+            defaultValue={filters.channel}
+            onChange={(value) => handleFilterChange("channel", value)}
+            className="w-full text-xs"
+          />
         </div>
 
         {/* Divider */}
-        <div className="md:col-span-2 border-b border-orange-200 my-2"></div>
+        <div className="md:col-span-2 border-b border-orange-200 my-1"></div>
 
-        {/* Baris 3 */}
+        {/* Baris 3: Angkatan & Program Studi */}
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Angkatan</label>
-          <SearchableDropdown options={angkatanOptions} defaultValue={filters.angkatan} onChange={(value) => handleFilterChange("angkatan", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Angkatan
+          </label>
+          <SearchableDropdown
+            options={angkatanOptions}
+            value={filters.angkatan}
+            defaultValue={filters.angkatan}
+            onChange={(value) => handleFilterChange("angkatan", value)}
+            className="w-full text-xs"
+          />
         </div>
 
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Program Studi</label>
-          <SearchableDropdown options={programStudiOptions} defaultValue={filters.programStudi} onChange={(value) => handleFilterChange("programStudi", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Program Studi
+          </label>
+          <SearchableDropdown
+            options={programStudiOptions}
+            value={filters.programStudi}
+            defaultValue={filters.programStudi}
+            onChange={(value) => handleFilterChange("programStudi", value)}
+            className="w-full text-xs"
+          />
         </div>
 
-        {/* Baris 4 */}
+        {/* Baris 4: Gelombang & Jalur Pendaftaran */}
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Gelombang</label>
-          <SearchableDropdown options={gelombangOptions} defaultValue={filters.gelombang} onChange={(value) => handleFilterChange("gelombang", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Gelombang
+          </label>
+          <SearchableDropdown
+            options={gelombangOptions}
+            value={filters.gelombang}
+            defaultValue={filters.gelombang}
+            onChange={(value) => handleFilterChange("gelombang", value)}
+            className="w-full text-xs"
+          />
         </div>
 
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Jalur Pendaftaran</label>
-          <SearchableDropdown options={jalurPendaftaranOptions} defaultValue={filters.jalurPendaftaran} onChange={(value) => handleFilterChange("jalurPendaftaran", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Jalur Pendaftaran
+          </label>
+          <SearchableDropdown
+            options={jalurPendaftaranOptions}
+            value={filters.jalurPendaftaran}
+            defaultValue={filters.jalurPendaftaran}
+            onChange={(value) => handleFilterChange("jalurPendaftaran", value)}
+            className="w-full text-xs"
+          />
         </div>
 
-        {/* Baris 5 */}
+        {/* Baris 5: Sistem Kuliah & Tombol Simpan Filter */}
         <div className="flex items-center">
-          <label className="w-40 font-medium text-amber-600">Sistem Kuliah</label>
-          <SearchableDropdown options={sistemKuliahOptions} defaultValue={filters.sistemKuliah} onChange={(value) => handleFilterChange("sistemKuliah", value)} className="w-full" />
+          <label className="w-44 text-sm font-semibold text-amber-600 shrink-0">
+            Sistem Kuliah
+          </label>
+          <SearchableDropdown
+            options={sistemKuliahOptions}
+            value={filters.sistemKuliah}
+            defaultValue={filters.sistemKuliah}
+            onChange={(value) => handleFilterChange("sistemKuliah", value)}
+            className="w-full text-xs"
+          />
         </div>
+
         <div className="flex justify-end items-center">
-          {/* <IconButton icon={<IoFilter className="mr-2" />} text="Simpan filter" variant="warning" /> */}
-          <button onClick={() => {}} className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors">
-            <IoFilter className="mr-2" />
-            Simpan Filter
+          <button
+            type="button"
+            onClick={handleSaveFilter}
+            className="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white px-5 py-2.5 rounded-lg flex items-center space-x-1.5 transition-colors cursor-pointer text-xs font-medium shadow-xs"
+          >
+            <IoFilter className="text-base" />
+            <span>Simpan Filter</span>
           </button>
         </div>
       </div>

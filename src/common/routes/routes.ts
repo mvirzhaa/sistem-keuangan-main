@@ -19,6 +19,7 @@ export const ROUTES = {
       "/operasional/monitoring_aturan_akademik/detail",
     MONITORING_UKT: "/operasional/monitoring_ukt",
     DETAIL_MONITORING_UKT: "/operasional/monitoring_ukt/detail",
+    MONITORING_TAGIHAN_SEMESTER: "/operasional/monitoring_tagihan_semester",
   },
 
   // Transaksi
@@ -26,11 +27,15 @@ export const ROUTES = {
     KEUANGAN: "/transaksi/keuangan",
     TAGIHAN: "/transaksi/tagihan",
     DETAIL_TAGIHAN: "/transaksi/tagihan/detail_tagihan",
+    DATA_TAGIHAN: "/transaksi/tagihan/data_tagihan",
     PEMBAYARAN: "/transaksi/pembayaran",
+    DETAIL_PEMBAYARAN: "/transaksi/pembayaran/detail_pembayaran",
+    KWITANSI_PEMBAYARAN: "/transaksi/pembayaran/kwitansi",
     DEPOSIT: "/transaksi/deposit",
     DETAIL_DEPOSIT: "/transaksi/deposit/detail_deposit",
     VIRTUAL_ACCOUNT: "/transaksi/virtual_account",
     DATA_TRANSAKSI_VA: "/transaksi/virtual_account/data_transaksi_va",
+    DETAIL_DATA_TRANSAKSI_VA: "/transaksi/virtual_account/detail_data_transaksi_va",
     POTONGAN_BEASISWA: "/transaksi/potongan_dan_beasiswa",
     VOUCHER: "/transaksi/voucher",
   },

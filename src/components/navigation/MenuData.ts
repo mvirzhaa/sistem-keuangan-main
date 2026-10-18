@@ -86,6 +86,11 @@ const menuList = [
           },
         ],
       },
+      {
+        menu: "Monitoring Tagihan Semester",
+        route: ROUTES.OPERASIONAL.MONITORING_TAGIHAN_SEMESTER,
+        showInNavbar: true,
+      },
     ],
   },
   {
@@ -107,6 +112,11 @@ const menuList = [
             route: ROUTES.TRANSAKSI.DETAIL_TAGIHAN,
             showInNavbar: false,
           },
+          {
+            menu: "Data Tagihan",
+            route: ROUTES.TRANSAKSI.DATA_TAGIHAN,
+            showInNavbar: false,
+          },
         ],
       },
 
@@ -114,6 +124,18 @@ const menuList = [
         menu: "Pembayaran",
         route: ROUTES.TRANSAKSI.PEMBAYARAN,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Pembayaran",
+            route: ROUTES.TRANSAKSI.DETAIL_PEMBAYARAN,
+            showInNavbar: false,
+          },
+          {
+            menu: "Kwitansi Pembayaran",
+            route: ROUTES.TRANSAKSI.KWITANSI_PEMBAYARAN,
+            showInNavbar: false,
+          },
+        ],
       },
       {
         menu: "Deposit",

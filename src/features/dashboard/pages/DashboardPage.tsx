@@ -26,7 +26,7 @@ import {
   pembayaranPerAngkatanData,
   uangKuliahTunggalData,
 } from "../data/mockDashboardCharts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDashboardStore } from "../stores/dashboardStore";
 import { dashboardController } from "../controllers/dashboardController";
 
@@ -55,19 +55,11 @@ export default function DashboardPage() {
 
   const formattedStats = dashboardController.getFormattedStats();
 
-  const periodeOptions = [
+  // Options periode murni diambil secara dinamis dari db.json / API
+  const periodeOptions = useMemo(() => [
     "-- Semua Periode --",
-    ...(periodeList.length > 0
-      ? periodeList.map((p) => p.nama)
-      : [
-          "2026 Genap",
-          "2026 Ganjil",
-          "2025 Genap",
-          "2025 Ganjil",
-          "2024 Genap",
-          "2024 Ganjil",
-        ]),
-  ];
+    ...periodeList.map((p) => p.nama),
+  ], [periodeList]);
 
   return (
     <>

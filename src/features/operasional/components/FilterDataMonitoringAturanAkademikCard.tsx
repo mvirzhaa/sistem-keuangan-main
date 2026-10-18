@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../../../components/inputs/SearchableDropdown";
 import { IoFilter } from "react-icons/io5";
+import { useReferensiStore } from "../../../common/stores/referensiStore";
 
 export interface FilterValues {
   unitKerja: string;
@@ -11,74 +12,98 @@ export interface FilterValues {
 }
 
 interface FilterDataMonitoringAturanAkademikProps {
+  initialFilters?: Partial<FilterValues>;
   onFilter?: (filters: FilterValues) => void;
   className?: string;
 }
 
 const FilterDataMonitoringAturanAkademikCard: React.FC<
   FilterDataMonitoringAturanAkademikProps
-> = ({ onFilter, className = "" }) => {
+> = ({ initialFilters, onFilter, className = "" }) => {
+  const { data: referensi, fetchReferensi } = useReferensiStore();
+
+  useEffect(() => {
+    fetchReferensi();
+  }, [fetchReferensi]);
+
   const [filters, setFilters] = useState<FilterValues>({
-    unitKerja: "Universitas Ibn Khaldun",
-    aturanAkademik: "KHS - Melihat KHS",
-    periodeAkademik: "2027 Genap",
-    statusSemester: "-- Semua --",
-    angkatan: "-- Semua --",
+    unitKerja: initialFilters?.unitKerja || "Universitas Ibn Khaldun",
+    aturanAkademik: initialFilters?.aturanAkademik || "KHS - Melihat KHS",
+    periodeAkademik: initialFilters?.periodeAkademik || "-- Semua --",
+    statusSemester: initialFilters?.statusSemester || "-- Semua --",
+    angkatan: initialFilters?.angkatan || "-- Semua --",
   });
 
-  // Options untuk dropdown
-  const unitKerjaOptions = [
-    "Universitas Ibn Khaldun",
-    "Fakultas Agama Islam",
-    "Fakultas Keguruan dan Ilmu Pendidikan",
-    "Fakultas Ekonomi dan Bisnis",
-    "Fakultas Teknik dan Sains",
-    "Fakultas Hukum",
-    "Fakultas Ilmu Kesehatan",
-    "Sekolah Pascasarjana",
-  ];
+  // Options diambil dari global referensiStore dengan fallback aman
+  const unitKerjaOptions =
+    referensi.unitKerja && referensi.unitKerja.length > 0
+      ? referensi.unitKerja
+      : [
+          "Universitas Ibn Khaldun",
+          "Fakultas Agama Islam",
+          "Fakultas Keguruan dan Ilmu Pendidikan",
+          "Fakultas Ekonomi dan Bisnis",
+          "Fakultas Teknik dan Sains",
+          "Fakultas Hukum",
+          "Fakultas Ilmu Kesehatan",
+          "Sekolah Pascasarjana",
+        ];
 
-  const aturanAkademikOptions = [
-    "KHS - Melihat KHS",
-    "KRS - Melakukan KRS",
-    "UAS - Mengikuti UAS",
-    "UTS - Mengikuti UTS",
-    "Perwalian - Melakukan Perwalian",
-    "KKN - Mengikuti KKN",
-  ];
+  const aturanAkademikOptions =
+    referensi.aturanAkademik && referensi.aturanAkademik.length > 0
+      ? referensi.aturanAkademik.includes("-- Semua --")
+        ? referensi.aturanAkademik
+        : ["-- Semua --", ...referensi.aturanAkademik]
+      : [
+          "-- Semua --",
+          "KHS - Melihat KHS",
+          "KRS - Melakukan KRS",
+          "UAS - Mengikuti UAS",
+          "UTS - Mengikuti UTS",
+          "Perwalian - Melakukan Perwalian",
+          "KKN - Mengikuti KKN",
+        ];
 
-  const periodeAkademikOptions = [
-    "2027 Genap",
-    "2027 Ganjil",
-    "2026 Genap",
-    "2026 Ganjil",
-    "2025 Genap",
-    "2025 Ganjil",
-    "2024 Genap",
-    "2024 Ganjil",
-  ];
+  const periodeAkademikOptions =
+    referensi.periode && referensi.periode.length > 0
+      ? referensi.periode.includes("-- Semua --")
+        ? referensi.periode
+        : ["-- Semua --", ...referensi.periode]
+      : [
+          "-- Semua --",
+          "2026 Ganjil",
+          "2026 Genap",
+          "2025 Ganjil",
+          "2025 Genap",
+          "2024 Ganjil",
+          "2024 Genap",
+          "2023 Ganjil",
+          "2023 Genap",
+        ];
 
-  const statusSemesterOptions = [
-    "-- Semua --",
-    "Aktif",
-    "Cuti",
-    "Non Aktif",
-    "Lulus",
-    "Keluar",
-    "Drop Out",
-  ];
+  const statusSemesterOptions =
+    referensi.statusMahasiswa && referensi.statusMahasiswa.length > 0
+      ? referensi.statusMahasiswa.includes("-- Semua --")
+        ? referensi.statusMahasiswa
+        : ["-- Semua --", ...referensi.statusMahasiswa]
+      : ["-- Semua --", "Aktif", "Cuti", "Non Aktif", "Lulus", "Keluar", "Drop Out"];
 
-  const angkatanOptions = [
-    "-- Semua --",
-    "2027 Ganjil",
-    "2026 Ganjil",
-    "2026 Genap",
-    "2025 Ganjil",
-    "2025 Genap",
-    "2024 Ganjil",
-    "2023 Ganjil",
-    "2022 Ganjil",
-  ];
+  const angkatanOptions =
+    referensi.angkatan && referensi.angkatan.length > 0
+      ? referensi.angkatan.includes("-- Semua --")
+        ? referensi.angkatan
+        : ["-- Semua --", ...referensi.angkatan]
+      : [
+          "-- Semua --",
+          "2027 Ganjil",
+          "2026 Ganjil",
+          "2026 Genap",
+          "2025 Ganjil",
+          "2025 Genap",
+          "2024 Ganjil",
+          "2023 Ganjil",
+          "2022 Ganjil",
+        ];
 
   // Handle perubahan filter
   const handleFilterChange = (key: keyof FilterValues, value: string) => {
@@ -97,12 +122,12 @@ const FilterDataMonitoringAturanAkademikCard: React.FC<
 
   return (
     <div
-      className={`border-t-4 border-t-amber-500 bg-white rounded-md shadow-md p-5 text-xs ${className}`}
+      className={`border-t-4 border-t-amber-500 shadow-md rounded-md p-4 text-xs sm:text-sm bg-white ${className}`}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         {/* Baris 1: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Unit Kerja
           </label>
           <SearchableDropdown
@@ -116,7 +141,7 @@ const FilterDataMonitoringAturanAkademikCard: React.FC<
 
         {/* Baris 1: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Aturan Akademik
           </label>
           <SearchableDropdown
@@ -130,7 +155,7 @@ const FilterDataMonitoringAturanAkademikCard: React.FC<
 
         {/* Baris 2: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Periode Akademik
           </label>
           <SearchableDropdown
@@ -144,7 +169,7 @@ const FilterDataMonitoringAturanAkademikCard: React.FC<
 
         {/* Baris 2: Kolom Kanan */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Angkatan
           </label>
           <SearchableDropdown
@@ -158,7 +183,7 @@ const FilterDataMonitoringAturanAkademikCard: React.FC<
 
         {/* Baris 3: Kolom Kiri */}
         <div className="flex items-center">
-          <label className="w-36 font-semibold text-amber-600 shrink-0">
+          <label className="w-36 font-medium text-amber-600 shrink-0">
             Status Semester
           </label>
           <SearchableDropdown

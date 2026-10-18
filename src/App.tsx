@@ -35,17 +35,21 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen items-center w-full">
-      <Navbar />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-16 py-6 flex-grow mb-30 w-full">
+    <div className="flex flex-col min-h-screen items-center w-full print:min-h-0 print:block">
+      <div className="print:hidden w-full">
+        <Navbar />
+      </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-16 py-6 flex-grow mb-30 w-full print:m-0 print:p-0 print:mb-0 print:max-w-none">
         <div>
-          <div className="mb-4">
+          <div className="mb-4 print:hidden">
             <Breadcrumb />
           </div>
           <div>{routes}</div>
         </div>
       </div>
-      <Footer />
+      <div className="print:hidden w-full">
+        <Footer />
+      </div>
     </div>
   );
 }

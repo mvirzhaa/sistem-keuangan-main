@@ -133,21 +133,23 @@ const PembayaranTable: React.FC<PembayaranTableProps> = ({ data, loading = false
   ];
 
   return (
-    <ListTable
-      data={data}
-      columns={columns}
-      rowKey={(item) => item.id}
-      initialSortColumn="kodePembayaran"
-      initialSortDirection="asc"
-      pageSize={10}
-      pageSizeOptions={[10, 25, 50, 100]}
-      selectable={true}
-      onSelectionChange={handleSelectionChange}
-      className="w-full text-xs"
-      headerClassName="text-xs"
-      loading={loading}
-      emptyMessage="Tidak ada data pembayaran"
-    />
+    <div className="w-full bg-white rounded-md overflow-hidden">
+      <ListTable
+        data={data}
+        columns={columns}
+        rowKey={(item) => item.id}
+        initialSortColumn="kodePembayaran"
+        initialSortDirection="asc"
+        pageSize={10}
+        pageSizeOptions={[10, 25, 50, 100]}
+        selectable={true}
+        onSelectionChange={handleSelectionChange}
+        className="w-full text-xs bg-white"
+        headerClassName="text-xs"
+        loading={loading}
+        emptyMessage="Tidak ada data pembayaran"
+      />
+    </div>
   );
 };
 

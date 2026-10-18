@@ -78,3 +78,69 @@ input[type="number"] {
   border-top: 1px solid #f1f5f9 !important;
 }
 
+/* Print styling for Kwitansi / Print sheets */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  nav,
+  header,
+  footer,
+  aside,
+  [aria-label="Breadcrumb"],
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Prevent any scrollbar from showing up on print */
+  *,
+  *::before,
+  *::after {
+    overflow: visible !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  ::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .print\:border-none {
+    border: none !important;
+  }
+
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  .print\:p-0 {
+    padding: 0 !important;
+  }
+
+  .print\:max-w-none {
+    max-width: 100% !important;
+  }
+}
+
+

@@ -17,7 +17,7 @@ function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="w-full relative z-40">
+    <div className="w-full relative z-40 print:hidden">
       <nav className="bg-gray-800 py-5 px-4 sm:px-6 lg:px-16 relative z-50">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex align-middle items-center">

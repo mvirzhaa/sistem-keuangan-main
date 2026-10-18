@@ -2,19 +2,9 @@ import React, { useState } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
 import { IoEye, IoTrash } from "react-icons/io5";
 
-export interface PotonganDanBeasiswaData {
-  id: string;
-  no: number;
-  nim: string;
-  nama: string;
-  angkatan: string;
-  programStudi: string;
-  sumber: string;
-  beasiswa: string;
-  periode: string;
-  nominal: number;
-  digunakan: number;
-}
+import { type PotonganDanBeasiswaData } from "../services/transaksi.api";
+
+export type { PotonganDanBeasiswaData };
 
 interface PotonganDanBeasiswaTableProps {
   data: PotonganDanBeasiswaData[];
@@ -45,6 +35,7 @@ const PotonganDanBeasiswaTable: React.FC<PotonganDanBeasiswaTableProps> = ({ dat
       header: "No",
       width: "60px",
       className: "text-center",
+      render: (item, index) => item.no || index + 1,
     },
     {
       key: "nim",
@@ -108,33 +99,35 @@ const PotonganDanBeasiswaTable: React.FC<PotonganDanBeasiswaTableProps> = ({ dat
         <div className="flex justify-center space-x-1">
           {onView && (
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onView(item);
               }}
-              className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600"
+              className="p-1.5 bg-[#00c0ef] hover:bg-[#00acd6] text-white rounded cursor-pointer transition-colors"
               title="Lihat detail"
             >
-              <IoEye size={18} />
+              <IoEye size={15} />
             </button>
           )}
 
           {onDelete && (
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(item);
               }}
-              className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600"
+              className="p-1.5 bg-[#dd4b39] hover:bg-[#c9302c] text-white rounded cursor-pointer transition-colors"
               title="Hapus data"
             >
-              <IoTrash size={18} />
+              <IoTrash size={15} />
             </button>
           )}
         </div>
       ),
       className: "text-center",
-      width: "90px",
+      width: "80px",
     },
   ];
 
@@ -150,7 +143,7 @@ const PotonganDanBeasiswaTable: React.FC<PotonganDanBeasiswaTableProps> = ({ dat
       selectable={true}
       onSelectionChange={handleSelectionChange}
       className="w-full text-xs"
-      headerClassName="text-xs"
+      headerClassName="text-xs bg-[#0c4a6e] text-white"
       loading={loading}
       emptyMessage="Tidak ada data potongan dan beasiswa"
     />
