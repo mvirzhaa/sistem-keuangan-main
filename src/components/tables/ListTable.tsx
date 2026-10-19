@@ -30,6 +30,7 @@ interface ListTableProps<T> {
   onSelectionChange?: (selectedItems: T[]) => void;
   showFooter?: boolean;
   footerRow?: React.ReactNode;
+  topRow?: React.ReactNode;
   className?: string;
   headerClassName?: string;
   rowClassName?: (item: T, index: number) => string;
@@ -50,6 +51,7 @@ function ListTable<T>({
   onSelectionChange,
   showFooter = true,
   footerRow,
+  topRow,
   className = "",
   headerClassName = "",
   rowClassName,
@@ -236,6 +238,7 @@ function ListTable<T>({
           </thead>
 
           <tbody>
+            {topRow}
             {loading ? (
               <tr>
                 <td
@@ -301,18 +304,13 @@ function ListTable<T>({
       </div>
 
       {/* Pagination */}
-      {showFooter && !loading && data.length > 0 && (
-        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 border-t border-gray-200 pt-2 text-sm">
-          <div className="text-gray-700 mb-2 sm:mb-0 bg-gray-100 p-2 rounded">
-            Hal {currentPage}/{totalPages} ({data.length} data,{" "}
-            {(
-              (((currentPage - 1) * currentPageSize) / data.length) *
-              100
-            ).toFixed(4)}{" "}
-            detik)
+      {showFooter && !loading && (
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 border-t border-gray-200 pt-3 text-xs">
+          <div className="text-gray-700 mb-2 sm:mb-0 bg-[#f8f9fa] border border-gray-200 px-3 py-1.5 rounded">
+            Hal {data.length === 0 ? 0 : currentPage}/{totalPages || 0} ({data.length} data, 0.0000 detik)
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <div>
               <select
                 value={currentPageSize}
@@ -320,7 +318,7 @@ function ListTable<T>({
                   setCurrentPageSize(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white cursor-pointer focus:outline-none focus:border-blue-500"
+                className="border border-gray-300 rounded px-2.5 py-1 text-xs bg-white cursor-pointer focus:outline-none focus:border-blue-500"
               >
                 {pageSizeOptions.map((size) => (
                   <option key={size} value={size}>
@@ -330,78 +328,80 @@ function ListTable<T>({
               </select>
             </div>
 
-            <div className="inline-flex rounded-xs border border-gray-300 overflow-hidden text-sm">
+            <div className="inline-flex rounded border border-gray-300 overflow-hidden text-xs">
               <button
                 type="button"
                 onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className={`w-9 h-9 flex items-center justify-center border-r border-gray-300 transition-colors ${
-                  currentPage === 1
-                    ? "bg-[#e9ecef] text-gray-400 cursor-not-allowed"
-                    : "bg-[#e9ecef] hover:bg-gray-200 text-gray-600 cursor-pointer"
+                disabled={currentPage <= 1 || data.length === 0}
+                className={`w-8 h-8 flex items-center justify-center border-r border-gray-300 transition-colors ${
+                  currentPage <= 1 || data.length === 0
+                    ? "bg-[#f8f9fa] text-gray-400 cursor-not-allowed"
+                    : "bg-[#f8f9fa] hover:bg-gray-200 text-gray-600 cursor-pointer"
                 }`}
                 title="Halaman Pertama"
               >
-                <MdFirstPage size={18} />
+                <MdFirstPage size={16} />
               </button>
 
               <button
                 type="button"
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className={`w-9 h-9 flex items-center justify-center border-r border-gray-300 transition-colors ${
-                  currentPage === 1
-                    ? "bg-[#e9ecef] text-gray-400 cursor-not-allowed"
-                    : "bg-[#e9ecef] hover:bg-gray-200 text-gray-600 cursor-pointer"
+                disabled={currentPage <= 1 || data.length === 0}
+                className={`w-8 h-8 flex items-center justify-center border-r border-gray-300 transition-colors ${
+                  currentPage <= 1 || data.length === 0
+                    ? "bg-[#f8f9fa] text-gray-400 cursor-not-allowed"
+                    : "bg-[#f8f9fa] hover:bg-gray-200 text-gray-600 cursor-pointer"
                 }`}
                 title="Halaman Sebelumnya"
               >
-                <IoIosArrowBack size={16} />
+                <IoIosArrowBack size={14} />
               </button>
 
-              {getPageNumbers().map((pageNum) => (
-                <button
-                  key={pageNum}
-                  type="button"
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`min-w-[36px] h-9 px-2 flex items-center justify-center border-r border-gray-300 font-medium transition-colors ${
-                    pageNum === currentPage
-                      ? "bg-blue-600 text-white cursor-default"
-                      : "bg-[#e9ecef] hover:bg-gray-200 text-gray-700 cursor-pointer"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ))}
+              {data.length > 0 ? (
+                getPageNumbers().map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`min-w-[32px] h-8 px-2 flex items-center justify-center border-r border-gray-300 font-semibold transition-colors ${
+                      pageNum === currentPage
+                        ? "bg-[#0d6efd] text-white cursor-default"
+                        : "bg-[#f8f9fa] hover:bg-gray-200 text-gray-700 cursor-pointer"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))
+              ) : null}
 
               <button
                 type="button"
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                 }
-                disabled={currentPage === totalPages}
-                className={`w-9 h-9 flex items-center justify-center border-r border-gray-300 transition-colors ${
-                  currentPage === totalPages
-                    ? "bg-[#e9ecef] text-gray-400 cursor-not-allowed"
-                    : "bg-[#e9ecef] hover:bg-gray-200 text-gray-600 cursor-pointer"
+                disabled={currentPage >= totalPages || data.length === 0}
+                className={`w-8 h-8 flex items-center justify-center border-r border-gray-300 transition-colors ${
+                  currentPage >= totalPages || data.length === 0
+                    ? "bg-[#f8f9fa] text-gray-400 cursor-not-allowed"
+                    : "bg-[#f8f9fa] hover:bg-gray-200 text-gray-600 cursor-pointer"
                 }`}
                 title="Halaman Berikutnya"
               >
-                <IoIosArrowForward size={16} />
+                <IoIosArrowForward size={14} />
               </button>
 
               <button
                 type="button"
                 onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className={`w-9 h-9 flex items-center justify-center transition-colors ${
-                  currentPage === totalPages
-                    ? "bg-[#e9ecef] text-gray-400 cursor-not-allowed"
-                    : "bg-[#e9ecef] hover:bg-gray-200 text-gray-600 cursor-pointer"
+                disabled={currentPage >= totalPages || data.length === 0}
+                className={`w-8 h-8 flex items-center justify-center transition-colors ${
+                  currentPage >= totalPages || data.length === 0
+                    ? "bg-[#f8f9fa] text-gray-400 cursor-not-allowed"
+                    : "bg-[#f8f9fa] hover:bg-gray-200 text-gray-600 cursor-pointer"
                 }`}
                 title="Halaman Terakhir"
               >
-                <MdLastPage size={18} />
+                <MdLastPage size={16} />
               </button>
             </div>
           </div>

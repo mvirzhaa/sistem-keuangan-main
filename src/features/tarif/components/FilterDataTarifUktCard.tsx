@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import Dropdown from "../../../components/inputs/Dropdown";
+import { IoFilter } from "react-icons/io5";
 
-interface FilterDataTarifUktProps {
-  onFilter?: (filters: FilterValues) => void;
-  className?: string;
-}
-
-interface FilterValues {
+export interface FilterValues {
   periodeMasuk: string;
   jalurPendaftaran: string;
   programStudi: string;
@@ -15,12 +11,21 @@ interface FilterValues {
   kelompokUKT: string;
 }
 
+interface FilterDataTarifUktProps {
+  onFilter?: (filters: FilterValues) => void;
+  value?: FilterValues;
+  onChange?: (key: keyof FilterValues, value: string) => void;
+  className?: string;
+}
+
 const FilterDataTarifUktCard: React.FC<FilterDataTarifUktProps> = ({
   onFilter,
+  value,
+  onChange,
   className = "",
 }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    periodeMasuk: "2024 Genap",
+  const [internalFilters, setInternalFilters] = useState<FilterValues>({
+    periodeMasuk: "-- Semua Periode Masuk --",
     jalurPendaftaran: "-- Semua Jalur Pendaftaran --",
     programStudi: "Universitas Ibn Khaldun",
     gelombang: "-- Semua Gelombang --",
@@ -28,8 +33,11 @@ const FilterDataTarifUktCard: React.FC<FilterDataTarifUktProps> = ({
     kelompokUKT: "-- Semua Kelompok UKT --",
   });
 
+  const filters = value || internalFilters;
+
   // Options untuk dropdown
   const periodeMasukOptions = [
+    "-- Semua Periode Masuk --",
     "2024 Genap",
     "2024 Ganjil",
     "2023 Genap",
@@ -79,11 +87,15 @@ const FilterDataTarifUktCard: React.FC<FilterDataTarifUktProps> = ({
   ];
 
   // Handle perubahan filter
-  const handleFilterChange = (key: keyof FilterValues, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const handleFilterChange = (key: keyof FilterValues, val: string) => {
+    if (onChange) {
+      onChange(key, val);
+    } else {
+      setInternalFilters((prev) => ({
+        ...prev,
+        [key]: val,
+      }));
+    }
   };
 
   // Handle submit filter
@@ -95,106 +107,104 @@ const FilterDataTarifUktCard: React.FC<FilterDataTarifUktProps> = ({
 
   return (
     <div
-      className={`border-t-2 border-t-amber-500 rounded-md shadow-sm p-4 text-xs ${className}`}
+      className={`border-t-4 border-t-amber-500 bg-white rounded-md shadow-md p-5 text-xs ${className}`}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Left Column */}
-        <div>
-          {/* Periode Masuk */}
-          <div className="mb-4 flex items-center">
-            <label className="w-32 font-medium text-amber-500">
-              Periode Masuk
-            </label>
-            <Dropdown
-              options={periodeMasukOptions}
-              defaultValue={filters.periodeMasuk}
-              onChange={(value) => handleFilterChange("periodeMasuk", value)}
-              className="w-full"
-            />
-          </div>
-
-          {/* Jalur Pendaftaran */}
-          <div className="mb-4 flex items-center">
-            <label className="w-32 font-medium text-amber-500">
-              Jalur Pendaftaran
-            </label>
-            <Dropdown
-              options={jalurPendaftaranOptions}
-              defaultValue={filters.jalurPendaftaran}
-              onChange={(value) =>
-                handleFilterChange("jalurPendaftaran", value)
-              }
-              className="w-full"
-            />
-          </div>
-
-          {/* Program Studi */}
-          <div className="flex items-center">
-            <label className="w-32 font-medium text-amber-500">
-              Program Studi
-            </label>
-            <Dropdown
-              options={programStudiOptions}
-              defaultValue={filters.programStudi}
-              onChange={(value) => handleFilterChange("programStudi", value)}
-              className="w-full"
-            />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+        {/* Periode Masuk */}
+        <div className="flex items-center">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Periode Masuk
+          </label>
+          <Dropdown
+            options={periodeMasukOptions}
+            value={filters.periodeMasuk}
+            onChange={(val) => handleFilterChange("periodeMasuk", val)}
+            className="w-full"
+          />
         </div>
 
-        {/* Right Column */}
-        <div>
-          {/* Gelombang */}
-          <div className="mb-4 flex items-center">
-            <label className="w-32 font-medium text-amber-500">Gelombang</label>
-            <Dropdown
-              options={gelombangOptions}
-              defaultValue={filters.gelombang}
-              onChange={(value) => handleFilterChange("gelombang", value)}
-              className="w-full"
-            />
-          </div>
+        {/* Gelombang */}
+        <div className="flex items-center">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Gelombang
+          </label>
+          <Dropdown
+            options={gelombangOptions}
+            value={filters.gelombang}
+            onChange={(val) => handleFilterChange("gelombang", val)}
+            className="w-full"
+          />
+        </div>
 
-          {/* Sistem Kuliah */}
-          <div className="mb-4 flex items-center">
-            <label className="w-32 font-medium text-amber-500">
-              Sistem Kuliah
-            </label>
-            <Dropdown
-              options={sistemKuliahOptions}
-              defaultValue={filters.sistemKuliah}
-              onChange={(value) => handleFilterChange("sistemKuliah", value)}
-              className="w-full"
-            />
-          </div>
+        {/* Jalur Pendaftaran */}
+        <div className="flex items-center">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Jalur Pendaftaran
+          </label>
+          <Dropdown
+            options={jalurPendaftaranOptions}
+            value={filters.jalurPendaftaran}
+            onChange={(val) =>
+              handleFilterChange("jalurPendaftaran", val)
+            }
+            className="w-full"
+          />
+        </div>
 
-          {/* Kelompok UKT */}
-          <div className="flex items-center">
-            <label className="w-32 font-medium text-amber-500">
-              Kelompok UKT
-            </label>
-            <Dropdown
-              options={kelompokUKTOptions}
-              defaultValue={filters.kelompokUKT}
-              onChange={(value) => handleFilterChange("kelompokUKT", value)}
-              className="w-full"
-            />
-          </div>
+        {/* Sistem Kuliah */}
+        <div className="flex items-center">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Sistem Kuliah
+          </label>
+          <Dropdown
+            options={sistemKuliahOptions}
+            value={filters.sistemKuliah}
+            onChange={(val) => handleFilterChange("sistemKuliah", val)}
+            className="w-full"
+          />
+        </div>
+
+        {/* Program Studi */}
+        <div className="flex items-center">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Program Studi
+          </label>
+          <Dropdown
+            options={programStudiOptions}
+            value={filters.programStudi}
+            onChange={(val) => handleFilterChange("programStudi", val)}
+            className="w-full"
+          />
+        </div>
+
+        {/* Kelompok UKT */}
+        <div className="flex items-center">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Kelompok UKT
+          </label>
+          <Dropdown
+            options={kelompokUKTOptions}
+            value={filters.kelompokUKT}
+            onChange={(val) => handleFilterChange("kelompokUKT", val)}
+            className="w-full"
+          />
         </div>
       </div>
 
-      {/* Button row - uncomment if you want a submit button like in the TagihanCard */}
-      {/* <div className="flex justify-end mt-4">
+      {/* Button row */}
+      <div className="flex justify-end mt-4">
         <button 
+          type="button"
           onClick={handleSubmit} 
-          className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors"
+          className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors shadow-sm font-medium cursor-pointer"
         >
           <IoFilter className="mr-2" />
           Simpan Filter
         </button>
-      </div> */}
+      </div>
     </div>
   );
 };
 
 export default FilterDataTarifUktCard;
+

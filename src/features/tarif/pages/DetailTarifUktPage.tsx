@@ -39,7 +39,7 @@ export default function DetailTarifUktPage() {
         <h1 className="text-2xl font-medium">Tarif UKT</h1>
         <p className="text-sm text-gray-500 mb-1">Detail Uang Kuliah Tunggal</p>
       </div>
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 p-4 mt-4">
+      <div className="container shadow-lg rounded border-t-green-800 border-t-4 p-4 mt-4 bg-white">
         <div className="flex flex-col sm:flex-row space-y-2  justify-between mb-4">
           <div className="flex flex-col sm:flex-row space-x-8 ">
             <div className="flex space-x-0.5 items-center">

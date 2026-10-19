@@ -14,6 +14,10 @@ body {
   overflow-x: hidden;
 }
 
+input[type="date"] {
+  position: relative;
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 0;
@@ -24,6 +28,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: auto;
   color: transparent;
   background: transparent;
+  cursor: pointer;
 }
 
 input::-webkit-outer-spin-button,

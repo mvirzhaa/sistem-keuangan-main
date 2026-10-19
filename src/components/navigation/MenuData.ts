@@ -178,11 +178,25 @@ const menuList = [
         menu: "Tagihan Mahasiswa",
         route: ROUTES.GENERATE.TAGIHAN_MAHASISWA,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Monitoring Generate Tagihan Mahasiswa",
+            route: ROUTES.GENERATE.DETAIL_MONITORING_TAGIHAN_MAHASISWA,
+            showInNavbar: false,
+          },
+        ],
       },
       {
         menu: "Tagihan Pendaftar",
         route: ROUTES.GENERATE.TAGIHAN_PENDAFTAR,
         showInNavbar: true,
+        children: [
+          {
+            menu: "Detail Monitoring Generate Tagihan Pendaftar",
+            route: ROUTES.GENERATE.DETAIL_MONITORING_TAGIHAN_PENDAFTAR,
+            showInNavbar: false,
+          },
+        ],
       },
     ],
   },
@@ -208,7 +222,6 @@ const menuList = [
         route: ROUTES.TARIF.MATA_KULIAH,
         showInNavbar: true,
       },
-      { menu: "Denda", route: ROUTES.TARIF.DENDA, showInNavbar: true },
       { menu: "Formulir", route: ROUTES.TARIF.FORMULIR, showInNavbar: true },
       {
         menu: "UKT",

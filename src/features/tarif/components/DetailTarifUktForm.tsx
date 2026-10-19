@@ -70,7 +70,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
         {/* Left Column */}
         <div className="space-y-4">
           <div className="flex items-center">
-            <label className="flex-1 text-blue-600">
+            <label className="flex-1 font-medium text-blue-600 text-sm">
               Periode Masuk<span className="text-red-500">*</span>
             </label>
             <Dropdown
@@ -82,7 +82,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           </div>
 
           <div className="flex items-center">
-            <label className="flex-1 text-blue-600">
+            <label className="flex-1 font-medium text-blue-600 text-sm">
               Gelombang<span className="text-red-500">*</span>
             </label>
             <Dropdown
@@ -94,7 +94,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           </div>
 
           <div className="flex items-center">
-            <label className="flex-1 text-blue-600">
+            <label className="flex-1 font-medium text-blue-600 text-sm">
               Sistem Kuliah<span className="text-red-500">*</span>
             </label>
             <Dropdown
@@ -109,7 +109,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
         {/* Right Column */}
         <div className="space-y-4">
           <div className="flex items-center">
-            <label className="flex-1 text-blue-600">
+            <label className="flex-1 font-medium text-blue-600 text-sm">
               Jalur Pendaftaran<span className="text-red-500">*</span>
             </label>
             <Dropdown
@@ -121,7 +121,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           </div>
 
           <div className="flex items-center">
-            <label className="flex-1 text-blue-600">
+            <label className="flex-1 font-medium text-blue-600 text-sm">
               Program Studi<span className="text-red-500">*</span>
             </label>
             <Dropdown
@@ -144,7 +144,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           {/* Left Column */}
           <div className="space-y-4">
             <div className="flex items-center ">
-              <label className="flex-1 text-blue-600">
+              <label className="flex-1 font-medium text-blue-600 text-sm">
                 Kelompok UKT<span className="text-red-500">*</span>
               </label>
               <Dropdown
@@ -156,7 +156,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
             </div>
 
             <div className="flex items-center ">
-              <label className="flex-1 text-blue-600">Kuota Penerima UKT</label>
+              <label className="flex-1 font-medium text-blue-600 text-sm">Kuota Penerima UKT</label>
               <div className="flex-4">
                 <TextField
                   value={formData.kuotaPenerima}
@@ -171,7 +171,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           {/* Right Column */}
           <div className="space-y-4">
             <div className="flex items-center">
-              <label className="flex-1 text-blue-600">
+              <label className="flex-1 font-medium text-blue-600 text-sm">
                 Nominal Tarif (Rp.)<span className="text-red-500">*</span>
               </label>
               <div className="flex-4">
@@ -185,7 +185,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
             </div>
 
             <div className="flex items-center">
-              <label className="flex-1 text-blue-600">
+              <label className="flex-1 font-medium text-blue-600 text-sm">
                 Jml. Cicilan<span className="text-red-500">*</span>
               </label>
               <Dropdown
@@ -209,7 +209,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           {/* Left Column */}
           <div className="space-y-4">
             <div className="flex items-center">
-              <label className="flex-1 text-blue-600">Frekuensi Denda</label>
+              <label className="flex-1 font-medium text-blue-600 text-sm">Frekuensi Denda</label>
               <Dropdown
                 options={frekuensiDendaOptions}
                 defaultValue={formData.frekuensiDenda}
@@ -219,7 +219,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
             </div>
 
             <div className="flex items-center">
-              <label className="flex-1 text-blue-600">
+              <label className="flex-1 font-medium text-blue-600 text-sm">
                 Nominal Denda (Rp.)
               </label>
               <div className="flex-4">
@@ -236,7 +236,7 @@ const DetailTarifUktForm: React.FC<DetailTarifUktFormProps> = ({
           {/* Right Column */}
           <div className="space-y-4">
             <div className="flex items-center">
-              <label className="flex-1 text-blue-600">Max. Denda (Rp.)</label>
+              <label className="flex-1 font-medium text-blue-600 text-sm">Max. Denda (Rp.)</label>
               <div className="flex-4">
                 <TextField
                   value={formData.maxDenda}

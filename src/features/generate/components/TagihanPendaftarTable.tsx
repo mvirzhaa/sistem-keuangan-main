@@ -25,12 +25,20 @@ interface TagihanItem {
 interface TagihanPendaftarTableProps {
   data: TagihanItem[];
   columns: TagihanColumn[];
+  onDetail?: (item: TagihanItem) => void;
   onGenerate?: (item: TagihanItem) => void;
   loading?: boolean;
   className?: string;
 }
 
-const TagihanPendaftarTable: React.FC<TagihanPendaftarTableProps> = ({ data, columns, onGenerate, loading = false, className = "" }) => {
+const TagihanPendaftarTable: React.FC<TagihanPendaftarTableProps> = ({
+  data,
+  columns,
+  onDetail,
+  onGenerate,
+  loading = false,
+  className = "",
+}) => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   // Format number to currency
@@ -99,16 +107,21 @@ const TagihanPendaftarTable: React.FC<TagihanPendaftarTableProps> = ({ data, col
             <td className="border border-slate-300 p-2 text-right">{formatCurrency(item.lunas)}</td>
             <td className="border border-slate-300 p-2 text-center">{item.jumlahTagihan}</td>
 
-            {/* Actions column - simplified for pendaftar */}
+            {/* Actions column */}
             <td className="border border-slate-300 p-1 text-center">
-              {item.type !== "program" && onGenerate && (
+              {item.type !== "program" && (onDetail || onGenerate) && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent row expansion when clicking action button
-                    onGenerate(item);
+                    if (onDetail) {
+                      onDetail(item);
+                    } else if (onGenerate) {
+                      onGenerate(item);
+                    }
                   }}
-                  className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600"
-                  title="Generate tagihan"
+                  className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600 cursor-pointer transition-colors"
+                  title="Detail Monitoring Generate Tagihan"
                 >
                   <BiPencil size={18} />
                 </button>

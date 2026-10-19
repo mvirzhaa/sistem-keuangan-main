@@ -31,6 +31,8 @@ const defaultData = {
   transaksiKeuangan: [],
   potonganDanBeasiswa: [],
   penerimaVoucher: [],
+  detailMonitoringGenerateTagihanMahasiswa: [],
+  detailMonitoringGenerateTagihanPendaftar: [],
 };
 
 const db = new Low(adapter, defaultData);
@@ -693,6 +695,117 @@ app.patch("/penerimaVoucher/:id", handleUpdatePenerimaVoucher);
 app.patch("/api/penerimaVoucher/:id", handleUpdatePenerimaVoucher);
 app.put("/penerimaVoucher/:id", handleUpdatePenerimaVoucher);
 app.put("/api/penerimaVoucher/:id", handleUpdatePenerimaVoucher);
+
+// Handler Detail Monitoring Generate Tagihan Mahasiswa
+async function handleDetailMonitoringGenerateTagihanMahasiswa(req, res) {
+  await db.read();
+  let list = db.data.detailMonitoringGenerateTagihanMahasiswa || [];
+  const { q, unit, status, frekuensi, periodeTagihan } = req.query || {};
+
+  if (unit && unit !== "Universitas Ibn Khaldun" && !unit.includes("Semua")) {
+    list = list.filter((item) =>
+      item.unit?.toLowerCase().includes(unit.toLowerCase())
+    );
+  }
+  if (status && !status.includes("Semua")) {
+    list = list.filter(
+      (item) => item.status?.toLowerCase() === status.toLowerCase()
+    );
+  }
+  if (periodeTagihan && !periodeTagihan.includes("Semua")) {
+    list = list.filter((item) =>
+      item.periodeTagihan?.toLowerCase().includes(periodeTagihan.toLowerCase())
+    );
+  }
+  if (q) {
+    const keyword = q.toLowerCase();
+    list = list.filter(
+      (item) =>
+        item.nim?.toLowerCase().includes(keyword) ||
+        item.nama?.toLowerCase().includes(keyword) ||
+        item.unit?.toLowerCase().includes(keyword) ||
+        item.jenisAkun?.toLowerCase().includes(keyword)
+    );
+  }
+  return res.status(200).json(list);
+}
+
+app.get(
+  "/detail-monitoring-generate-tagihan-mahasiswa",
+  handleDetailMonitoringGenerateTagihanMahasiswa
+);
+app.get(
+  "/api/detail-monitoring-generate-tagihan-mahasiswa",
+  handleDetailMonitoringGenerateTagihanMahasiswa
+);
+
+async function handleDetailMonitoringGenerateTagihanPendaftar(req, res) {
+  await db.read();
+  let list = db.data.detailMonitoringGenerateTagihanPendaftar || [];
+  const { q, unit, status, frekuensi, periodeTagihan, periodeMasuk, gelombang, jalur, sistemKuliah } =
+    req.query || {};
+
+  if (unit && unit !== "Universitas Ibn Khaldun" && !unit.includes("Semua")) {
+    list = list.filter(
+      (item) =>
+        item.unitDiterima?.toLowerCase().includes(unit.toLowerCase()) ||
+        item.unit?.toLowerCase().includes(unit.toLowerCase())
+    );
+  }
+  if (status && !status.includes("Semua")) {
+    list = list.filter(
+      (item) => item.status?.toLowerCase() === status.toLowerCase()
+    );
+  }
+  if (periodeTagihan && !periodeTagihan.includes("Semua")) {
+    list = list.filter(
+      (item) =>
+        item.periode?.toLowerCase().includes(periodeTagihan.toLowerCase()) ||
+        item.periodeTagihan?.toLowerCase().includes(periodeTagihan.toLowerCase())
+    );
+  }
+  if (periodeMasuk && !periodeMasuk.includes("Semua")) {
+    list = list.filter((item) =>
+      item.periodeMasuk?.toLowerCase().includes(periodeMasuk.toLowerCase())
+    );
+  }
+  if (gelombang && !gelombang.includes("Semua")) {
+    list = list.filter((item) =>
+      item.gelombang?.toLowerCase().includes(gelombang.toLowerCase())
+    );
+  }
+  if (jalur && !jalur.includes("Semua")) {
+    list = list.filter((item) =>
+      item.jalurPendaftaran?.toLowerCase().includes(jalur.toLowerCase())
+    );
+  }
+  if (sistemKuliah && !sistemKuliah.includes("Semua")) {
+    list = list.filter((item) =>
+      item.sistemKuliah?.toLowerCase().includes(sistemKuliah.toLowerCase())
+    );
+  }
+  if (q) {
+    const keyword = q.toLowerCase();
+    list = list.filter(
+      (item) =>
+        item.kodePendaftar?.toLowerCase().includes(keyword) ||
+        item.nama?.toLowerCase().includes(keyword) ||
+        item.unitDiterima?.toLowerCase().includes(keyword) ||
+        item.jalurPendaftaran?.toLowerCase().includes(keyword) ||
+        item.jenisAkun?.toLowerCase().includes(keyword)
+    );
+  }
+  return res.status(200).json(list);
+}
+
+app.get(
+  "/detail-monitoring-generate-tagihan-pendaftar",
+  handleDetailMonitoringGenerateTagihanPendaftar
+);
+app.get(
+  "/api/detail-monitoring-generate-tagihan-pendaftar",
+  handleDetailMonitoringGenerateTagihanPendaftar
+);
 
 // Mount json-server endpoints under /api and root /
 app.use("/api", jsonServerApp);

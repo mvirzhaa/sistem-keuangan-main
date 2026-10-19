@@ -2,42 +2,60 @@ import React, { useState } from "react";
 import Dropdown from "../../../components/inputs/Dropdown";
 import { IoFilter } from "react-icons/io5";
 
-interface FilterDataTarifPotonganProps {
-  onFilter?: (filters: FilterValues) => void;
-  className?: string;
-}
-
-interface FilterValues {
+export interface FilterValues {
   jenisPotongan: string;
   potongan: string;
   penerima: string;
   periodeMulai: string;
 }
 
+interface FilterDataTarifPotonganProps {
+  onFilter?: (filters: FilterValues) => void;
+  value?: FilterValues;
+  onChange?: (key: keyof FilterValues, value: string) => void;
+  className?: string;
+}
+
 const FilterDataTarifPotonganCard: React.FC<FilterDataTarifPotonganProps> = ({
   onFilter,
+  value,
+  onChange,
   className = "",
 }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    jenisPotongan: "Potongan",
+  const [internalFilters, setInternalFilters] = useState<FilterValues>({
+    jenisPotongan: "-- Semua Jenis --",
     potongan: "-- Semua Potongan --",
     penerima: "Mahasiswa",
-    periodeMulai: "2024 Genap",
+    periodeMulai: "-- Semua Periode --",
   });
 
+  const filters = value || internalFilters;
+
   // Options untuk dropdown
-  const jenisPotonganOptions = ["Potongan", "Diskon", "Beasiswa"];
+  const jenisPotonganOptions = [
+    "-- Semua Jenis --",
+    "Potongan",
+    "Diskon",
+    "Beasiswa",
+  ];
 
   const potonganOptions = [
     "-- Semua Potongan --",
     "Potongan UKT",
     "Potongan Formulir",
     "Potongan Wisuda",
+    "Baznas Jawa Barat",
   ];
 
-  const penerimaOptions = ["Mahasiswa", "Calon Mahasiswa", "Alumni"];
+  const penerimaOptions = [
+    "-- Semua Penerima --",
+    "Mahasiswa",
+    "Calon Mahasiswa",
+    "Alumni",
+  ];
 
   const periodeMulaiOptions = [
+    "-- Semua Periode --",
     "2024 Genap",
     "2024 Ganjil",
     "2023 Genap",
@@ -47,11 +65,15 @@ const FilterDataTarifPotonganCard: React.FC<FilterDataTarifPotonganProps> = ({
   ];
 
   // Handle perubahan filter
-  const handleFilterChange = (key: keyof FilterValues, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const handleFilterChange = (key: keyof FilterValues, val: string) => {
+    if (onChange) {
+      onChange(key, val);
+    } else {
+      setInternalFilters((prev) => ({
+        ...prev,
+        [key]: val,
+      }));
+    }
   };
 
   // Handle submit filter
@@ -63,51 +85,57 @@ const FilterDataTarifPotonganCard: React.FC<FilterDataTarifPotonganProps> = ({
 
   return (
     <div
-      className={`border-t-4 border-t-amber-500 rounded-md shadow-md p-5 text-xs ${className}`}
+      className={`border-t-4 border-t-amber-500 bg-white rounded-md shadow-md p-5 text-xs ${className}`}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {/* Baris 1 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+        {/* Jenis Potongan */}
         <div className="flex items-center">
-          <label className="w-36 font-medium text-amber-600">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
             Jenis Potongan
           </label>
           <Dropdown
             options={jenisPotonganOptions}
-            defaultValue={filters.jenisPotongan}
-            onChange={(value) => handleFilterChange("jenisPotongan", value)}
+            value={filters.jenisPotongan}
+            onChange={(val) => handleFilterChange("jenisPotongan", val)}
             className="w-full"
           />
         </div>
 
+        {/* Potongan */}
         <div className="flex items-center">
-          <label className="w-36 font-medium text-amber-600">Potongan</label>
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Potongan
+          </label>
           <Dropdown
             options={potonganOptions}
-            defaultValue={filters.potongan}
-            onChange={(value) => handleFilterChange("potongan", value)}
+            value={filters.potongan}
+            onChange={(val) => handleFilterChange("potongan", val)}
             className="w-full"
           />
         </div>
 
-        {/* Baris 2 */}
+        {/* Penerima */}
         <div className="flex items-center">
-          <label className="w-36 font-medium text-amber-600">Penerima</label>
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
+            Penerima
+          </label>
           <Dropdown
             options={penerimaOptions}
-            defaultValue={filters.penerima}
-            onChange={(value) => handleFilterChange("penerima", value)}
+            value={filters.penerima}
+            onChange={(val) => handleFilterChange("penerima", val)}
             className="w-full"
           />
         </div>
 
+        {/* Periode Mulai */}
         <div className="flex items-center">
-          <label className="w-36 font-medium text-amber-600">
+          <label className="w-36 font-medium text-amber-600 text-sm flex-shrink-0">
             Periode Mulai
           </label>
           <Dropdown
             options={periodeMulaiOptions}
-            defaultValue={filters.periodeMulai}
-            onChange={(value) => handleFilterChange("periodeMulai", value)}
+            value={filters.periodeMulai}
+            onChange={(val) => handleFilterChange("periodeMulai", val)}
             className="w-full"
           />
         </div>
@@ -116,8 +144,9 @@ const FilterDataTarifPotonganCard: React.FC<FilterDataTarifPotonganProps> = ({
       {/* Button row */}
       <div className="flex justify-end mt-4">
         <button
+          type="button"
           onClick={handleSubmit}
-          className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors"
+          className="bg-amber-500 text-white px-4 py-2 rounded-md flex items-center hover:bg-amber-600 transition-colors shadow-sm font-medium cursor-pointer"
         >
           <IoFilter className="mr-2" />
           Simpan Filter
@@ -128,3 +157,4 @@ const FilterDataTarifPotonganCard: React.FC<FilterDataTarifPotonganProps> = ({
 };
 
 export default FilterDataTarifPotonganCard;
+

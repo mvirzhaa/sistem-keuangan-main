@@ -43,7 +43,9 @@ export const ROUTES = {
   // Generate
   GENERATE: {
     TAGIHAN_MAHASISWA: "/generate/tagihan_mahasiswa",
+    DETAIL_MONITORING_TAGIHAN_MAHASISWA: "/generate/tagihan_mahasiswa/detail",
     TAGIHAN_PENDAFTAR: "/generate/tagihan_pendaftar",
+    DETAIL_MONITORING_TAGIHAN_PENDAFTAR: "/generate/tagihan_pendaftar/detail",
   },
 
   // Tarif
@@ -56,6 +58,7 @@ export const ROUTES = {
     UKT: "/tarif/ukt",
     DETAIL_TARIF_UKT: "/tarif/ukt/detail_tarif_ukt",
     POTONGAN: "/tarif/potongan",
+    DETAIL_PENERIMA_POTONGAN: "/tarif/potongan/detail_penerima_potongan",
   },
 
   // Referensi

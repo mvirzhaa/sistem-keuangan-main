@@ -25,14 +25,26 @@ interface TagihanItem {
 interface TagihanMahasiswaTableProps {
   data: TagihanItem[];
   columns: TagihanColumn[];
+  onDetail?: (item: TagihanItem) => void;
   onGenerate?: (item: TagihanItem) => void;
+  onCancel?: (item: TagihanItem) => void;
   onApprove?: (item: TagihanItem) => void;
   onRemove?: (item: TagihanItem) => void;
   loading?: boolean;
   className?: string;
 }
 
-const TagihanMahasiswaTable: React.FC<TagihanMahasiswaTableProps> = ({ data, columns, onGenerate, onApprove, onRemove, loading = false, className = "" }) => {
+const TagihanMahasiswaTable: React.FC<TagihanMahasiswaTableProps> = ({
+  data,
+  columns,
+  onDetail,
+  onGenerate,
+  onCancel,
+  onApprove,
+  onRemove,
+  loading = false,
+  className = "",
+}) => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   // Format number to currency
@@ -104,20 +116,36 @@ const TagihanMahasiswaTable: React.FC<TagihanMahasiswaTableProps> = ({ data, col
             {/* Actions column */}
             <td className="border border-slate-300 p-1 text-center">
               {item.type !== "program" && (
-                <div className="flex justify-center space-x-1">
-                  {onGenerate && (
-                    <button onClick={() => onGenerate(item)} className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600" title="Generate tagihan">
+                <div className="flex justify-center items-center space-x-1.5 py-1">
+                  {(onDetail || onGenerate) && (
+                    <button
+                      type="button"
+                      onClick={() => (onDetail ? onDetail(item) : onGenerate?.(item))}
+                      className="p-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors shadow-xs cursor-pointer"
+                      title="Detail Monitoring Generate Tagihan"
+                    >
                       <BiPencil size={18} />
                     </button>
                   )}
 
-                  {onApprove && (
-                    <button onClick={() => onApprove(item)} className="p-1.5 bg-green-500 text-white rounded hover:bg-green-600" title="Approve tagihan">
+                  {(onGenerate || onApprove) && (
+                    <button
+                      type="button"
+                      onClick={() => onGenerate ? onGenerate(item) : onApprove?.(item)}
+                      className="p-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors shadow-xs cursor-pointer"
+                      title="Generate Tagihan Mahasiswa"
+                    >
                       <BiCheckCircle size={18} />
                     </button>
                   )}
-                  {onRemove && (
-                    <button onClick={() => onRemove(item)} className="p-1.5 bg-red-400 text-white rounded hover:bg-green-500" title="Remove tagihan">
+
+                  {(onCancel || onRemove) && (
+                    <button
+                      type="button"
+                      onClick={() => (onCancel ? onCancel(item) : onRemove?.(item))}
+                      className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors shadow-xs cursor-pointer"
+                      title="Batalkan Tagihan Mahasiswa"
+                    >
                       <IoMdClose size={18} />
                     </button>
                   )}

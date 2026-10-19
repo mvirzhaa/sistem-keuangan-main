@@ -26,6 +26,8 @@ export default defineConfig({
       "/monitoring-tagihan-semester": "http://localhost:3001",
       "/transaksi-keuangan": "http://localhost:3001",
       "/tagihan": "http://localhost:3001",
+      "/detail-monitoring-generate-tagihan-mahasiswa": "http://localhost:3001",
+      "/detail-monitoring-generate-tagihan-pendaftar": "http://localhost:3001",
     },
   },
 });

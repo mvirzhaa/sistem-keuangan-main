@@ -104,8 +104,7 @@ const TarifMataKuliahTable: React.FC<TarifMataKuliahTableProps> = ({
       initialSortColumn="kode"
       initialSortDirection="asc"
       onRowClick={onRowClick}
-      selectable
-      onSelectionChange={onSelectionChange}
+      selectable={false}
       className={`text-xs ${className}`}
       headerClassName="text-xs"
       emptyMessage="Data kosong"

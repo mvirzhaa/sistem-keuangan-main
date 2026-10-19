@@ -240,9 +240,31 @@ export const routeConfig: RouteObject[] = [
     ),
   },
   {
+    path: ROUTES.GENERATE.DETAIL_MONITORING_TAGIHAN_MAHASISWA,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/generate/pages/DetailMonitoringGenerateTagihanMahasiswaPage"
+          ),
+      ),
+    ),
+  },
+  {
     path: ROUTES.GENERATE.TAGIHAN_PENDAFTAR,
     element: withSuspense(
       lazy(() => import("../../features/generate/pages/TagihanPendaftarPage")),
+    ),
+  },
+  {
+    path: ROUTES.GENERATE.DETAIL_MONITORING_TAGIHAN_PENDAFTAR,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/generate/pages/DetailMonitoringGenerateTagihanPendaftarPage"
+          ),
+      ),
     ),
   },
   //Tarif Routes
@@ -286,6 +308,14 @@ export const routeConfig: RouteObject[] = [
     path: ROUTES.TARIF.POTONGAN,
     element: withSuspense(
       lazy(() => import("../../features/tarif/pages/TarifPotonganPage")),
+    ),
+  },
+  {
+    path: ROUTES.TARIF.DETAIL_PENERIMA_POTONGAN,
+    element: withSuspense(
+      lazy(
+        () => import("../../features/tarif/pages/DetailPenerimaPotonganPage"),
+      ),
     ),
   },
 
