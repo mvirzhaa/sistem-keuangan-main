@@ -31,6 +31,12 @@ interface ListTableProps<T> {
   showFooter?: boolean;
   footerRow?: React.ReactNode;
   topRow?: React.ReactNode;
+  customRow?: (
+    item: T,
+    index: number,
+    isSelected: boolean,
+    toggleSelect: () => void,
+  ) => React.ReactNode;
   className?: string;
   headerClassName?: string;
   rowClassName?: (item: T, index: number) => string;
@@ -52,6 +58,7 @@ function ListTable<T>({
   showFooter = true,
   footerRow,
   topRow,
+  customRow,
   className = "",
   headerClassName = "",
   rowClassName,
@@ -260,6 +267,21 @@ function ListTable<T>({
             ) : (
               paginatedData.map((item, index) => {
                 const id = rowKey(item);
+                const isSelected = selectedRows.has(id);
+                const toggleSelect = () => handleSelectRow(id);
+
+                if (customRow) {
+                  const customNode = customRow(
+                    item,
+                    index,
+                    isSelected,
+                    toggleSelect,
+                  );
+                  if (customNode !== undefined && customNode !== null) {
+                    return customNode;
+                  }
+                }
+
                 return (
                   <tr
                     key={id}
@@ -272,10 +294,10 @@ function ListTable<T>({
                       <td className="p-2 text-center border border-slate-300">
                         <input
                           type="checkbox"
-                          checked={selectedRows.has(id)}
+                          checked={isSelected}
                           onChange={(e) => {
                             e.stopPropagation();
-                            handleSelectRow(id);
+                            toggleSelect();
                           }}
                           className="form-checkbox h-4 w-4"
                         />

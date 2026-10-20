@@ -1,4 +1,3 @@
-import { authController } from "../../features/auth/controllers/authController";
 import type { MenuItem } from "../../components/navigation/MenuData";
 
 export const formatRoleName = (role: string | null): string => {
@@ -18,9 +17,10 @@ export const formatRoleName = (role: string | null): string => {
   return roleMapping[role] || role;
 };
 
-export const filterMenuByRole = (menuItems: MenuItem[]): MenuItem[] => {
-  const activeRole = authController.getActiveRole();
-
+export const filterMenuByRole = (
+  menuItems: MenuItem[],
+  activeRole: string | null,
+): MenuItem[] => {
   if (!activeRole) return [];
 
   const filterRecursive = (items: MenuItem[]): MenuItem[] => {
@@ -59,11 +59,13 @@ export const filterMenuByRole = (menuItems: MenuItem[]): MenuItem[] => {
   return filterRecursive(menuItems);
 };
 
-export const hasMenuAccess = (allowedRoles?: string[]): boolean => {
-  const activeRole = authController.getActiveRole();
-
+export const hasMenuAccess = (
+  allowedRoles?: string[],
+  activeRole?: string | null,
+): boolean => {
   if (!activeRole) return false;
   if (!allowedRoles || allowedRoles.length === 0) return true;
 
   return allowedRoles.includes(activeRole);
 };
+

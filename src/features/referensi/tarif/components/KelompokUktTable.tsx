@@ -5,6 +5,7 @@ import ListTable, {
   type Column,
 } from "../../../../components/tables/ListTable";
 import TextField from "../../../../components/inputs/TextField";
+import KonfirmasiModal from "../../../../components/modal/KonfirmasiModal";
 
 interface KelompokUkt {
   id: string;
@@ -54,6 +55,10 @@ const KelompokUktTable: React.FC<KelompokUktTableProps> = ({
   // For editing existing rows
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<KelompokUkt>>({});
+
+  // For delete confirmation modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<KelompokUkt | null>(null);
 
   // Handle input changes for new kelompok UKT
   const handleNewInputChange = (field: keyof KelompokUkt, value: any) => {
@@ -145,6 +150,17 @@ const KelompokUktTable: React.FC<KelompokUktTableProps> = ({
   const handleCancelEdit = () => {
     setEditingRowId(null);
     setEditFormData({});
+  };
+
+  // Handle delete confirmation
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      setKelompokUktData((prev) =>
+        prev.filter((item) => item.id !== itemToDelete.id),
+      );
+    }
+    setIsDeleteModalOpen(false);
+    setItemToDelete(null);
   };
 
   // Prepare data for ListTable
@@ -328,14 +344,8 @@ const KelompokUktTable: React.FC<KelompokUktTableProps> = ({
               className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600"
               title="Hapus"
               onClick={() => {
-                // Add delete logic here
-                if (
-                  window.confirm("Apakah Anda yakin ingin menghapus data ini?")
-                ) {
-                  setKelompokUktData((prev) =>
-                    prev.filter((i) => i.id !== item.id),
-                  );
-                }
+                setItemToDelete(item);
+                setIsDeleteModalOpen(true);
               }}
             >
               <IoTrash size={16} />
@@ -347,21 +357,36 @@ const KelompokUktTable: React.FC<KelompokUktTableProps> = ({
   ];
 
   return (
-    <div className="overflow-x-auto text-xs">
-      <ListTable
-        data={tableData}
-        columns={columns}
-        rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white"
-        rowClassName={(item) => {
-          if (item.isAddForm) return "bg-blue-50";
-          if (item.id === editingRowId) return "bg-yellow-50";
-          return "";
+    <>
+      <div className="overflow-x-auto text-xs">
+        <ListTable
+          data={tableData}
+          columns={columns}
+          rowKey={(item) => item.id}
+          headerClassName="text-white"
+          rowClassName={(item) => {
+            if (item.isAddForm) return "bg-blue-50";
+            if (item.id === editingRowId) return "bg-yellow-50";
+            return "";
+          }}
+          showFooter={true}
+          emptyMessage="Tidak ada data kelompok UKT"
+        />
+      </div>
+
+      <KonfirmasiModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDelete(null);
         }}
-        showFooter={true}
-        emptyMessage="Tidak ada data kelompok UKT"
+        onConfirm={handleConfirmDelete}
+        title="Konfirmasi"
+        message="Apakah anda yakin akan menghapus data ini?"
+        cancelText="Batalkan"
+        confirmText="Ya, Yakin"
       />
-    </div>
+    </>
   );
 };
 

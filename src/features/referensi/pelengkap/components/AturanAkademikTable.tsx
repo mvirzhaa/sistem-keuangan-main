@@ -175,7 +175,7 @@ const AturanAkademikTable: React.FC<AturanAkademikTableProps> = ({
         rowKey={(item) => item.id}
         selectable={selectable}
         onSelectionChange={onSelectionChange}
-        headerClassName="bg-blue-900 text-white text-base text-xs"
+        headerClassName="text-white text-base text-xs"
         showFooter={false}
         emptyMessage="Tidak ada data aturan akademik"
       />

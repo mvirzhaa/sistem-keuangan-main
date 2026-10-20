@@ -52,7 +52,7 @@ const ChannelPembayaranEdufinTable: React.FC = () => {
         rowKey={(item) => item.id}
         emptyMessage="Data kosong"
         className="w-full"
-        headerClassName="bg-blue-900 text-white"
+        headerClassName="text-white"
         rowClassName={(item, index) =>
           index % 2 === 0 ? "bg-gray-50" : "bg-white"
         }

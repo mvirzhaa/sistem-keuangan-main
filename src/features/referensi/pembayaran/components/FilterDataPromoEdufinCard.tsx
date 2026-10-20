@@ -1,23 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Dropdown from "../../../../components/inputs/Dropdown";
 import { IoFilter } from "react-icons/io5";
+
+export interface FilterValues {
+  channel: string;
+}
+
+export const defaultFilterValues: FilterValues = {
+  channel: "-- Semua Channel --",
+};
 
 interface FilterDataPromoEdufinCardProps {
   onFilter?: (filters: FilterValues) => void;
   className?: string;
-}
-
-interface FilterValues {
-  channel: string;
+  initialFilters?: FilterValues;
 }
 
 const FilterDataPromoEdufinCard: React.FC<FilterDataPromoEdufinCardProps> = ({
   onFilter,
   className = "",
+  initialFilters,
 }) => {
-  const [filters, setFilters] = useState<FilterValues>({
-    channel: "-- Semua Channel --",
-  });
+  const [filters, setFilters] = useState<FilterValues>(
+    initialFilters || defaultFilterValues,
+  );
+
+  useEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters);
+    }
+  }, [initialFilters]);
 
   // Options untuk dropdown
   const channelOptions = [
@@ -46,22 +58,35 @@ const FilterDataPromoEdufinCard: React.FC<FilterDataPromoEdufinCardProps> = ({
 
   return (
     <div
-      className={`border-t-4 border-t-amber-500 rounded-md shadow-md p-5 text-xs ${className}`}
+      className={`bg-white border-t-4 border-t-amber-500 rounded-md shadow-md p-5 text-xs ${className}`}
     >
-      <div className="grid grid-cols-1 gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
         {/* Single row with channel filter */}
-        <div className="flex items-center">
-          <label className="w-24 font-medium text-amber-600">Channel</label>
+        <div className="flex-1 flex items-center">
+          <label className="w-24 font-medium text-amber-600 text-sm">
+            Channel
+          </label>
           <Dropdown
             options={channelOptions}
+            value={filters.channel}
             defaultValue={filters.channel}
             onChange={(value) => handleFilterChange("channel", value)}
-            className="w-full"
+            className="w-full text-xs"
           />
         </div>
-      </div>
 
-      {/* No submit button needed for simple single filter */}
+        {/* Tombol Simpan Filter */}
+        <div className="flex justify-end items-center shrink-0">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md flex items-center text-xs font-medium cursor-pointer shadow-xs transition-colors"
+          >
+            <IoFilter className="mr-2 text-sm" />
+            Simpan Filter
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -10,7 +10,7 @@ import NavbarNotificationMenu from "./NavbarNotificationMenu";
 import NavbarHelpMenu from "./NavbarHelpMenu";
 import NavbarProfileModal from "./NavbarProfileModal";
 import { useState, useRef, useEffect } from "react";
-import { authController } from "../../features/auth/controllers/authController";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 import { formatRoleName } from "../../common/helpers/helpers";
 
 function Navbar() {
@@ -67,8 +67,8 @@ function MenuAccount() {
 
   const isOpen = isHovered || isClicked;
 
-  const user = authController.getUser();
-  const activeRole = authController.getActiveRole();
+  const { user, activeRole } = useAuth();
+
 
   // Click outside listener untuk menutup modal profil
   useEffect(() => {

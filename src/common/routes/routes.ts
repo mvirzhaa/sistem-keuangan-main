@@ -70,9 +70,11 @@ export const ROUTES = {
       AKUN_TRANSAKSI: "/referensi/transaksi/akun_transaksi",
     },
     PEMBAYARAN: {
-      CHANNEL_PEMBAYARAN: "/referensi/pembayaran/channer_pembayaran",
+      CHANNEL_PEMBAYARAN: "/referensi/pembayaran/channel_pembayaran",
       PENGATURAN_METODE_PEMBAYARAN:
         "/referensi/pembayaran/pengaturan_metode_pembayaran",
+      DETAIL_PENGATURAN_METODE_PEMBAYARAN:
+        "/referensi/pembayaran/detail_pengaturan_metode_pembayaran",
       PROMO_EDUFIN: "/referensi/pembayaran/promo_edufin",
     },
     TARIF: {

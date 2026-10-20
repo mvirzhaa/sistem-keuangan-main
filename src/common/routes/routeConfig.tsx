@@ -378,6 +378,28 @@ export const routeConfig: RouteObject[] = [
     ),
   },
   {
+    path: ROUTES.REFERENSI.PEMBAYARAN.DETAIL_PENGATURAN_METODE_PEMBAYARAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/referensi/pembayaran/pages/DetailPengaturanMetodePembayaranPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: "/referensi/pembayaran/pengaturan_metode_pembayaran/detail",
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/referensi/pembayaran/pages/DetailPengaturanMetodePembayaranPage"
+          ),
+      ),
+    ),
+  },
+  {
     path: ROUTES.REFERENSI.PEMBAYARAN.PROMO_EDUFIN,
     element: withSuspense(
       lazy(
@@ -404,6 +426,15 @@ export const routeConfig: RouteObject[] = [
   },
   {
     path: ROUTES.REFERENSI.POTONGAN.DETAIL_POTONGAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import("../../features/referensi/potongan/pages/DetailPotonganPage"),
+      ),
+    ),
+  },
+  {
+    path: "/referensi/potongan/potongan/detail",
     element: withSuspense(
       lazy(
         () =>

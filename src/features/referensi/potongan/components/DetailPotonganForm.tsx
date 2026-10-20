@@ -1,245 +1,287 @@
-import React, { useState } from "react";
-import TextField from "../../../../components/inputs/TextField";
+import React from "react";
 import Dropdown from "../../../../components/inputs/Dropdown";
 
-interface DetailPotonganFormProps {
-  initialData?: {
-    namaPotongan: string;
-    rekanan: string;
-    periodeAwal: string;
-    periodeAkhir: string;
-    nominalPotongan: number;
-    anggaran: number;
-    jenisPotongan: string;
-    jumlahPenerima: number;
-    realisasi: number;
-    memotongTagihan: boolean;
-    tipePotongan: string;
-  };
-  onSave?: (data: any) => void;
+export interface DetailPotonganFormData {
+  namaPotongan: string;
+  tipePotongan: string;
+  metodePotongan: string;
+  nominalPotongan: string;
+  anggaran: string;
+  periodeAwal: string;
+  periodeAkhir: string;
+  jenisPotongan: string;
+  rekanan: string;
+  jumlahPenerima: string;
+  realisasi: string;
+  memotongTagihan: boolean;
 }
 
+interface DetailPotonganFormProps {
+  formData: DetailPotonganFormData;
+  onChange?: (field: keyof DetailPotonganFormData, value: any) => void;
+  isReadOnly?: boolean;
+}
+
+const periodeOptions = [
+  "2027 Genap",
+  "2027 Ganjil",
+  "2026 Genap",
+  "2026 Ganjil",
+  "2025 Genap",
+  "2025 Ganjil",
+  "2024 Genap",
+  "2024 Ganjil",
+];
+const tipePotonganOptions = ["Potongan Rata", "Persentase", "Bertahap"];
+const metodePotonganOptions = ["Nominal", "Persentase"];
+const jenisPotonganOptions = ["Potongan", "Beasiswa", "Voucher"];
+const rekananOptions = [
+  "-- Pilih Rekanan --",
+  "Universitas Ibn Khaldun",
+  "Bank Syariah Indonesia",
+  "Pemerintah",
+];
+
 const DetailPotonganForm: React.FC<DetailPotonganFormProps> = ({
-  initialData,
-  onSave,
+  formData,
+  onChange,
+  isReadOnly = false,
 }) => {
-  const [formData, setFormData] = useState(
-    initialData || {
-      namaPotongan: "",
-      rekanan: "-- Pilih Rekanan --",
-      periodeAwal: "2025 Genap",
-      periodeAkhir: "2025 Genap",
-      nominalPotongan: 0,
-      anggaran: 0,
-      jenisPotongan: "Potongan",
-      jumlahPenerima: 0,
-      realisasi: 0,
-      memotongTagihan: false,
-      tipePotongan: "Potongan Rata",
-    },
-  );
-
-  // Options for dropdowns
-  const rekananOptions = [
-    "-- Pilih Rekanan --",
-    "Universitas Ibn Khaldun",
-    "Bank Syariah Indonesia",
-    "Pemerintah",
-  ];
-  const periodeOptions = [
-    "2025 Genap",
-    "2025 Ganjil",
-    "2024 Genap",
-    "2024 Ganjil",
-  ];
-  const jenisPotonganOptions = ["Potongan", "Beasiswa", "Voucher"];
-  const tipePotonganOptions = ["Potongan Rata", "Persentase", "Bertahap"];
-
-  const handleTextChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleNumberChange = (field: string, value: string) => {
-    // Remove non-numeric characters and parse
-    const numericValue = parseFloat(value.replace(/[^\d]/g, ""));
-    setFormData((prev) => ({
-      ...prev,
-      [field]: isNaN(numericValue) ? 0 : numericValue,
-    }));
-  };
-
-  const handleCheckboxChange = (field: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: checked,
-    }));
-  };
-
-  const handleDropdownChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleChange = (field: keyof DetailPotonganFormData, value: any) => {
+    if (onChange) {
+      onChange(field, value);
+    }
   };
 
   return (
-    <div className="space-y-4 text-sm">
-      {/* First row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-4 my-6 text-sm">
+      {/* Kolom Kiri */}
+      <div className="space-y-4">
+        {/* Nama Potongan* */}
         <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-20">
-            Nama Potongan<span className="text-red-500">*</span>
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Nama Potongan
+            {!isReadOnly && <span className="text-red-500">*</span>}
           </label>
-          <TextField
-            value={formData.namaPotongan}
-            onChange={(e) => handleTextChange("namaPotongan", e)}
-            placeholder="Masukkan nama potongan"
-            className="w-full text-sm"
-            fullWidth={true}
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">Rekanan</label>
-          <Dropdown
-            options={rekananOptions}
-            defaultValue={formData.rekanan}
-            onChange={(value) => handleDropdownChange("rekanan", value)}
-            className="w-full flex-1 text-sm"
-          />
-        </div>
-      </div>
-
-      {/* Second row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Periode Awal
-          </label>
-          <Dropdown
-            options={periodeOptions}
-            defaultValue={formData.periodeAwal}
-            onChange={(value) => handleDropdownChange("periodeAwal", value)}
-            className="w-full flex-1 text-sm"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Jumlah Penerima
-          </label>
-          <TextField
-            type="text"
-            value={formData.jumlahPenerima.toString()}
-            onChange={(e) => handleNumberChange("jumlahPenerima", e)}
-            className="w-full flex-1 text-sm"
-            readOnly
-          />
-        </div>
-      </div>
-
-      {/* Third row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Periode Akhir
-          </label>
-          <Dropdown
-            options={periodeOptions}
-            defaultValue={formData.periodeAkhir}
-            onChange={(value) => handleDropdownChange("periodeAkhir", value)}
-            className="w-full flex-1 text-sm"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Realisasi
-          </label>
-          <TextField
-            value={
-              formData.realisasi === 0 ? "0,00" : formData.realisasi.toString()
-            }
-            onChange={(e) => handleNumberChange("realisasi", e)}
-            className="w-full flex-1 text-sm"
-            readOnly
-          />
-        </div>
-      </div>
-
-      {/* Fourth row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Nominal Potongan<span className="text-red-500">*</span>
-          </label>
-          <TextField
-            value={formData.nominalPotongan.toString()}
-            onChange={(e) => handleNumberChange("nominalPotongan", e)}
-            placeholder="0"
-            className="w-full flex-1 text-sm"
-          />
-        </div>
-
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Memotong Tagihan?
-          </label>
-          <div className="flex-1">
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.namaPotongan || "-"}
+            </span>
+          ) : (
             <input
-              type="checkbox"
-              checked={formData.memotongTagihan}
-              onChange={(e) =>
-                handleCheckboxChange("memotongTagihan", e.target.checked)
-              }
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              type="text"
+              value={formData.namaPotongan}
+              onChange={(e) => handleChange("namaPotongan", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
             />
-          </div>
-        </div>
-      </div>
-
-      {/* Fifth row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-        <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Anggaran<span className="text-red-500">*</span>
-          </label>
-          <TextField
-            value={formData.anggaran.toString()}
-            onChange={(e) => handleNumberChange("anggaran", e)}
-            placeholder="0"
-            className="w-full flex-1 text-sm text-right"
-          />
+          )}
         </div>
 
+        {/* Tipe Potongan */}
         <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
             Tipe Potongan
           </label>
-          <Dropdown
-            options={tipePotonganOptions}
-            defaultValue={formData.tipePotongan}
-            onChange={(value) => handleDropdownChange("tipePotongan", value)}
-            className="w-full flex-1 text-sm"
-          />
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.tipePotongan || "-"}
+            </span>
+          ) : (
+            <Dropdown
+              options={tipePotonganOptions}
+              value={formData.tipePotongan}
+              defaultValue={formData.tipePotongan}
+              onChange={(val) => handleChange("tipePotongan", val)}
+              className="w-full text-sm"
+            />
+          )}
+        </div>
+
+        {/* Metode Potongan */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Metode Potongan
+          </label>
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.metodePotongan || "-"}
+            </span>
+          ) : (
+            <Dropdown
+              options={metodePotonganOptions}
+              value={formData.metodePotongan}
+              defaultValue={formData.metodePotongan}
+              onChange={(val) => handleChange("metodePotongan", val)}
+              className="w-full text-sm"
+            />
+          )}
+        </div>
+
+        {/* Nominal Potongan* */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Nominal Potongan
+            {!isReadOnly && <span className="text-red-500">*</span>}
+          </label>
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.nominalPotongan || "-"}
+            </span>
+          ) : (
+            <input
+              type="text"
+              value={formData.nominalPotongan}
+              onChange={(e) => handleChange("nominalPotongan", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
+            />
+          )}
+        </div>
+
+        {/* Anggaran* */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Anggaran
+            {!isReadOnly && <span className="text-red-500">*</span>}
+          </label>
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.anggaran || "-"}
+            </span>
+          ) : (
+            <input
+              type="text"
+              value={formData.anggaran}
+              onChange={(e) => handleChange("anggaran", e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
+            />
+          )}
         </div>
       </div>
 
-      {/* Sixth row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+      {/* Kolom Kanan */}
+      <div className="space-y-4">
+        {/* Periode Awal */}
         <div className="flex items-center">
-          <label className="text-blue-600 font-medium w-32 pr-4">
-            Jenis Potongan<span className="text-red-500">*</span>
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Periode Awal
           </label>
-          <Dropdown
-            options={jenisPotonganOptions}
-            defaultValue={formData.jenisPotongan}
-            onChange={(value) => handleDropdownChange("jenisPotongan", value)}
-            className="w-full flex-1 text-sm"
-          />
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.periodeAwal || "-"}
+            </span>
+          ) : (
+            <Dropdown
+              options={periodeOptions}
+              value={formData.periodeAwal}
+              defaultValue={formData.periodeAwal}
+              onChange={(val) => handleChange("periodeAwal", val)}
+              className="w-full text-sm"
+            />
+          )}
+        </div>
+
+        {/* Periode Akhir */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Periode Akhir
+          </label>
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.periodeAkhir || "-"}
+            </span>
+          ) : (
+            <Dropdown
+              options={periodeOptions}
+              value={formData.periodeAkhir}
+              defaultValue={formData.periodeAkhir}
+              onChange={(val) => handleChange("periodeAkhir", val)}
+              className="w-full text-sm"
+            />
+          )}
+        </div>
+
+        {/* Jenis Potongan* */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Jenis Potongan
+            {!isReadOnly && <span className="text-red-500">*</span>}
+          </label>
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.jenisPotongan || "-"}
+            </span>
+          ) : (
+            <Dropdown
+              options={jenisPotonganOptions}
+              value={formData.jenisPotongan}
+              defaultValue={formData.jenisPotongan}
+              onChange={(val) => handleChange("jenisPotongan", val)}
+              className="w-full text-sm"
+            />
+          )}
+        </div>
+
+        {/* Rekanan */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Rekanan
+          </label>
+          {isReadOnly ? (
+            <span className="text-sm font-medium text-gray-900 flex-1">
+              {formData.rekanan || "-"}
+            </span>
+          ) : (
+            <Dropdown
+              options={rekananOptions}
+              value={formData.rekanan}
+              defaultValue={formData.rekanan}
+              onChange={(val) => handleChange("rekanan", val)}
+              className="w-full text-sm"
+            />
+          )}
+        </div>
+
+        {/* Jumlah Penerima */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Jumlah Penerima
+          </label>
+          <span className="text-sm font-medium text-gray-900 flex-1">
+            {formData.jumlahPenerima || ""}
+          </span>
+        </div>
+
+        {/* Realisasi */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Realisasi
+          </label>
+          <span className="text-sm font-medium text-gray-900 flex-1">
+            {formData.realisasi || ""}
+          </span>
+        </div>
+
+        {/* Memotong Tagihan? */}
+        <div className="flex items-center">
+          <label className="w-44 text-sm font-bold text-[#337ab7] shrink-0">
+            Memotong Tagihan?
+          </label>
+          <div className="flex-1 flex items-center">
+            {isReadOnly ? (
+              <span className="text-sm font-medium text-gray-900">
+                {formData.memotongTagihan ? "✓" : "✕"}
+              </span>
+            ) : (
+              <input
+                type="checkbox"
+                checked={formData.memotongTagihan}
+                onChange={(e) =>
+                  handleChange("memotongTagihan", e.target.checked)
+                }
+                className="h-4 w-4 text-green-600 rounded cursor-pointer"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

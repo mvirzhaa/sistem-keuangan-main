@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuthStore } from "../stores/authStore";
-import { authController } from "../../features/auth/controllers/authController";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,13 +13,13 @@ export default function ProtectedRoute({
   requiredRole,
   requireAllRoles = false,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, checkAuthStatus, hasRole } = useAuth();
   const location = useLocation();
 
   // Check auth status saat component mount
   useEffect(() => {
-    authController.checkAuthStatus();
-  }, []);
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   if (!isAuthenticated) {
     // Redirect ke login dengan state untuk redirect setelah login
@@ -29,20 +28,19 @@ export default function ProtectedRoute({
 
   // Check role jika diperlukan
   if (requiredRole) {
-    const userRoles = authController.getUserRoles();
     let hasAccess = false;
 
     if (typeof requiredRole === "string") {
       // Single role check
-      hasAccess = authController.hasRole(requiredRole);
+      hasAccess = hasRole(requiredRole);
     } else if (Array.isArray(requiredRole)) {
       // Multiple roles check
       if (requireAllRoles) {
         // AND logic - user harus memiliki SEMUA role yang diperlukan
-        hasAccess = requiredRole.every((role) => authController.hasRole(role));
+        hasAccess = requiredRole.every((role) => hasRole(role));
       } else {
         // OR logic - user hanya perlu memiliki SALAH SATU role
-        hasAccess = requiredRole.some((role) => authController.hasRole(role));
+        hasAccess = requiredRole.some((role) => hasRole(role));
       }
     }
 
@@ -53,3 +51,4 @@ export default function ProtectedRoute({
 
   return <>{children}</>;
 }
+

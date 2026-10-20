@@ -6,21 +6,74 @@ import ListTable, {
 } from "../../../../components/tables/ListTable";
 import TextField from "../../../../components/inputs/TextField";
 
-interface KelompokItem {
+export interface KelompokItem {
   id: string;
   kode: string;
   nama: string;
   jenisUser: string;
+  jenisTransaksi?: string;
 }
 
-const KelompokTable: React.FC = () => {
-  const [items, setItems] = useState<KelompokItem[]>([]);
+interface KelompokTableProps {
+  filterJenisTransaksi?: string;
+}
+
+const defaultKelompokItems: KelompokItem[] = [
+  {
+    id: "1",
+    kode: "KP",
+    nama: "Biaya Kuliah Pokok",
+    jenisUser: "Mahasiswa",
+    jenisTransaksi: "INV - Tagihan",
+  },
+  {
+    id: "2",
+    kode: "KS",
+    nama: "Biaya Kuliah SKS",
+    jenisUser: "Mahasiswa",
+    jenisTransaksi: "INV - Tagihan",
+  },
+  {
+    id: "3",
+    kode: "DP",
+    nama: "Deposit Mahasiswa",
+    jenisUser: "Mahasiswa",
+    jenisTransaksi: "DEP - Deposit",
+  },
+  {
+    id: "4",
+    kode: "VA",
+    nama: "Pembayaran Virtual Account",
+    jenisUser: "Mahasiswa",
+    jenisTransaksi: "PAY - Pembayaran",
+  },
+  {
+    id: "5",
+    kode: "FR",
+    nama: "Pembelian Formulir Pendaftaran",
+    jenisUser: "Alumni",
+    jenisTransaksi: "PAY - Pembayaran",
+  },
+  {
+    id: "6",
+    kode: "LB",
+    nama: "Praktikum Laboratorium",
+    jenisUser: "Mahasiswa",
+    jenisTransaksi: "INV - Tagihan",
+  },
+];
+
+const KelompokTable: React.FC<KelompokTableProps> = ({
+  filterJenisTransaksi = "-- Semua Jenis Transaksi --",
+}) => {
+  const [items, setItems] = useState<KelompokItem[]>(defaultKelompokItems);
   const [isAdding, setIsAdding] = useState(false);
   const [newItem, setNewItem] = useState<KelompokItem>({
     id: "",
     kode: "",
     nama: "",
     jenisUser: "Mahasiswa",
+    jenisTransaksi: "INV - Tagihan",
   });
 
   const jenisUserOptions = ["Mahasiswa", "Dosen", "Karyawan", "Alumni"];
@@ -33,6 +86,11 @@ const KelompokTable: React.FC = () => {
       kode: "",
       nama: "",
       jenisUser: "Mahasiswa",
+      jenisTransaksi:
+        filterJenisTransaksi &&
+        filterJenisTransaksi !== "-- Semua Jenis Transaksi --"
+          ? filterJenisTransaksi
+          : "INV - Tagihan",
     });
   };
 
@@ -48,6 +106,7 @@ const KelompokTable: React.FC = () => {
     setItems([...items, { ...newItem, id: `item-${Date.now()}` }]);
     setIsAdding(false);
   };
+
 
   // Handle canceling new item
   const handleCancel = () => {
@@ -158,11 +217,23 @@ const KelompokTable: React.FC = () => {
     },
   ];
 
+  // Filter items based on filterJenisTransaksi
+  const filteredItems = React.useMemo(() => {
+    if (
+      !filterJenisTransaksi ||
+      filterJenisTransaksi === "-- Semua Jenis Transaksi --" ||
+      filterJenisTransaksi === "-- Semua --"
+    ) {
+      return items;
+    }
+    return items.filter((item) => item.jenisTransaksi === filterJenisTransaksi);
+  }, [items, filterJenisTransaksi]);
+
   // Combine existing items with new item when adding
-  const displayData = isAdding ? [...items, newItem] : items;
+  const displayData = isAdding ? [...filteredItems, newItem] : filteredItems;
 
   return (
-    <div className="shadow-md rounded-md overflow-hidden border-t-4 border-t-green-600 p-5 text-xs">
+    <div className="shadow-md bg-white rounded-md overflow-hidden border-t-4 border-t-green-600 p-5 text-xs">
       <div className="flex justify-end mb-4">
         <button
           onClick={handleAddClick}
@@ -179,8 +250,13 @@ const KelompokTable: React.FC = () => {
         rowKey={(item) => item.id}
         emptyMessage="Data kosong"
         className="w-full"
+        headerClassName="text-xs text-white"
+        rowClassName={(_item, index) =>
+          index % 2 === 0 ? "bg-gray-50" : "bg-white"
+        }
       />
     </div>
+
   );
 };
 

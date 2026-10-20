@@ -9,8 +9,8 @@ import {
   IoArrowForward,
 } from "react-icons/io5";
 import TextField from "../../../components/inputs/TextField";
-import { useAuthStore } from "../../../common/stores/authStore";
-import { authController } from "../controllers/authController";
+import { useAuth } from "../hooks/useAuth";
+import { validateLoginForm } from "../utils/validation";
 import logoUika from "../../../assets/logo-uika.png";
 import bgImage from "../../../assets/background-uika.jpg";
 
@@ -18,8 +18,8 @@ export default function LoginPage() {
   document.title = "Login - Sistem Keuangan";
   const navigate = useNavigate();
 
-  // Zustand store
-  const { isLoginLoading, error, isAuthenticated } = useAuthStore();
+  // Auth Hook
+  const { isLoginLoading, error, isAuthenticated, login, clearError } = useAuth();
 
   // Local state
   const [formData, setFormData] = useState({
@@ -43,9 +43,9 @@ export default function LoginPage() {
   // Clear error ketika user mengetik
   useEffect(() => {
     if (error) {
-      authController.clearError();
+      clearError();
     }
-  }, [formData.email, formData.password]);
+  }, [formData.email, formData.password, error, clearError]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -57,7 +57,7 @@ export default function LoginPage() {
   };
 
   const validateForm = () => {
-    const validation = authController.validateLoginForm(
+    const validation = validateLoginForm(
       formData.email,
       formData.password,
     );
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
     if (!validateForm()) return;
 
-    const result = await authController.handleLogin({
+    const result = await login({
       email: formData.email,
       password: formData.password,
     });
@@ -84,6 +84,7 @@ export default function LoginPage() {
       navigate("/dashboard");
     }
   };
+
 
   const handleEnter = (field: string) => {
     if (field === "email") {

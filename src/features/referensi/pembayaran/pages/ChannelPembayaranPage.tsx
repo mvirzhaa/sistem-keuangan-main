@@ -1,11 +1,9 @@
 import { useState } from "react";
 import TabNavigation from "../../../../components/navigation/TabNavigation";
 import IconButton from "../../../../components/button/IconButton";
-import { IoMdAdd, IoMdRefresh, IoMdSearch, IoMdSync } from "react-icons/io";
+import { IoMdSync } from "react-icons/io";
 import ChannelPembayaranEdufinTable from "../components/ChannelPembayaranEdufinTable";
-import Dropdown from "../../../../components/inputs/Dropdown";
-import TextField from "../../../../components/inputs/TextField";
-import ChannelPembayaranSiakadTable from "../components/ChannelPembayaranSiakadTable";
+import ChannelPembayaranSiakadSection from "../components/ChannelPembayaranSiakadSection";
 
 export default function ChannelPembayaranPage() {
   document.title = "Channel Pembayaran";
@@ -41,7 +39,7 @@ export default function ChannelPembayaranPage() {
       <div className="shadow-md rounded-md p-4 bg-white">
         {activeTab === "edufin" && <BuildChannelEdufin />}
 
-        {activeTab === "siakad" && <BuildChannelSiakad />}
+        {activeTab === "siakad" && <ChannelPembayaranSiakadSection />}
       </div>
     </>
   );
@@ -58,45 +56,6 @@ function BuildChannelEdufin() {
         />
       </div>
       <ChannelPembayaranEdufinTable />
-    </>
-  );
-}
-
-function BuildChannelSiakad() {
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  return (
-    <>
-      <div className="flex flex-col sm:flex-row space-y-2 justify-between mb-4">
-        <div className="flex flex-col sm:flex-row space-x-8 ">
-          <Dropdown
-            options={["-- Semua --", "NIM", "Nama"]}
-            className="mr-4 mb-2 sm:mb-0 w-40 sm:w-full text-xs"
-          />
-          <div className="flex space-x-0.5 items-center">
-            <TextField
-              placeholder="Cari Channel Pembayaran"
-              className="w-full sm:w-80"
-            />
-            <IconButton icon={<IoMdSearch />} variant="success" />
-            <IconButton icon={<IoMdRefresh />} variant="info" />
-          </div>
-        </div>
-        <div className="flex space-x-2">
-          <IconButton
-            icon={<IoMdAdd />}
-            responsive={false}
-            text="Tambah"
-            variant="success"
-            className="text-sm"
-            onClick={() => setShowAddForm(!showAddForm)} // Toggle form visibility
-          />
-        </div>
-      </div>
-      <ChannelPembayaranSiakadTable
-        showAddForm={showAddForm}
-        onAddClick={() => setShowAddForm(false)} // Hide form when done
-      />
     </>
   );
 }

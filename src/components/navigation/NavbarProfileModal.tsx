@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoMdClose, IoMdPerson, IoMdLogOut } from "react-icons/io";
-import { authController } from "../../features/auth/controllers/authController";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 import { formatRoleName } from "../../common/helpers/helpers";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../common/routes/routes";
@@ -15,9 +15,7 @@ export default function NavbarProfileModal({
   onClose,
 }: NavbarProfileModalProps) {
   const navigate = useNavigate();
-  const user = authController.getUser();
-  const activeRole = authController.getActiveRole();
-  const userRoles = authController.getUserRoles();
+  const { user, activeRole, userRoles, setActiveRole, logout } = useAuth();
 
   const [selectedRole, setSelectedRole] = useState(activeRole || "");
 
@@ -26,18 +24,19 @@ export default function NavbarProfileModal({
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const role = e.target.value;
     setSelectedRole(role);
-    authController.setActiveRole(role);
+    setActiveRole(role);
   };
 
   const handleLogout = async () => {
     try {
-      await authController.handleLogout();
+      await logout();
       onClose();
       navigate(ROUTES.LOGIN);
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
+
 
   return (
     <div className="bg-white rounded-lg shadow-xl w-80 overflow-hidden border border-gray-200">

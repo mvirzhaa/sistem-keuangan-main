@@ -6,6 +6,7 @@ import ListTable, {
 } from "../../../../components/tables/ListTable";
 import TextField from "../../../../components/inputs/TextField";
 import Dropdown from "../../../../components/inputs/Dropdown";
+import KonfirmasiModal from "../../../../components/modal/KonfirmasiModal";
 
 interface AturanVoucher {
   id: string;
@@ -28,6 +29,10 @@ const AturanVoucherTable: React.FC<AturanVoucherTableProps> = ({
   const [aturanVoucherData, setAturanVoucherData] = useState<AturanVoucher[]>([
     { id: "1", jenisAkun: "Formulir", maksimalNominal: 300000.0 },
   ]);
+
+  // Modal confirmation state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
 
   // Form data for adding new aturan voucher
   const [newAturanVoucher, setNewAturanVoucher] = useState<
@@ -147,11 +152,19 @@ const AturanVoucherTable: React.FC<AturanVoucherTableProps> = ({
     setEditFormData({});
   };
 
-  // Handle delete
+  // Handle delete trigger
   const handleDelete = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      setAturanVoucherData((prev) => prev.filter((item) => item.id !== id));
+    setItemToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirm delete
+  const handleConfirmDelete = () => {
+    if (itemToDeleteId) {
+      setAturanVoucherData((prev) => prev.filter((item) => item.id !== itemToDeleteId));
     }
+    setIsDeleteModalOpen(false);
+    setItemToDeleteId(null);
   };
 
   // Prepare data for ListTable
@@ -304,21 +317,36 @@ const AturanVoucherTable: React.FC<AturanVoucherTableProps> = ({
   ];
 
   return (
-    <div className="overflow-x-auto text-xs">
-      <ListTable
-        data={tableData}
-        columns={columns}
-        rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white"
-        rowClassName={(item) => {
-          if (item.isAddForm) return "bg-blue-50";
-          if (item.id === editingRowId) return "bg-yellow-50";
-          return "";
+    <>
+      <div className="overflow-x-auto text-xs">
+        <ListTable
+          data={tableData}
+          columns={columns}
+          rowKey={(item) => item.id}
+          headerClassName="text-white"
+          rowClassName={(item) => {
+            if (item.isAddForm) return "bg-blue-50";
+            if (item.id === editingRowId) return "bg-yellow-50";
+            return "";
+          }}
+          showFooter={false}
+          emptyMessage="Tidak ada data aturan voucher"
+        />
+      </div>
+
+      <KonfirmasiModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDeleteId(null);
         }}
-        showFooter={false}
-        emptyMessage="Tidak ada data aturan voucher"
+        onConfirm={handleConfirmDelete}
+        title="Konfirmasi"
+        message="Apakah anda yakin akan menghapus data ini?"
+        cancelText="Batalkan"
+        confirmText="Ya, Yakin"
       />
-    </div>
+    </>
   );
 };
 

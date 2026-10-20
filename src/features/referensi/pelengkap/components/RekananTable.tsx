@@ -5,6 +5,7 @@ import ListTable, {
   type Column,
 } from "../../../../components/tables/ListTable";
 import TextField from "../../../../components/inputs/TextField";
+import KonfirmasiModal from "../../../../components/modal/KonfirmasiModal";
 
 interface Rekanan {
   id: string;
@@ -106,6 +107,10 @@ const RekananTable: React.FC<RekananTableProps> = ({
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<Rekanan>>({});
 
+  // Delete confirmation modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
+
   // Handle input changes for new rekanan
   const handleNewInputChange = (field: keyof Rekanan, value: string) => {
     setNewRekanan((prev) => ({
@@ -206,11 +211,21 @@ const RekananTable: React.FC<RekananTableProps> = ({
     setEditFormData({});
   };
 
-  // Handle delete
+  // Handle delete - open confirmation modal
   const handleDelete = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      setRekananData((prev) => prev.filter((item) => item.id !== id));
+    setItemToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirm delete
+  const handleConfirmDelete = () => {
+    if (itemToDeleteId) {
+      setRekananData((prev) =>
+        prev.filter((item) => item.id !== itemToDeleteId),
+      );
     }
+    setIsDeleteModalOpen(false);
+    setItemToDeleteId(null);
   };
 
   // Prepare data for ListTable
@@ -431,21 +446,37 @@ const RekananTable: React.FC<RekananTableProps> = ({
   ];
 
   return (
-    <div className="overflow-x-auto text-xs">
-      <ListTable
-        data={tableData}
-        columns={columns}
-        rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white"
-        rowClassName={(item) => {
-          if (item.isAddForm) return "bg-blue-50";
-          if (item.id === editingRowId) return "bg-yellow-50";
-          return "";
+    <>
+      <div className="overflow-x-auto text-xs">
+        <ListTable
+          data={tableData}
+          columns={columns}
+          rowKey={(item) => item.id}
+          headerClassName="text-white"
+          rowClassName={(item) => {
+            if (item.isAddForm) return "bg-blue-50";
+            if (item.id === editingRowId) return "bg-yellow-50";
+            return "";
+          }}
+          showFooter={true}
+          emptyMessage="Tidak ada data rekanan"
+        />
+      </div>
+
+      {/* Modal Konfirmasi Hapus */}
+      <KonfirmasiModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDeleteId(null);
         }}
-        showFooter={true}
-        emptyMessage="Tidak ada data rekanan"
+        onConfirm={handleConfirmDelete}
+        title="Konfirmasi"
+        message="Apakah anda yakin akan menghapus data ini?"
+        cancelText="Batalkan"
+        confirmText="Ya, Yakin"
       />
-    </div>
+    </>
   );
 };
 

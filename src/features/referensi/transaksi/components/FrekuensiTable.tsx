@@ -1,4 +1,7 @@
 import React from "react";
+import ListTable, {
+  type Column,
+} from "../../../../components/tables/ListTable";
 
 interface Frekuensi {
   kode: string;
@@ -22,45 +25,55 @@ const FrekuensiTable: React.FC = () => {
     { kode: "WT", nama: "Tahunan", jumlahHari: 365 },
   ];
 
+  const columns: Column<Frekuensi>[] = [
+    {
+      key: "kode",
+      header: "Kode",
+      width: "20%",
+      className: "text-center py-2.5",
+      headerClassName: "text-center",
+      sortable: true,
+      render: (item) => item.kode,
+    },
+    {
+      key: "nama",
+      header: "Nama",
+      width: "50%",
+      className: "text-left py-2.5 px-4",
+      headerClassName: "text-center",
+      sortable: true,
+      render: (item) => item.nama,
+    },
+    {
+      key: "jumlahHari",
+      header: "Jumlah Hari",
+      width: "30%",
+      className: "text-center py-2.5",
+      headerClassName: "text-center",
+      sortable: true,
+      render: (item) => (item.jumlahHari !== null ? item.jumlahHari : ""),
+    },
+  ];
+
   return (
-    <div>
-      <div className="overflow-x-auto flex justify-center">
-        <table className="w-full sm:w-4/5 text-xs border-collapse shadow-md border-b-2 border-blue-900">
-          <thead>
-            <tr className="bg-blue-900 text-white">
-              <th className="py-3 px-4 text-center font-medium w-[20%] border border-gray-300">
-                Kode
-              </th>
-              <th className="py-3 px-4 text-center font-medium w-[50%] border border-gray-300">
-                Nama
-              </th>
-              <th className="py-3 px-4 text-center font-medium w-[30%] border border-gray-300">
-                Jumlah Hari
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {frekuensiData.map((item, index) => (
-              <tr
-                key={item.kode}
-                className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-              >
-                <td className="py-2.5 px-4 border border-gray-200 text-center">
-                  {item.kode}
-                </td>
-                <td className="py-2.5 px-4 border border-gray-200 text-left">
-                  {item.nama}
-                </td>
-                <td className="py-2.5 px-4 border border-gray-200 text-center">
-                  {item.jumlahHari !== null ? item.jumlahHari : ""}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div className="overflow-x-auto text-xs flex justify-center">
+      <div className="w-full sm:w-4/5">
+        <ListTable
+          data={frekuensiData}
+          columns={columns}
+          rowKey={(item) => item.kode}
+          headerClassName="text-xs text-white"
+          rowClassName={(_item, index) =>
+            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+          }
+          showFooter={false}
+          pageSize={50}
+          emptyMessage="Tidak ada data frekuensi"
+        />
       </div>
     </div>
   );
 };
 
 export default FrekuensiTable;
+

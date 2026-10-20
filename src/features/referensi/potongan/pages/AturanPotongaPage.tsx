@@ -8,6 +8,9 @@ export default function AturanPotongaPage() {
   document.title = "Aturan Potongan";
 
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedPotongan, setSelectedPotongan] = useState(
+    "Beasiswa Pemerintah Kota Bogor 2023",
+  );
 
   const handleAddClick = () => {
     setShowAddForm(true);
@@ -23,16 +26,18 @@ export default function AturanPotongaPage() {
         <h1 className="text-2xl font-medium">Aturan Potongan</h1>
       </div>
       <div>
-        <FilterDataAturanPotonganCard />
+        <FilterDataAturanPotonganCard
+          onFilter={(potongan) => setSelectedPotongan(potongan)}
+        />
       </div>
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 sm:px-40 mt-4">
+      <div className="container bg-white shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 sm:px-40 mt-4">
         <div className="flex justify-end mb-4">
           <IconButton
             icon={<IoMdAdd />}
             responsive={false}
             text="Tambah"
             variant="success"
-            className="text-sm"
+            className="text-sm cursor-pointer"
             onClick={handleAddClick}
             disabled={showAddForm}
           />
@@ -41,6 +46,7 @@ export default function AturanPotongaPage() {
           <AturanPotonganTable
             showAddForm={showAddForm}
             onAddClose={handleAddClose}
+            selectedPotongan={selectedPotongan}
           />
         </div>
       </div>

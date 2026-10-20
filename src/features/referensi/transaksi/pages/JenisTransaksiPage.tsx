@@ -1,3 +1,7 @@
+import ListTable, {
+  type Column,
+} from "../../../../components/tables/ListTable";
+
 interface JenisTransaksi {
   kode: string;
   nama: string;
@@ -26,55 +30,70 @@ export default function JenisTransaksiPage() {
     },
   ];
 
+  const columns: Column<JenisTransaksi>[] = [
+    {
+      key: "kode",
+      header: "Kode",
+      width: "20%",
+      className: "text-center py-2.5",
+      headerClassName: "text-center",
+      sortable: true,
+      render: (item) => item.kode,
+    },
+    {
+      key: "nama",
+      header: "Nama",
+      width: "35%",
+      className: "text-center py-2.5",
+      headerClassName: "text-center",
+      sortable: true,
+      render: (item) => item.nama,
+    },
+    {
+      key: "formatKode",
+      header: "Format Kode Transaksi",
+      width: "45%",
+      className: "text-center py-2.5",
+      headerClassName: "text-center",
+      render: (item) => item.formatKode,
+    },
+  ];
+
   return (
-    <div className="container mx-auto ">
+    <div className="container mx-auto">
       <div className="flex items-baseline space-x-3 mb-4">
         <h1 className="text-2xl font-medium">Jenis Transaksi</h1>
       </div>
 
-      <div className="shadow-md rounded-md overflow-hidden border-t-4 border-t-green-600 px-4 sm:px-32 py-4">
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-b-2 border-blue-900 ">
-            <thead>
-              <tr className="bg-blue-900 text-white">
-                <th className="py-3 px-4 text-center w-1/6">Kode</th>
-                <th className="py-3 px-4 text-center w-1/3">Nama</th>
-                <th className="py-3 px-4 text-center">Format Kode Transaksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jenisTransaksiList.map((jenis, index) => (
-                <tr
-                  key={jenis.kode}
-                  className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
-                >
-                  <td className="py-3 px-4 border-t text-center">
-                    {jenis.kode}
-                  </td>
-                  <td className="py-3 px-4 border-t text-center">
-                    {jenis.nama}
-                  </td>
-                  <td className="py-3 px-4 border-t text-center">
-                    {jenis.formatKode}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="shadow-md rounded-md overflow-hidden bg-white border-t-4 border-t-green-600 px-4 sm:px-32 py-4">
+        {/* Table using ListTable */}
+        <div className="overflow-x-auto text-sm">
+          <ListTable
+            data={jenisTransaksiList}
+            columns={columns}
+            rowKey={(item) => item.kode}
+            headerClassName="text-xs text-white"
+            rowClassName={(_item, index) =>
+              index % 2 === 0 ? "bg-gray-50" : "bg-white"
+            }
+            showFooter={false}
+            emptyMessage="Tidak ada data jenis transaksi"
+          />
         </div>
 
         {/* Format explanation */}
-        <div className="bg-yellow-50 border-l-4 border-yellow-600 p-4 mt-4">
-          <h3 className="font-medium mb-2">Format Pengkodean Transaksi</h3>
-          <div className="flex flex-wrap">
-            <div className="mr-10">
-              <span className="font-medium">Urutan : </span>
-              <span className="text-blue-600">{"{urutan}"}</span>
+        <div className="bg-yellow-50 border-l-4 border-yellow-600 p-3 mt-4 text-sm">
+          <h3 className="font-semibold text-gray-800 mb-1.5 text-sm">
+            Format Pengkodean Transaksi
+          </h3>
+          <div className="flex flex-wrap text-sm">
+            <div className="mr-8">
+              <span className="font-medium text-gray-700">Urutan : </span>
+              <span className="text-blue-600 font-medium">{"{urutan}"}</span>
             </div>
             <div>
-              <span className="font-medium">Periode : </span>
-              <span className="text-blue-600">{"{periode}"}</span>
+              <span className="font-medium text-gray-700">Periode : </span>
+              <span className="text-blue-600 font-medium">{"{periode}"}</span>
             </div>
           </div>
         </div>
@@ -82,3 +101,4 @@ export default function JenisTransaksiPage() {
     </div>
   );
 }
+

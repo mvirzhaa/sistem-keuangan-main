@@ -27,39 +27,42 @@ import {
   uangKuliahTunggalData,
 } from "../data/mockDashboardCharts";
 import { useEffect, useState, useMemo } from "react";
-import { useDashboardStore } from "../stores/dashboardStore";
-import { dashboardController } from "../controllers/dashboardController";
+import { useDashboard } from "../hooks/useDashboard";
 
 export default function DashboardPage() {
   document.title = "Dashboard - Selamat Datang di Sistem Informasi Keuangan";
 
-  const { periodeList } = useDashboardStore();
+  const {
+    periodeList,
+    formattedStats,
+    fetchPeriodeList,
+    fetchDashboardData,
+  } = useDashboard();
   const [selectedPeriode, setSelectedPeriode] = useState("-- Semua Periode --");
   const [activeTab, setActiveTab] = useState<DashboardTabId>("dashboard");
 
   useEffect(() => {
     // Load list periode dari mock server / API
-    dashboardController.loadPeriodeList();
-  }, []);
+    fetchPeriodeList();
+  }, [fetchPeriodeList]);
 
   useEffect(() => {
     // Load data dashboard saat periode berganti
     if (selectedPeriode) {
-      dashboardController.loadDashboardData(selectedPeriode);
+      fetchDashboardData(selectedPeriode);
     }
-  }, [selectedPeriode]);
+  }, [selectedPeriode, fetchDashboardData]);
 
   const handlePeriodeChange = (periode: string) => {
     setSelectedPeriode(periode);
   };
-
-  const formattedStats = dashboardController.getFormattedStats();
 
   // Options periode murni diambil secara dinamis dari db.json / API
   const periodeOptions = useMemo(() => [
     "-- Semua Periode --",
     ...periodeList.map((p) => p.nama),
   ], [periodeList]);
+
 
   return (
     <>

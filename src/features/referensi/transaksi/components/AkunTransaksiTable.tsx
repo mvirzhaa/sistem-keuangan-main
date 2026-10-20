@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import ListTable, {
   type Column,
 } from "../../../../components/tables/ListTable";
-import { IoCheckmark, IoPencil, IoTrash } from "react-icons/io5";
+import { IoPencil, IoTrash } from "react-icons/io5";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
+import AkunTransaksiFormRow from "./AkunTransaksiFormRow";
 
 export interface AkunTransaksi {
   id: string;
@@ -22,19 +23,24 @@ export interface AkunTransaksi {
 interface AkunTransaksiTableProps {
   data: AkunTransaksi[];
   onSelectionChange?: (selectedItems: AkunTransaksi[]) => void;
+  isAdding?: boolean;
+  onSaveAdd?: (newItem: AkunTransaksi) => void;
+  onCancelAdd?: () => void;
+  onUpdateItem?: (updatedItem: AkunTransaksi) => void;
+  onDeleteItem?: (item: AkunTransaksi) => void;
 }
 
 const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
   data,
   onSelectionChange = () => {},
+  isAdding = false,
+  onSaveAdd,
+  onCancelAdd,
+  onUpdateItem,
+  onDeleteItem,
 }) => {
-  const [selectedItems, setSelectedItems] = useState<AkunTransaksi[]>([]);
-
-  // Handle selection change
-  const handleSelectionChange = (items: AkunTransaksi[]) => {
-    setSelectedItems(items);
-    onSelectionChange(items);
-  };
+  // State for which row is currently being edited in-place
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Define columns
   const columns: Column<AkunTransaksi>[] = [
@@ -94,7 +100,6 @@ const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
         <div className="flex justify-center">
           {item.pendaftar ? (
             <span className="text-green-600 text-xl">
-              {" "}
               <IoMdCheckmark />
             </span>
           ) : (
@@ -113,7 +118,6 @@ const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
         <div className="flex justify-center">
           {item.generateKuliah ? (
             <span className="text-green-600 text-xl">
-              {" "}
               <IoMdCheckmark />
             </span>
           ) : (
@@ -126,13 +130,12 @@ const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
     },
     {
       key: "sevimaPay",
-      header: "SevimaPay?",
+      header: "EduFin?",
       width: "8%",
       render: (item) => (
         <div className="flex justify-center">
           {item.sevimaPay ? (
             <span className="text-green-600 text-xl">
-              {" "}
               <IoMdCheckmark />
             </span>
           ) : (
@@ -150,13 +153,17 @@ const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
       render: (item) => (
         <div className="flex justify-center space-x-1">
           <button
-            className="p-1.5 bg-amber-500 text-white rounded hover:bg-amber-600"
+            type="button"
+            onClick={() => setEditingId(item.id)}
+            className="p-1.5 bg-amber-500 text-white rounded hover:bg-amber-600 cursor-pointer"
             title="Edit"
           >
             <IoPencil size={16} />
           </button>
           <button
-            className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600"
+            type="button"
+            onClick={() => onDeleteItem?.(item)}
+            className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
             title="Hapus"
           >
             <IoTrash size={16} />
@@ -166,6 +173,32 @@ const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
     },
   ];
 
+  // Custom row render for in-place inline editing
+  const renderCustomRow = (
+    item: AkunTransaksi,
+    _index: number,
+    isSelected: boolean,
+    toggleSelect: () => void,
+  ) => {
+    if (editingId === item.id) {
+      return (
+        <AkunTransaksiFormRow
+          key={item.id}
+          initialData={item}
+          isEdit={true}
+          isSelected={isSelected}
+          onToggleSelect={toggleSelect}
+          onSave={(updated) => {
+            onUpdateItem?.(updated);
+            setEditingId(null);
+          }}
+          onCancel={() => setEditingId(null)}
+        />
+      );
+    }
+    return undefined;
+  };
+
   return (
     <div className="shadow-md rounded-md overflow-hidden text-xs">
       <ListTable
@@ -173,10 +206,20 @@ const AkunTransaksiTable: React.FC<AkunTransaksiTableProps> = ({
         columns={columns}
         rowKey={(item) => item.id}
         selectable={true}
-        onSelectionChange={handleSelectionChange}
+        onSelectionChange={onSelectionChange}
+        topRow={
+          isAdding ? (
+            <AkunTransaksiFormRow
+              isEdit={false}
+              onSave={(newItem) => onSaveAdd?.(newItem)}
+              onCancel={() => onCancelAdd?.()}
+            />
+          ) : undefined
+        }
+        customRow={renderCustomRow}
         emptyMessage="Data kosong"
         className="w-full"
-        headerClassName="bg-blue-900 text-white"
+        headerClassName="text-white"
       />
     </div>
   );

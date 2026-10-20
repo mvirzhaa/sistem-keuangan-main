@@ -3,7 +3,8 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { menuList } from "./MenuData";
 import type { MenuItem } from "./MenuData";
 import { filterMenuByRole } from "../../common/helpers/helpers";
-import { useAuthStore } from "../../common/stores/authStore";
+import { useAuth } from "../../features/auth/hooks/useAuth";
+
 
 interface DropdownMenuProps {
   items: MenuItem[];
@@ -215,11 +216,12 @@ function NavbarMenu() {
   const [openPath, setOpenPath] = useState<string[]>([]);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Subscribe to auth store untuk re-render saat role berubah
-  useAuthStore((state) => state.activeRole);
+  // Reaktif terhadap perubahan activeRole dari useAuth
+  const { activeRole } = useAuth();
 
   // Filter menu berdasarkan role aktif
-  const filteredMenuList = filterMenuByRole(menuList);
+  const filteredMenuList = filterMenuByRole(menuList, activeRole);
+
 
   // Close dropdown when click outside
   useEffect(() => {

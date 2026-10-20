@@ -4,15 +4,17 @@ import Navbar from "./components/navigation/Navbar";
 import Breadcrumb from "./components/breadcrumb/Breadcrumb";
 import { routeConfig } from "./common/routes/routeConfig";
 import Footer from "./components/footer/Footer";
-import { authController } from "./features/auth/controllers/authController";
+import { useAuth } from "./features/auth/hooks/useAuth";
 
 function App() {
   const routes = useRoutes(routeConfig);
   const location = useLocation();
+  const { checkAuthStatus } = useAuth();
 
   useEffect(() => {
-    authController.checkAuthStatus();
-  }, []);
+    checkAuthStatus();
+  }, [checkAuthStatus]);
+
 
   // Halaman yang tidak menggunakan layout navbar
   const noLayoutPages = ["/login", "/unauthorized"];

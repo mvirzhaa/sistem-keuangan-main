@@ -1,27 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "../../../../components/inputs/TextField";
 import Dropdown from "../../../../components/inputs/Dropdown";
 import DatePicker from "../../../../components/inputs/DatePicker";
 
+export interface DetailVoucherFormData {
+  id?: string;
+  kodeVoucher: string;
+  namaVoucher: string;
+  periodeAwal: string;
+  periodeAkhir: string;
+  tglExpired: string;
+  nominal: number;
+  anggaran: number;
+  realisasi: number;
+}
+
 interface DetailVoucherFormProps {
-  initialData?: {
-    kodeVoucher: string;
-    namaVoucher: string;
-    periodeAwal: string;
-    periodeAkhir: string;
-    tglExpired: string;
-    nominal: number;
-    anggaran: number;
-    realisasi: number;
-  };
-  onSave?: (data: any) => void;
+  initialData?: DetailVoucherFormData;
+  onChange?: (data: DetailVoucherFormData) => void;
 }
 
 const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
   initialData,
-  onSave,
+  onChange,
 }) => {
-  const [formData, setFormData] = useState(
+  const [formData, setFormData] = useState<DetailVoucherFormData>(
     initialData || {
       kodeVoucher: "",
       namaVoucher: "",
@@ -34,6 +37,12 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
     },
   );
 
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
+
   // State for the auto-generate checkbox
   const [autoGenerateCode, setAutoGenerateCode] = useState(false);
 
@@ -45,46 +54,39 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
     "2024 Ganjil",
   ];
 
-  const handleTextChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const updateFormData = (updated: Partial<DetailVoucherFormData>) => {
+    setFormData((prev) => {
+      const next = { ...prev, ...updated };
+      if (onChange) {
+        onChange(next);
+      }
+      return next;
+    });
   };
 
-  const handleNumberChange = (field: string, value: string) => {
-    // Remove non-numeric characters and parse
+  const handleTextChange = (field: keyof DetailVoucherFormData, value: string) => {
+    updateFormData({ [field]: value });
+  };
+
+  const handleNumberChange = (field: keyof DetailVoucherFormData, value: string) => {
     const numericValue = parseFloat(value.replace(/[^\d]/g, ""));
-    setFormData((prev) => ({
-      ...prev,
-      [field]: isNaN(numericValue) ? 0 : numericValue,
-    }));
+    updateFormData({ [field]: isNaN(numericValue) ? 0 : numericValue });
   };
 
-  const handleDropdownChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleDropdownChange = (field: keyof DetailVoucherFormData, value: string) => {
+    updateFormData({ [field]: value });
   };
 
-  const handleDateChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleDateChange = (field: keyof DetailVoucherFormData, value: string) => {
+    updateFormData({ [field]: value });
   };
 
   const handleGenerateKode = () => {
-    // Generate a random code as an example
     const randomCode = `VOUCHER${Math.floor(Math.random() * 10000)
       .toString()
       .padStart(4, "0")}`;
 
-    setFormData((prev) => ({
-      ...prev,
-      kodeVoucher: randomCode,
-    }));
+    updateFormData({ kodeVoucher: randomCode });
   };
 
   // Toggle the auto-generate checkbox
@@ -92,20 +94,19 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
     const isChecked = e.target.checked;
     setAutoGenerateCode(isChecked);
 
-    // If checked, generate a code immediately
     if (isChecked) {
       handleGenerateKode();
     }
   };
 
   return (
-    <div className="space-y-4 py-5 text-xs">
+    <div className="space-y-5 py-5">
       {/* First row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
         {/* Left side - Kode Voucher */}
         <div className="flex items-start">
-          <div className="w-1/3">
-            <label className="text-blue-600 font-medium">
+          <div className="w-1/3 pt-1.5">
+            <label className="text-sm font-medium text-blue-600 select-none">
               Kode Voucher<span className="text-red-500">*</span>
             </label>
           </div>
@@ -116,18 +117,17 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
               className="w-full"
               disabled={autoGenerateCode}
             />
-            <div className="flex items-center mt-1">
+            <div className="flex items-center mt-2">
               <input
                 type="checkbox"
                 id="autoGenerateCheckbox"
                 checked={autoGenerateCode}
                 onChange={handleAutoGenerateToggle}
-                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
               />
               <label
                 htmlFor="autoGenerateCheckbox"
-                className="text-sm text-blue-600 hover:underline cursor-pointer"
-                onClick={() => setAutoGenerateCode(!autoGenerateCode)}
+                className="text-sm text-blue-600 hover:underline cursor-pointer select-none"
               >
                 Generate Kode Otomatis
               </label>
@@ -138,7 +138,9 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
         {/* Right side - Tgl. Expired */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">Tgl. Expired</label>
+            <label className="text-sm font-medium text-blue-600 select-none">
+              Tgl. Expired
+            </label>
           </div>
           <div className="w-2/3">
             <DatePicker
@@ -152,11 +154,11 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
       </div>
 
       {/* Second row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
         {/* Left side - Nama Voucher */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">
+            <label className="text-sm font-medium text-blue-600 select-none">
               Nama Voucher<span className="text-red-500">*</span>
             </label>
           </div>
@@ -172,7 +174,7 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
         {/* Right side - Nominal */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">
+            <label className="text-sm font-medium text-blue-600 select-none">
               Nominal<span className="text-red-500">*</span>
             </label>
           </div>
@@ -187,11 +189,13 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
       </div>
 
       {/* Third row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
         {/* Left side - Periode Awal */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">Periode Awal</label>
+            <label className="text-sm font-medium text-blue-600 select-none">
+              Periode Awal
+            </label>
           </div>
           <div className="w-2/3">
             <Dropdown
@@ -206,7 +210,7 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
         {/* Right side - Anggaran */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">
+            <label className="text-sm font-medium text-blue-600 select-none">
               Anggaran<span className="text-red-500">*</span>
             </label>
           </div>
@@ -221,11 +225,13 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
       </div>
 
       {/* Fourth row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
         {/* Left side - Periode Akhir */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">Periode Akhir</label>
+            <label className="text-sm font-medium text-blue-600 select-none">
+              Periode Akhir
+            </label>
           </div>
           <div className="w-2/3">
             <Dropdown
@@ -240,7 +246,9 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
         {/* Right side - Realisasi */}
         <div className="flex items-center">
           <div className="w-1/3">
-            <label className="text-blue-600 font-medium">Realisasi</label>
+            <label className="text-sm font-medium text-blue-600 select-none">
+              Realisasi
+            </label>
           </div>
           <div className="w-2/3">
             <TextField
@@ -257,3 +265,4 @@ const DetailVoucherForm: React.FC<DetailVoucherFormProps> = ({
 };
 
 export default DetailVoucherForm;
+

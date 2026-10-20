@@ -1,8 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import ListTable, {
   type Column,
 } from "../../../../components/tables/ListTable";
-import { IoEye, IoPencil } from "react-icons/io5";
+import { IoEye } from "react-icons/io5";
+import { ROUTES } from "../../../../common/routes/routes";
 
 interface MetodePembayaranEdufin {
   id: string;
@@ -16,6 +18,7 @@ interface MetodePembayaranEdufin {
 }
 
 const MetodePembayaranEdufinTable: React.FC = () => {
+  const navigate = useNavigate();
   // Sample data from the image
   const metodePembayaranData: MetodePembayaranEdufin[] = [
     {
@@ -104,11 +107,19 @@ const MetodePembayaranEdufinTable: React.FC = () => {
       key: "actions",
       header: "Aksi",
       width: "7%",
-      render: () => (
+      render: (item) => (
         <div className="flex justify-center">
           <button
-            className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600"
-            title="Edit"
+            type="button"
+            className="p-1.5 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors cursor-pointer"
+            title="Lihat Detail"
+            onClick={() =>
+              navigate(
+                ROUTES.REFERENSI.PEMBAYARAN
+                  .DETAIL_PENGATURAN_METODE_PEMBAYARAN,
+                { state: { item } },
+              )
+            }
           >
             <IoEye size={16} />
           </button>
@@ -118,12 +129,12 @@ const MetodePembayaranEdufinTable: React.FC = () => {
   ];
 
   return (
-    <div className="shadow-md rounded-md overflow-hidden text-sm">
+    <div className="shadow-md rounded-md overflow-hidden text-xs">
       <ListTable
         data={metodePembayaranData}
         columns={columns}
         rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white"
+        headerClassName="text-white"
         rowClassName={(item, index) =>
           index % 2 === 0 ? "bg-white" : "bg-gray-50"
         }

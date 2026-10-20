@@ -140,7 +140,7 @@ const TagihanPendaftarTable: React.FC<TagihanPendaftarTableProps> = ({
     <div className={`overflow-x-auto ${className}`}>
       <table className="min-w-full border-collapse text-xs">
         <thead>
-          <tr className="bg-blue-900 text-white text-center">
+          <tr className="bg-[#004e82] text-white text-center">
             <th rowSpan={2} className="border border-slate-300 p-2 w-48">
               Program Studi
             </th>
@@ -160,7 +160,7 @@ const TagihanPendaftarTable: React.FC<TagihanPendaftarTableProps> = ({
               Aksi
             </th>
           </tr>
-          <tr className="bg-blue-900 text-white text-center">
+          <tr className="bg-[#004e82] text-white text-center">
             {/* Payment code column headers */}
             {columns.map((column) => (
               <th key={column.code} className="border border-slate-300 p-2">

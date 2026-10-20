@@ -24,7 +24,7 @@ export default function AturanVoucherPage() {
       <div>
         <FilterDataAturanVoucherCard />
       </div>
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 sm:px-40 mt-4">
+      <div className="container bg-white shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 mt-4">
         <div className="flex justify-end mb-4">
           <IconButton
             icon={<IoMdAdd />}

@@ -1,29 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { apiService } from "../../common/services/apiService";
-import { type ApiError } from "../../common/types/apiTypes";
-import { authApi } from "../../features/auth/services/auth.api";
+import { apiService } from "../../../common/services/apiService";
+import { type ApiError } from "../../../common/types/apiTypes";
+import { authApi } from "../services/auth.api";
 
-// Types untuk Auth berdasarkan API response Anda
-export interface User {
-  id: string;
-  email: string;
-  nama: string;
-  createdAt: string;
-  updatedAt: string;
-  roles: string[];
-}
+import type { User, LoginRequest, LoginResponse } from "../types/auth.types";
+export type { User, LoginRequest, LoginResponse };
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user: User;
-  token: string;
-  expiresIn: string;
-}
 
 interface AuthState {
   // Data

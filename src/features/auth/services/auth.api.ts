@@ -4,7 +4,8 @@ import type {
   LoginRequest,
   LoginResponse,
   User,
-} from "../../../common/stores/authStore";
+} from "../types/auth.types";
+
 
 export const authApi = {
   /**

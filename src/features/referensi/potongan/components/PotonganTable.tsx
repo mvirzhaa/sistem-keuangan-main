@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { IoPencil, IoTrash } from "react-icons/io5";
+import React from "react";
+import { IoTrash } from "react-icons/io5";
 import { IoEyeSharp } from "react-icons/io5";
 import ListTable, {
   type Column,
 } from "../../../../components/tables/ListTable";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../../common/routes/routes";
 
-interface Potongan {
+export interface Potongan {
   id: string;
   namaBeasiswa: string;
   periodeAwal: string;
@@ -16,68 +18,86 @@ interface Potongan {
   realisasi: number;
   memotongTagihan: boolean;
   tipePotongan: string;
+  rekanan?: string;
+  jenisPotongan?: string;
 }
 
+export const defaultPotonganList: Potongan[] = [
+  {
+    id: "1",
+    namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Diamond",
+    periodeAwal: "2025 Ganjil",
+    periodeAkhir: "2025 Genap",
+    nominalBeasiswa: 18000000,
+    anggaran: 5000000000,
+    jumlahPenerima: 7,
+    realisasi: 101200000,
+    memotongTagihan: true,
+    tipePotongan: "Potongan Rata",
+    rekanan: "Universitas Ibn Khaldun",
+    jenisPotongan: "Beasiswa",
+  },
+  {
+    id: "2",
+    namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Gold",
+    periodeAwal: "2025 Ganjil",
+    periodeAkhir: "2025 Genap",
+    nominalBeasiswa: 13500000,
+    anggaran: 5000000000,
+    jumlahPenerima: 1,
+    realisasi: 7300000,
+    memotongTagihan: true,
+    tipePotongan: "Potongan Rata",
+    rekanan: "Universitas Ibn Khaldun",
+    jenisPotongan: "Beasiswa",
+  },
+  {
+    id: "3",
+    namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Platinum",
+    periodeAwal: "2025 Ganjil",
+    periodeAkhir: "2025 Genap",
+    nominalBeasiswa: 15000000,
+    anggaran: 5000000000,
+    jumlahPenerima: 3,
+    realisasi: 29900000,
+    memotongTagihan: true,
+    tipePotongan: "Potongan Rata",
+    rekanan: "Universitas Ibn Khaldun",
+    jenisPotongan: "Beasiswa",
+  },
+  {
+    id: "4",
+    namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Silver",
+    periodeAwal: "2025 Ganjil",
+    periodeAkhir: "2025 Genap",
+    nominalBeasiswa: 11500000,
+    anggaran: 5000000000,
+    jumlahPenerima: 9,
+    realisasi: 78500000,
+    memotongTagihan: true,
+    tipePotongan: "Potongan Rata",
+    rekanan: "Universitas Ibn Khaldun",
+    jenisPotongan: "Beasiswa",
+  },
+];
+
 interface PotonganTableProps {
+  data?: Potongan[];
   selectable?: boolean;
   onSelectionChange?: (selectedItems: Potongan[]) => void;
+  onViewDetail?: (item: Potongan) => void;
+  onDeleteItem?: (item: Potongan) => void;
 }
 
 const PotonganTable: React.FC<PotonganTableProps> = ({
+  data,
   selectable = true,
   onSelectionChange,
+  onViewDetail,
+  onDeleteItem,
 }) => {
-  // Sample data
-  const potonganData: Potongan[] = [
-    {
-      id: "1",
-      namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Diamond",
-      periodeAwal: "2025 Ganjil",
-      periodeAkhir: "2025 Genap",
-      nominalBeasiswa: 18000000,
-      anggaran: 5000000000,
-      jumlahPenerima: 7,
-      realisasi: 101200000,
-      memotongTagihan: true,
-      tipePotongan: "Potongan Rata",
-    },
-    {
-      id: "2",
-      namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Gold",
-      periodeAwal: "2025 Ganjil",
-      periodeAkhir: "2025 Genap",
-      nominalBeasiswa: 13500000,
-      anggaran: 5000000000,
-      jumlahPenerima: 1,
-      realisasi: 7300000,
-      memotongTagihan: true,
-      tipePotongan: "Potongan Rata",
-    },
-    {
-      id: "3",
-      namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Platinum",
-      periodeAwal: "2025 Ganjil",
-      periodeAkhir: "2025 Genap",
-      nominalBeasiswa: 15000000,
-      anggaran: 5000000000,
-      jumlahPenerima: 3,
-      realisasi: 29900000,
-      memotongTagihan: true,
-      tipePotongan: "Potongan Rata",
-    },
-    {
-      id: "4",
-      namaBeasiswa: "Beasiswa Hafidz 30 Juz 2025 Skema Silver",
-      periodeAwal: "2025 Ganjil",
-      periodeAkhir: "2025 Genap",
-      nominalBeasiswa: 11500000,
-      anggaran: 5000000000,
-      jumlahPenerima: 9,
-      realisasi: 78500000,
-      memotongTagihan: true,
-      tipePotongan: "Potongan Rata",
-    },
-  ];
+  const navigate = useNavigate();
+  const currentData = data !== undefined ? data : defaultPotonganList;
 
   // Format currency
   const formatCurrency = (value: number): string => {
@@ -155,14 +175,30 @@ const PotonganTable: React.FC<PotonganTableProps> = ({
       render: (item) => (
         <div className="flex justify-center space-x-1">
           <button
-            className="p-1.5 bg-sky-500 text-white rounded hover:bg-sky-600"
+            type="button"
+            className="p-1.5 bg-sky-500 text-white rounded hover:bg-sky-600 cursor-pointer shadow-xs"
             title="Lihat Detail"
+            onClick={() => {
+              if (onViewDetail) {
+                onViewDetail(item);
+              } else {
+                navigate(ROUTES.REFERENSI.POTONGAN.DETAIL_POTONGAN, {
+                  state: { item, mode: "view" },
+                });
+              }
+            }}
           >
             <IoEyeSharp size={16} />
           </button>
           <button
-            className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600"
+            type="button"
+            className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer shadow-xs"
             title="Hapus"
+            onClick={() => {
+              if (onDeleteItem) {
+                onDeleteItem(item);
+              }
+            }}
           >
             <IoTrash size={16} />
           </button>
@@ -174,12 +210,12 @@ const PotonganTable: React.FC<PotonganTableProps> = ({
   return (
     <div className="overflow-x-auto text-xs">
       <ListTable
-        data={potonganData}
+        data={currentData}
         columns={columns}
         rowKey={(item) => item.id}
         selectable={selectable}
         onSelectionChange={onSelectionChange}
-        headerClassName="bg-blue-900 text-white text-xs"
+        headerClassName="text-white text-xs"
         showFooter={true}
         emptyMessage="Tidak ada data potongan"
       />

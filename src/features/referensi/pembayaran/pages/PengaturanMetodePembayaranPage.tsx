@@ -4,7 +4,7 @@ import MetodePembayaranEdufinTable from "../components/MetodePembayaranEdufinTab
 import MetodePembayaranSiakadTable from "../components/MetodePembayaranSiakadTable";
 
 export default function PengaturanMetodePembayaran() {
-  document.title = "Channel Pembayaran";
+  document.title = "Pengaturan Metode Pembayaran";
 
   // Tab state management
   const [activeTab, setActiveTab] = useState("edufuin");

@@ -6,6 +6,7 @@ import ListTable, {
 } from "../../../../components/tables/ListTable";
 import TextField from "../../../../components/inputs/TextField";
 import Dropdown from "../../../../components/inputs/Dropdown";
+import KonfirmasiModal from "../../../../components/modal/KonfirmasiModal";
 
 interface AturanPotongan {
   id: string;
@@ -19,6 +20,7 @@ interface AturanPotongan {
 interface AturanPotonganTableProps {
   showAddForm?: boolean;
   onAddClose?: () => void;
+  selectedPotongan?: string;
 }
 
 const AturanPotonganTable: React.FC<AturanPotonganTableProps> = ({
@@ -57,6 +59,10 @@ const AturanPotonganTable: React.FC<AturanPotonganTableProps> = ({
   // For editing existing rows
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<AturanPotongan>>({});
+
+  // Delete modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState<string | null>(null);
 
   // Sample options for jenis akun dropdown
   const jenisAkunOptions = [
@@ -170,11 +176,21 @@ const AturanPotonganTable: React.FC<AturanPotonganTableProps> = ({
     setEditFormData({});
   };
 
-  // Handle delete
+  // Handle delete click - open KonfirmasiModal
   const handleDelete = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-      setAturanPotonganData((prev) => prev.filter((item) => item.id !== id));
+    setItemToDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Confirm delete
+  const handleConfirmDelete = () => {
+    if (itemToDeleteId) {
+      setAturanPotonganData((prev) =>
+        prev.filter((item) => item.id !== itemToDeleteId),
+      );
     }
+    setIsDeleteModalOpen(false);
+    setItemToDeleteId(null);
   };
 
   // Prepare data for ListTable
@@ -203,7 +219,7 @@ const AturanPotonganTable: React.FC<AturanPotonganTableProps> = ({
       className: "text-center",
       render: (item) => {
         if (item.isAddForm) {
-          return ""; // No number for add form
+          return "";
         }
         return item.noUrut;
       },
@@ -340,21 +356,37 @@ const AturanPotonganTable: React.FC<AturanPotonganTableProps> = ({
   ];
 
   return (
-    <div className="overflow-x-auto text-xs">
-      <ListTable
-        data={tableData}
-        columns={columns}
-        rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white"
-        rowClassName={(item) => {
-          if (item.isAddForm) return "bg-blue-50";
-          if (item.id === editingRowId) return "bg-yellow-50";
-          return "";
+    <>
+      <div className="overflow-x-auto text-xs">
+        <ListTable
+          data={tableData}
+          columns={columns}
+          rowKey={(item) => item.id}
+          headerClassName="text-white"
+          rowClassName={(item) => {
+            if (item.isAddForm) return "bg-blue-50";
+            if (item.id === editingRowId) return "bg-yellow-50";
+            return "";
+          }}
+          showFooter={false}
+          emptyMessage="Tidak ada data aturan potongan"
+        />
+      </div>
+
+      {/* Modal Konfirmasi Hapus */}
+      <KonfirmasiModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setItemToDeleteId(null);
         }}
-        showFooter={false}
-        emptyMessage="Tidak ada data aturan potongan"
+        onConfirm={handleConfirmDelete}
+        title="Konfirmasi"
+        message="Apakah anda yakin akan menghapus data ini?"
+        cancelText="Batalkan"
+        confirmText="Ya, Yakin"
       />
-    </div>
+    </>
   );
 };
 

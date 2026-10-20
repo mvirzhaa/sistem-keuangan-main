@@ -22,7 +22,7 @@ export default function RekananPage() {
         <h1 className="text-2xl font-medium">Rekanan</h1>
       </div>
 
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 mt-4">
+      <div className="container bg-white shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 mt-4">
         <div className="flex flex-col sm:flex-row space-y-2  justify-between mb-4">
           <div className="flex flex-col sm:flex-row space-x-8 ">
             <Dropdown
