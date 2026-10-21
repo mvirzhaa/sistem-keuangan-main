@@ -1,11 +1,37 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { IoMdSearch, IoMdRefresh } from "react-icons/io";
 import IconButton from "../../../components/button/IconButton";
 import Dropdown from "../../../components/inputs/Dropdown";
 import TextField from "../../../components/inputs/TextField";
 import PengaturanPeriodePembayaranTable from "../components/PengaturanPeriodePembayaranTable";
+import { ROUTES } from "../../../common/routes/routes";
 
 export default function PengaturanPeriodePembayaranPage() {
   document.title = "Pengaturan - Periode Pembayaran";
+
+  const [filterField, setFilterField] = useState("-- Semua --");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [appliedFilter, setAppliedFilter] = useState({
+    field: "-- Semua --",
+    query: "",
+  });
+
+  const handleSearch = () => {
+    setAppliedFilter({
+      field: filterField,
+      query: searchQuery.trim(),
+    });
+  };
+
+  const handleReset = () => {
+    setFilterField("-- Semua --");
+    setSearchQuery("");
+    setAppliedFilter({
+      field: "-- Semua --",
+      query: "",
+    });
+  };
 
   return (
     <>
@@ -16,23 +42,42 @@ export default function PengaturanPeriodePembayaranPage() {
       <div>
         <InformationCard />
       </div>
-      <div className="container shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 mt-4">
+      <div className="container bg-white shadow-lg rounded border-t-green-800 border-t-4 px-4 py-4 mt-4">
         <div className="flex flex-col sm:flex-row space-x-8 mb-4">
           <Dropdown
-            options={["-- Semua --", "NIM", "Nama"]}
-            className="mr-4 mb-2 sm:mb-0 w-40  text-xs"
+            options={["-- Semua --", "Kode", "Nama Periode"]}
+            value={filterField}
+            defaultValue={filterField}
+            onChange={(val) => setFilterField(val)}
+            className="mr-4 mb-2 sm:mb-0 w-40 text-xs"
           />
-          <div className="flex space-x-0.5  items-center">
+          <div className="flex space-x-0.5 items-center">
             <TextField
               placeholder="Cari Pengaturan Periode"
               className="w-full sm:w-80"
+              value={searchQuery}
+              onChange={(val) => setSearchQuery(val)}
+              onEnter={handleSearch}
             />
-            <IconButton icon={<IoMdSearch />} variant="success" />
-            <IconButton icon={<IoMdRefresh />} variant="info" />
+            <IconButton
+              icon={<IoMdSearch />}
+              variant="success"
+              onClick={handleSearch}
+              title="Cari"
+            />
+            <IconButton
+              icon={<IoMdRefresh />}
+              variant="info"
+              onClick={handleReset}
+              title="Reset"
+            />
           </div>
         </div>
         <div>
-          <PengaturanPeriodePembayaranTable />
+          <PengaturanPeriodePembayaranTable
+            filterField={appliedFilter.field}
+            searchQuery={appliedFilter.query}
+          />
         </div>
       </div>
     </>
@@ -52,9 +97,12 @@ function InformationCard() {
           <p className="text-gray-800">
             Setelah mengisi tanggal pembayaran, pastikan aturan tagihan sudah
             terisi{" "}
-            <a href="#" className="text-green-600 hover:underline">
+            <Link
+              to={ROUTES.PENGATURAN.TAGIHAN}
+              className="text-green-600 hover:underline font-semibold"
+            >
               di sini
-            </a>
+            </Link>
           </p>
         </div>
       </div>

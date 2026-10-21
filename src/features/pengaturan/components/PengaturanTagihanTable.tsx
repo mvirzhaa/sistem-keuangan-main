@@ -177,7 +177,7 @@ const PengaturanTagihanTable: React.FC = () => {
         data={tagihanData}
         columns={columns}
         rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white"
+        headerClassName="text-white"
         rowClassName={(item, index) =>
           index % 2 === 0 ? "bg-gray-50" : "bg-white"
         }

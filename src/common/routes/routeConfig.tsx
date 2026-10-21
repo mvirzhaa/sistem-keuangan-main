@@ -525,6 +525,17 @@ export const routeConfig: RouteObject[] = [
     ),
   },
   {
+    path: `${ROUTES.PENGATURAN.DETAIL_ATURAN_AKADEMIK}/:id`,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/pengaturan/pages/DetailPengaturanAturanAkademikPage"
+          ),
+      ),
+    ),
+  },
+  {
     path: ROUTES.PENGATURAN.JENIS_TAGIHAN,
     element: withSuspense(
       lazy(

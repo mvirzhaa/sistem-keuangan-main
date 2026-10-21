@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ListTable, { type Column } from "../../../components/tables/ListTable";
 import Dropdown from "../../../components/inputs/Dropdown";
 import DatePicker from "../../../components/inputs/DatePicker";
@@ -10,10 +10,31 @@ export interface JenisTagihanRow {
   bulanAwal?: string;
   bulanAkhir?: string;
   tanggalJatuhTempo?: string;
+  tanggalTerbitTagihan?: string;
 }
 
-const bulanOptions = [
+interface PengaturanJenisTagihanTableProps {
+  periode?: string;
+}
+
+const bulanAwalOptions = [
   "-- Pilih Bulan Awal --",
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+const bulanAkhirOptions = [
+  "-- Pilih Bulan Akhir --",
   "Januari",
   "Februari",
   "Maret",
@@ -30,38 +51,71 @@ const bulanOptions = [
 
 const initialData: JenisTagihanRow[] = [
   { id: "1", kode: "3207", jenisTagihan: "Alumni (FH)" },
-  { id: "2", kode: "2017", jenisTagihan: "BIMBINGAN SKRIPSI (FKIP)" },
-  {
-    id: "3",
-    kode: "2019",
-    jenisTagihan: "BIMBINGAN SKRIPSI LEWAT WAKTU (FKIP)",
-  },
+  { id: "2", kode: "9800", jenisTagihan: "Biaya Awal Masuk - Pasca" },
+  { id: "3", kode: "PPG", jenisTagihan: "Biaya Awal Perkuliahan" },
   { id: "4", kode: "4085", jenisTagihan: "Biaya Buku Panduan Skripsi" },
-  { id: "5", kode: "1061", jenisTagihan: "Biaya Pemeliharaan Ijazah" },
-  { id: "6", kode: "1119", jenisTagihan: "Biaya Pendaftaran Rusunawa" },
+  { id: "5", kode: "2056", jenisTagihan: "Biaya Kuliah Mandiri" },
+  { id: "6", kode: "1061", jenisTagihan: "Biaya Pemeliharaan Ijazah" },
+  { id: "7", kode: "1119", jenisTagihan: "Biaya Pendaftaran Rusunawa" },
 ];
 
-const PengaturanJenisTagihanTable: React.FC = () => {
-  const [data, setData] = useState<JenisTagihanRow[]>(initialData);
+const getStoredDataForPeriode = (periodeKey: string): JenisTagihanRow[] => {
+  const stored = localStorage.getItem(`jenis_tagihan_data_${periodeKey}`);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      // fallback
+    }
+  }
+  return initialData;
+};
+
+const PengaturanJenisTagihanTable: React.FC<
+  PengaturanJenisTagihanTableProps
+> = ({ periode = "2024 Genap" }) => {
+  const [data, setData] = useState<JenisTagihanRow[]>(() =>
+    getStoredDataForPeriode(periode),
+  );
+
+  useEffect(() => {
+    setData(getStoredDataForPeriode(periode));
+  }, [periode]);
 
   const handleChange = (id: string, field: string, value: string) => {
-    setData((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
-    );
+    setData((prev) => {
+      const next = prev.map((row) =>
+        row.id === id
+          ? {
+              ...row,
+              [field]:
+                value === "-- Pilih Bulan Awal --" ||
+                value === "-- Pilih Bulan Akhir --"
+                  ? ""
+                  : value,
+            }
+          : row,
+      );
+      localStorage.setItem(
+        `jenis_tagihan_data_${periode}`,
+        JSON.stringify(next),
+      );
+      return next;
+    });
   };
 
   const columns: Column<JenisTagihanRow>[] = [
     {
       key: "kode",
       header: "Kode",
-      width: "10%",
+      width: "8%",
       className: "text-center font-bold",
       render: (item) => <span>{item.kode}</span>,
     },
     {
       key: "jenisTagihan",
       header: "Jenis Tagihan",
-      width: "30%",
+      width: "26%",
       render: (item) => (
         <span className="font-semibold">{item.jenisTagihan}</span>
       ),
@@ -69,11 +123,12 @@ const PengaturanJenisTagihanTable: React.FC = () => {
     {
       key: "bulanAwal",
       header: "Bulan Awal",
-      width: "20%",
+      width: "16%",
       render: (item) => (
         <Dropdown
-          options={bulanOptions}
-          defaultValue={item.bulanAwal || ""}
+          options={bulanAwalOptions}
+          value={item.bulanAwal || "-- Pilih Bulan Awal --"}
+          defaultValue={item.bulanAwal || "-- Pilih Bulan Awal --"}
           onChange={(v) => handleChange(item.id, "bulanAwal", v)}
           className="w-full"
         />
@@ -82,11 +137,12 @@ const PengaturanJenisTagihanTable: React.FC = () => {
     {
       key: "bulanAkhir",
       header: "Bulan Akhir",
-      width: "20%",
+      width: "16%",
       render: (item) => (
         <Dropdown
-          options={bulanOptions}
-          defaultValue={item.bulanAkhir || ""}
+          options={bulanAkhirOptions}
+          value={item.bulanAkhir || "-- Pilih Bulan Akhir --"}
+          defaultValue={item.bulanAkhir || "-- Pilih Bulan Akhir --"}
           onChange={(v) => handleChange(item.id, "bulanAkhir", v)}
           className="w-full"
         />
@@ -95,7 +151,7 @@ const PengaturanJenisTagihanTable: React.FC = () => {
     {
       key: "tanggalJatuhTempo",
       header: "Tanggal Jatuh Tempo",
-      width: "20%",
+      width: "17%",
       render: (item) => (
         <DatePicker
           value={item.tanggalJatuhTempo || ""}
@@ -105,15 +161,28 @@ const PengaturanJenisTagihanTable: React.FC = () => {
         />
       ),
     },
+    {
+      key: "tanggalTerbitTagihan",
+      header: "Tanggal Terbit Tagihan",
+      width: "17%",
+      render: (item) => (
+        <DatePicker
+          value={item.tanggalTerbitTagihan || ""}
+          onChange={(v) => handleChange(item.id, "tanggalTerbitTagihan", v)}
+          placeholder="dd-mm-yyyy"
+          className="w-full"
+        />
+      ),
+    },
   ];
 
   return (
-    <div className="text-xs w-full">
+    <div className="text-xs w-full overflow-x-auto">
       <ListTable
         data={data}
         columns={columns}
         rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white text-xs"
+        headerClassName="text-white text-xs whitespace-nowrap"
         rowClassName={(_, idx) => (idx % 2 === 0 ? "bg-white" : "bg-gray-50")}
         showFooter={false}
         emptyMessage="Tidak ada data jenis tagihan"

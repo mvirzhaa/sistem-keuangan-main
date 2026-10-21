@@ -14,128 +14,133 @@ export interface AkademikTableRow {
 
 interface PengaturanAturanAkademikTableProps {
   data: AkademikTableRow[];
-  onView?: (id: string) => void;
+  selectedIds?: string[];
+  onToggleSelect?: (id: string) => void;
+  onView?: (item: AkademikTableRow) => void;
   onDelete?: (id: string) => void;
 }
 
-const columns: Column<AkademikTableRow>[] = [
-  {
-    key: "checkbox",
-    header: "",
-    width: "4%",
-    className: "text-center",
-    render: (item) => <input type="checkbox" />,
-  },
-  {
-    key: "jenisTagihan",
-    header: "Jenis Tagihan",
-    width: "25%",
-    render: (item) => (
-      <div className="font-bold text-blue-900">
-        {item.jenisTagihan}
-        {item.keteranganTagihan && (
-          <div className="text-xs font-normal text-gray-700 flex items-center mt-1">
-            <span className="mr-1">ⓘ</span>
-            {item.keteranganTagihan}
-          </div>
-        )}
-      </div>
-    ),
-  },
-  {
-    key: "syaratCicilan",
-    header: "Syarat Cicilan",
-    width: "25%",
-    render: (item) => (
-      <div>
-        {item.syaratCicilan}
-        {item.syaratCicilanTambahan && (
-          <div className="text-xs text-gray-700 flex items-center mt-1">
-            <span className="mr-1">ⓘ</span>
-            {item.syaratCicilanTambahan}
-          </div>
-        )}
-      </div>
-    ),
-  },
-  {
-    key: "pembayaranMinimal",
-    header: "Pembayaran Minimal",
-    width: "15%",
-    className: "font-bold text-center",
-    render: (item) => <span>{item.pembayaranMinimal}</span>,
-  },
-  {
-    key: "status",
-    header: "Status",
-    width: "15%",
-    className: "text-center",
-    render: (item) => (
-      <span
-        className={`px-2 py-1 rounded text-xs font-bold ${
-          item.status === "Aktif"
-            ? "bg-green-500 text-white"
-            : "bg-red-500 text-white"
-        }`}
-      >
-        {item.status}
-      </span>
-    ),
-  },
-  {
-    key: "aksi",
-    header: "Aksi",
-    width: "10%",
-    className: "text-center",
-    render: (
-      item,
-      _index,
-      context?: {
-        onView?: (id: string) => void;
-        onDelete?: (id: string) => void;
-      },
-    ) => (
-      <div className="flex gap-2 justify-center">
-        <button
-          className="bg-blue-400 hover:bg-blue-600 text-white p-2 rounded"
-          title="Lihat"
-          onClick={() => context?.onView && context.onView(item.id)}
-        >
-          <IoMdEye />
-        </button>
-        <button
-          className="bg-red-400 hover:bg-red-600 text-white p-2 rounded"
-          title="Hapus"
-          onClick={() => context?.onDelete && context.onDelete(item.id)}
-        >
-          <IoMdTrash />
-        </button>
-      </div>
-    ),
-  },
-];
-
 const PengaturanAturanAkademikTable: React.FC<
   PengaturanAturanAkademikTableProps
-> = ({ data, onView, onDelete }) => {
-  // Pass onView and onDelete to render function via props
-  const columnsWithProps = columns.map((col) => ({
-    ...col,
-    render: col.render
-      ? (item: AkademikTableRow, index: number) => col.render!(item, index)
-      : undefined,
-  }));
+> = ({ data, selectedIds = [], onToggleSelect, onView, onDelete }) => {
+  const columns: Column<AkademikTableRow>[] = React.useMemo(
+    () => [
+      {
+        key: "checkbox",
+        header: "",
+        width: "4%",
+        className: "text-center",
+        render: (item) => (
+          <input
+            type="checkbox"
+            checked={selectedIds.includes(item.id)}
+            onChange={() => onToggleSelect && onToggleSelect(item.id)}
+            className="form-checkbox h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          />
+        ),
+      },
+      {
+        key: "jenisTagihan",
+        header: "Jenis Tagihan",
+        width: "28%",
+        render: (item) => (
+          <div className="py-1">
+            <span className="font-bold text-gray-800 text-xs sm:text-sm">
+              {item.jenisTagihan}
+            </span>
+            {item.keteranganTagihan && (
+              <div className="text-[11px] text-gray-600 flex items-center gap-1.5 mt-0.5">
+                <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-800 text-white text-[9px] font-bold shrink-0">
+                  !
+                </span>
+                <span>{item.keteranganTagihan}</span>
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        key: "syaratCicilan",
+        header: "Syarat Cicilan",
+        width: "28%",
+        render: (item) => (
+          <div className="py-1">
+            <span className="text-gray-800 text-xs font-normal">
+              {item.syaratCicilan}
+            </span>
+            {item.syaratCicilanTambahan && (
+              <div className="text-[11px] text-gray-600 flex items-center gap-1.5 mt-0.5">
+                <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-800 text-white text-[9px] font-bold shrink-0">
+                  !
+                </span>
+                <span>{item.syaratCicilanTambahan}</span>
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        key: "pembayaranMinimal",
+        header: "Pembayaran Minimal",
+        width: "15%",
+        className: "font-bold text-center text-gray-800",
+        render: (item) => <span>{item.pembayaranMinimal}</span>,
+      },
+      {
+        key: "status",
+        header: "Status",
+        width: "12%",
+        className: "text-center",
+        render: (item) => (
+          <span
+            className={`px-2.5 py-1 rounded text-[11px] font-medium text-white inline-block ${
+              item.status === "Aktif" ? "bg-[#00a65a]" : "bg-[#dd4b39]"
+            }`}
+          >
+            {item.status}
+          </span>
+        ),
+      },
+      {
+        key: "aksi",
+        header: "Aksi",
+        width: "13%",
+        className: "text-center",
+        render: (item) => (
+          <div className="flex gap-1.5 justify-center">
+            <button
+              type="button"
+              className="bg-[#00c0ef] hover:bg-[#00a7d0] text-white p-1.5 rounded transition-colors cursor-pointer"
+              title="Lihat"
+              onClick={() => onView && onView(item)}
+            >
+              <IoMdEye size={16} />
+            </button>
+            <button
+              type="button"
+              className="bg-[#dd4b39] hover:bg-[#c9302c] text-white p-1.5 rounded transition-colors cursor-pointer"
+              title="Hapus"
+              onClick={() => onDelete && onDelete(item.id)}
+            >
+              <IoMdTrash size={16} />
+            </button>
+          </div>
+        ),
+      },
+    ],
+    [onView, onDelete],
+  );
 
   return (
-    <div className="text-xs w-full">
+    <div className="text-xs w-full overflow-x-auto">
       <ListTable
         data={data}
-        columns={columnsWithProps}
+        columns={columns}
         rowKey={(item) => item.id}
-        headerClassName="bg-blue-900 text-white text-xs"
+        headerClassName="text-white text-xs"
         rowClassName={(_, idx) => (idx % 2 === 0 ? "bg-white" : "bg-gray-50")}
         showFooter={false}
-        emptyMessage="Tidak ada data pengaturan akademik"
+        emptyMessage="Data kosong"
       />
     </div>
   );

@@ -1,15 +1,8 @@
-import React, { useState } from "react";
-import {
-  IoInformationCircle,
-  IoDocumentText,
-  IoCashOutline,
-  IoCard,
-} from "react-icons/io5";
-import TextField from "../../../components/inputs/TextField";
-import Toggle from "../../../components/inputs/Toggle";
+import { useState } from "react";
 import MenuPengaturan from "../components/PengaturanAplikasiMenu";
 import InformasiKeuanganSection from "../components/InformasiKeuanganSection";
 import SistemPembayaranSection from "../components/SistemPembayaranSection";
+import DanacitaSection from "../components/DanacitaSection";
 
 export default function PengaturanAplikasiPage() {
   document.title = "Pengaturan Aplikasi";
@@ -18,34 +11,23 @@ export default function PengaturanAplikasiPage() {
   return (
     <>
       <div className="flex items-baseline space-x-3 mb-6">
-        <h1 className="text-2xl font-medium">Pengaturan</h1>
+        <h1 className="text-2xl font-medium text-gray-800">Pengaturan</h1>
         <p className="text-sm text-gray-500 mb-1">Pengaturan Aplikasi</p>
       </div>
 
-      <div className="flex">
-        <div className="w-1/4">
+      <div className="bg-white rounded-2xl border border-gray-200/80 border-t-2 border-t-amber-400 shadow-xs flex flex-col md:flex-row overflow-hidden min-h-[600px]">
+        <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-100 shrink-0">
           <MenuPengaturan
             activeMenu={activeMenu}
             setActiveMenu={setActiveMenu}
           />
         </div>
-        <div className="w-3/4">
+        <div className="flex-1 min-w-0">
           {activeMenu === "informasi-keuangan" && <InformasiKeuanganSection />}
           {activeMenu === "sistem-pembayaran" && <SistemPembayaranSection />}
           {activeMenu === "danacita" && <DanacitaSection />}
         </div>
       </div>
     </>
-  );
-}
-
-function DanacitaSection() {
-  return (
-    <div className="bg-white rounded-sm shadow-sm border-t-2 border-t-amber-400 p-6">
-      <h2 className="text-lg font-semibold mb-4">Danacita</h2>
-      <p className="text-sm text-gray-600">
-        Content untuk danacita akan ditambahkan nanti...
-      </p>
-    </div>
   );
 }
