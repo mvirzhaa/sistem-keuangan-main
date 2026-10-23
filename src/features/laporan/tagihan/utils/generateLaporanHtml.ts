@@ -1,15 +1,20 @@
 export interface ReportRowData {
   no: number;
+  kodeTagihan: string;
   nim: string;
   nama: string;
   prodi: string;
-  jenisTagihan: string;
   periode: string;
-  nominal: number;
+  jenisTagihan: string;
+  cicilan: string;
+  bulan: string;
+  nominal: number; // Tagihan
+  denda: number;
   potongan: number;
-  bayar: number;
-  sisa: number;
-  status: string;
+  bayar: number; // Pembayaran
+  status: string; // Lunas?
+  sisa: number; // Sisa Tagihan
+  suspend: string; // Suspend?
 }
 
 export interface GenerateLaporanHtmlParams {
@@ -43,10 +48,16 @@ export function generateLaporanHtml(params: GenerateLaporanHtmlParams): string {
       <title>Laporan Tagihan - Universitas Ibn Khaldun Bogor</title>
       <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; color: #252a38; }
-        .header { text-align: center; margin-bottom: 25px; border-bottom: ${useKop ? "3px double #10ac84" : "none"}; padding-bottom: ${useKop ? "15px" : "0"}; }
-        .header h2 { margin: 0; font-size: 20px; color: #1e3a8a; }
-        .header h1 { margin: 5px 0; font-size: 24px; color: #10ac84; }
-        .header p { margin: 3px 0; font-size: 13px; color: #4b5563; }
+        .header { margin-bottom: 20px; }
+        .header-content { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .header-logo { width: 75px; height: 75px; object-fit: contain; }
+        .header-text { text-align: center; }
+        .header-text h2 { margin: 0; font-size: 20px; font-weight: bold; color: #111827; letter-spacing: 0.5px; }
+        .header-text p { margin: 2px 0; font-size: 12px; color: #374151; }
+        .header-line { border-bottom: 3px double #111827; margin-top: 10px; }
+        .report-title { text-align: center; margin: 15px 0 20px 0; }
+        .report-title h3 { margin: 0; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #111827; }
+        .report-title p { margin: 5px 0 0 0; font-size: 11px; color: #6b7280; }
         .info-table { width: 100%; margin-bottom: 20px; font-size: 13px; }
         .info-table td { padding: 4px 8px; }
         .info-table td.label { font-weight: bold; width: 180px; color: #1e3a8a; }
@@ -75,17 +86,21 @@ export function generateLaporanHtml(params: GenerateLaporanHtmlParams): string {
         useKop
           ? `
         <div class="header">
-          <h2>UNIVERSITAS IBN KHALDUN BOGOR</h2>
-          <h1>SISTEM INFORMASI KEUANGAN</h1>
-          <p>Jl. KH. Sholeh Iskandar KM.2, Kedung Badak, Tanah Sereal, Kota Bogor, Jawa Barat 16162</p>
-          <p>Telepon: (0251) 8356884 | Email: info@uika-bogor.ac.id</p>
+          <div class="header-content">
+            <img src="/images/logo-uika.png" alt="Logo UIKA" class="header-logo" />
+            <div class="header-text">
+              <h2>UNIVERSITAS IBN KHALDUN BOGOR</h2>
+              <p>Jl KH Sholeh Iskandar KM 2 Kedung Badak Bogor</p>
+              <p>Website : uika-bogor.ac.id/ e-Mail :mail@uika-bogor.ac.id / Telepon :0251-8356884</p>
+            </div>
+          </div>
+          <div class="header-line"></div>
         </div>
       `
           : ""
       }
-      <div style="text-align: center; margin: 20px 0;">
-        <h3 style="margin: 0; text-transform: uppercase; letter-spacing: 1px; color: #1e3a8a;">Laporan Tagihan ${selectedPenerima}</h3>
-        <p style="margin: 5px 0 0 0; font-size: 12px; color: #6b7280;">Tanggal Cetak: ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
+      <div class="report-title">
+        <h3>TAGIHAN ${selectedPenerima.toUpperCase()} PERIODE ${(selectedPeriods.length > 0 ? selectedPeriods.join(", ") : "SEMUA PERIODE").toUpperCase()}</h3>
       </div>
 
       <table class="info-table">
@@ -110,17 +125,22 @@ export function generateLaporanHtml(params: GenerateLaporanHtmlParams): string {
       <table class="data-table">
         <thead>
           <tr>
-            <th width="40">No</th>
-            <th>NIM / ID</th>
-            <th>Nama Mahasiswa</th>
+            <th width="35">No.</th>
+            <th>Kode Tagihan</th>
+            <th>NIM</th>
+            <th>Nama</th>
             <th>Program Studi</th>
-            <th>Jenis Tagihan</th>
             <th>Periode</th>
-            <th class="text-right">Nominal</th>
+            <th>Jenis Tagihan</th>
+            <th class="text-center">Cicilan</th>
+            <th class="text-center">Bulan</th>
+            <th class="text-right">Tagihan</th>
+            <th class="text-right">Denda</th>
             <th class="text-right">Potongan</th>
             <th class="text-right">Pembayaran</th>
+            <th class="text-center">Lunas?</th>
             <th class="text-right">Sisa Tagihan</th>
-            <th class="text-center">Status</th>
+            <th class="text-center">Suspend?</th>
           </tr>
         </thead>
         <tbody>
@@ -129,20 +149,25 @@ export function generateLaporanHtml(params: GenerateLaporanHtmlParams): string {
               (row) => `
             <tr>
               <td class="text-center">${row.no}</td>
-              <td>${row.nim}</td>
+              <td class="text-center font-mono">${row.kodeTagihan}</td>
+              <td class="text-center font-mono">${row.nim}</td>
               <td><b>${row.nama}</b></td>
               <td>${row.prodi}</td>
-              <td>${row.jenisTagihan}</td>
               <td class="text-center">${row.periode}</td>
+              <td>${row.jenisTagihan}</td>
+              <td class="text-center">${row.cicilan}</td>
+              <td class="text-center">${row.bulan}</td>
               <td class="text-right">${formatRupiah(row.nominal)}</td>
+              <td class="text-right">${formatRupiah(row.denda)}</td>
               <td class="text-right">${formatRupiah(row.potongan)}</td>
               <td class="text-right">${formatRupiah(row.bayar)}</td>
-              <td class="text-right font-semibold">${formatRupiah(row.sisa)}</td>
               <td class="text-center">
-                <span class="badge ${row.status === "Lunas" ? "badge-lunas" : "badge-belum"}">
+                <span class="badge ${row.status === "Lunas" || row.status === "Ya" ? "badge-lunas" : "badge-belum"}">
                   ${row.status}
                 </span>
               </td>
+              <td class="text-right font-semibold">${formatRupiah(row.sisa)}</td>
+              <td class="text-center">${row.suspend}</td>
             </tr>
           `,
             )

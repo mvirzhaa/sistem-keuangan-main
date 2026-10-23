@@ -2,7 +2,7 @@ import React from "react";
 
 interface FormFieldRowProps {
   id?: string;
-  label: string;
+  label: React.ReactNode;
   required?: boolean;
   alignCenter?: boolean;
   children: React.ReactNode;

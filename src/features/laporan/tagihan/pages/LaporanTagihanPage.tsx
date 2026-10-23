@@ -34,6 +34,10 @@ import {
   generateLaporanHtml,
   type ReportRowData,
 } from "../utils/generateLaporanHtml";
+import {
+  exportLaporanToPdf,
+  exportLaporanToExcel,
+} from "../utils/exportLaporan";
 
 export default function LaporanTagihanPage() {
   document.title = "Laporan Tagihan - Sistem Informasi Keuangan UIKA";
@@ -124,55 +128,75 @@ export default function LaporanTagihanPage() {
   const mockReportData: ReportRowData[] = [
     {
       no: 1,
+      kodeTagihan: "INV/20262/0000001",
       nim: "231106051399",
       nama: "ZIYAD RAIS",
       prodi: selectedProdi || "S1 - Teknik Informatika",
-      jenisTagihan: selectedJenisTagihan || "UKT",
       periode: selectedPeriods[0] || "2026 Genap",
+      jenisTagihan: selectedJenisTagihan || "UKT",
+      cicilan: "-",
+      bulan: "-",
       nominal: 4500000,
+      denda: 0,
       potongan: 0,
       bayar: 4500000,
-      sisa: 0,
       status: "Lunas",
+      sisa: 0,
+      suspend: "Tidak",
     },
     {
       no: 2,
+      kodeTagihan: "INV/20262/0000002",
       nim: "231105060041",
       nama: "ANNISA AGUSTIN",
       prodi: selectedProdi || "S1 - Sistem Informasi",
-      jenisTagihan: selectedJenisTagihan || "SKS",
       periode: selectedPeriods[0] || "2026 Genap",
+      jenisTagihan: selectedJenisTagihan || "SKS",
+      cicilan: "-",
+      bulan: "-",
       nominal: 3200000,
+      denda: 0,
       potongan: 500000,
       bayar: 2700000,
-      sisa: 0,
       status: "Lunas",
+      sisa: 0,
+      suspend: "Tidak",
     },
     {
       no: 3,
+      kodeTagihan: "INV/20262/0000003",
       nim: "221105031312",
       nama: "MUHAMMAD JABAR",
       prodi: selectedProdi || "S1 - Manajemen",
-      jenisTagihan: selectedJenisTagihan || "Cicilan Ke-1",
       periode: selectedPeriods[0] || "2026 Genap",
+      jenisTagihan: selectedJenisTagihan || "Cicilan Ke-1",
+      cicilan: "1",
+      bulan: "-",
       nominal: 2500000,
+      denda: 0,
       potongan: 0,
       bayar: 1000000,
+      status: "Belum",
       sisa: 1500000,
-      status: "Belum Lunas",
+      suspend: "Tidak",
     },
     {
       no: 4,
+      kodeTagihan: "INV/20262/0000004",
       nim: "241020510521",
       nama: "AHID MUHAMMAD RIDWAN",
       prodi: selectedProdi || "S1 - Ilmu Hukum",
-      jenisTagihan: selectedJenisTagihan || "Biaya Awal Masuk",
       periode: selectedPeriods[0] || "2026 Genap",
+      jenisTagihan: selectedJenisTagihan || "Biaya Awal Masuk",
+      cicilan: "-",
+      bulan: "-",
       nominal: 5000000,
+      denda: 0,
       potongan: 0,
       bayar: 0,
+      status: "Belum",
       sisa: 5000000,
-      status: "Belum Bayar",
+      suspend: "Tidak",
     },
   ];
 
@@ -187,10 +211,38 @@ export default function LaporanTagihanPage() {
     }, 100);
   };
 
-  // Handler Lihat di Tab Baru
-  const handleLihatTabBaru = () => {
+  // Handler Lihat di Tab Baru & Auto Download sesuai format
+  const handleLihatTabBaru = async () => {
     if (!validateForm()) return;
 
+    if (selectedFormat === "PDF") {
+      await exportLaporanToPdf({
+        useKop,
+        selectedPenerima,
+        selectedPeriods,
+        selectedStatus,
+        selectedProdi,
+        selectedJenisTagihan,
+        reportData: mockReportData,
+        formatRupiah: formatRupiahDisplay,
+      });
+      return;
+    }
+
+    if (selectedFormat === "EXCEL") {
+      exportLaporanToExcel({
+        useKop,
+        selectedPenerima,
+        selectedPeriods,
+        selectedStatus,
+        selectedProdi,
+        selectedJenisTagihan,
+        reportData: mockReportData,
+      });
+      return;
+    }
+
+    // Default HTML: Buka di tab baru
     const reportHtml = generateLaporanHtml({
       useKop,
       selectedPenerima,
@@ -510,12 +562,14 @@ export default function LaporanTagihanPage() {
       {/* Preview Section */}
       {showPreview && (
         <LaporanTagihanPreview
+          useKop={useKop}
           selectedPenerima={selectedPenerima}
           selectedPeriods={selectedPeriods}
           selectedFormat={selectedFormat}
           reportData={mockReportData}
           formatRupiah={formatRupiahDisplay}
           onLihatTabBaru={handleLihatTabBaru}
+          onCetakFormat={handleLihatTabBaru}
         />
       )}
     </div>

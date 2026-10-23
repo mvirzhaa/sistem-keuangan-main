@@ -1,13 +1,16 @@
 export interface RekapRowData {
   no: number;
+  kodeProdi: string;
   prodi: string;
   jenisTagihan: string;
-  jumlahTagihan: number;
-  nominalTagihan: number;
+  nominal: number; // Tagihan
   potongan: number;
-  terbayar: number;
-  sisaPiutang: number;
-  persentaseTerbayar: number;
+  denda: number;
+  totalTagihan: number;
+  bayar: number; // Pembayaran
+  sisa: number; // Sisa Tagihan
+  jumlahTagihan: number; // Jumlah Tagihan
+  jumlahLunas: number; // Jumlah Lunas
 }
 
 export interface GenerateLaporanRekapHtmlParams {
@@ -44,32 +47,38 @@ export function generateLaporanRekapHtml(
   } = params;
 
   // Hitung total keseluruhan
-  const totalTagihanCount = rekapData.reduce(
+  const totalNominal = rekapData.reduce((acc, curr) => acc + curr.nominal, 0);
+  const totalPotongan = rekapData.reduce((acc, curr) => acc + curr.potongan, 0);
+  const totalDenda = rekapData.reduce((acc, curr) => acc + curr.denda, 0);
+  const totalTagihan = rekapData.reduce((acc, curr) => acc + curr.totalTagihan, 0);
+  const totalBayar = rekapData.reduce((acc, curr) => acc + curr.bayar, 0);
+  const totalSisa = rekapData.reduce((acc, curr) => acc + curr.sisa, 0);
+  const totalJumlahTagihan = rekapData.reduce(
     (acc, curr) => acc + curr.jumlahTagihan,
     0,
   );
-  const totalNominal = rekapData.reduce(
-    (acc, curr) => acc + curr.nominalTagihan,
+  const totalJumlahLunas = rekapData.reduce(
+    (acc, curr) => acc + curr.jumlahLunas,
     0,
   );
-  const totalPotongan = rekapData.reduce((acc, curr) => acc + curr.potongan, 0);
-  const totalTerbayar = rekapData.reduce((acc, curr) => acc + curr.terbayar, 0);
-  const totalSisa = rekapData.reduce((acc, curr) => acc + curr.sisaPiutang, 0);
-  const overallPercentage =
-    totalNominal > 0 ? ((totalTerbayar / totalNominal) * 100).toFixed(1) : "0";
 
   return `
     <!DOCTYPE html>
     <html lang="id">
     <head>
       <meta charset="UTF-8">
-      <title>Laporan Rekap Tagihan - Universitas Ibn Khaldun Bogor</title>
+      <title>Laporan Rekapitulasi Tagihan - Universitas Ibn Khaldun Bogor</title>
       <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; color: #252a38; }
-        .header { text-align: center; margin-bottom: 25px; border-bottom: ${useKop ? "3px double #10ac84" : "none"}; padding-bottom: ${useKop ? "15px" : "0"}; }
-        .header h2 { margin: 0; font-size: 20px; color: #1e3a8a; }
-        .header h1 { margin: 5px 0; font-size: 24px; color: #10ac84; }
-        .header p { margin: 3px 0; font-size: 13px; color: #4b5563; }
+        .header { margin-bottom: 20px; }
+        .header-content { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .header-logo { width: 75px; height: 75px; object-fit: contain; }
+        .header-text { text-align: center; }
+        .header-text h2 { margin: 0; font-size: 20px; font-weight: bold; color: #111827; letter-spacing: 0.5px; }
+        .header-text p { margin: 2px 0; font-size: 12px; color: #374151; }
+        .header-line { border-bottom: 3px double #111827; margin-top: 10px; }
+        .report-title { text-align: center; margin: 15px 0 20px 0; }
+        .report-title h3 { margin: 0; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #111827; }
         .info-table { width: 100%; margin-bottom: 20px; font-size: 13px; }
         .info-table td { padding: 4px 8px; }
         .info-table td.label { font-weight: bold; width: 180px; color: #1e3a8a; }
@@ -80,9 +89,7 @@ export function generateLaporanRekapHtml(
         table.data-table tfoot tr { background-color: #f3f4f6; font-weight: bold; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
-        .badge-success { background: #d1fae5; color: #065f46; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
+        .font-mono { font-family: monospace; }
         .footer { margin-top: 40px; text-align: right; font-size: 12px; color: #6b7280; }
         @media print {
           .no-print { display: none; }
@@ -99,17 +106,21 @@ export function generateLaporanRekapHtml(
         useKop
           ? `
         <div class="header">
-          <h2>UNIVERSITAS IBN KHALDUN BOGOR</h2>
-          <h1>SISTEM INFORMASI KEUANGAN</h1>
-          <p>Jl. KH. Sholeh Iskandar KM.2, Kedung Badak, Tanah Sereal, Kota Bogor, Jawa Barat 16162</p>
-          <p>Telepon: (0251) 8356884 | Email: info@uika-bogor.ac.id</p>
+          <div class="header-content">
+            <img src="/images/logo-uika.png" alt="Logo UIKA" class="header-logo" />
+            <div class="header-text">
+              <h2>UNIVERSITAS IBN KHALDUN BOGOR</h2>
+              <p>Jl KH Sholeh Iskandar KM 2 Kedung Badak Bogor</p>
+              <p>Website : uika-bogor.ac.id/ e-Mail :mail@uika-bogor.ac.id / Telepon :0251-8356884</p>
+            </div>
+          </div>
+          <div class="header-line"></div>
         </div>
       `
           : ""
       }
-      <div style="text-align: center; margin: 20px 0;">
-        <h3 style="margin: 0; text-transform: uppercase; letter-spacing: 1px; color: #1e3a8a;">Laporan Rekapitulasi Tagihan</h3>
-        <p style="margin: 5px 0 0 0; font-size: 12px; color: #6b7280;">Tanggal Cetak: ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
+      <div class="report-title">
+        <h3>REKAPITULASI TAGIHAN ${tahunAkademik ? `TAHUN AKADEMIK ${tahunAkademik.toUpperCase()}` : ""}</h3>
       </div>
 
       <table class="info-table">
@@ -152,15 +163,18 @@ export function generateLaporanRekapHtml(
       <table class="data-table">
         <thead>
           <tr>
-            <th width="40">No</th>
+            <th width="35">No.</th>
+            <th>Kode Prodi</th>
             <th>Program Studi</th>
             <th>Jenis Tagihan</th>
-            <th class="text-center">Jml Tagihan</th>
-            <th class="text-right">Total Nominal</th>
-            <th class="text-right">Total Potongan</th>
-            <th class="text-right">Total Terbayar</th>
-            <th class="text-right">Sisa Piutang</th>
-            <th class="text-center">% Terbayar</th>
+            <th class="text-right">Tagihan</th>
+            <th class="text-right">Potongan</th>
+            <th class="text-right">Denda</th>
+            <th class="text-right">Total Tagihan</th>
+            <th class="text-right">Pembayaran</th>
+            <th class="text-right">Sisa Tagihan</th>
+            <th class="text-center">Jumlah Tagihan</th>
+            <th class="text-center">Jumlah Lunas</th>
           </tr>
         </thead>
         <tbody>
@@ -169,18 +183,17 @@ export function generateLaporanRekapHtml(
               (row) => `
             <tr>
               <td class="text-center">${row.no}</td>
+              <td class="text-center font-mono">${row.kodeProdi}</td>
               <td><b>${row.prodi}</b></td>
               <td>${row.jenisTagihan}</td>
-              <td class="text-center">${row.jumlahTagihan.toLocaleString("id-ID")}</td>
-              <td class="text-right">${formatRupiah(row.nominalTagihan)}</td>
-              <td class="text-right">${formatRupiah(row.potongan)}</td>
-              <td class="text-right">${formatRupiah(row.terbayar)}</td>
-              <td class="text-right font-semibold">${formatRupiah(row.sisaPiutang)}</td>
-              <td class="text-center">
-                <span class="badge ${row.persentaseTerbayar >= 70 ? "badge-success" : "badge-warning"}">
-                  ${row.persentaseTerbayar}%
-                </span>
-              </td>
+              <td class="text-right font-mono">${formatRupiah(row.nominal)}</td>
+              <td class="text-right font-mono">${formatRupiah(row.potongan)}</td>
+              <td class="text-right font-mono">${formatRupiah(row.denda)}</td>
+              <td class="text-right font-mono font-semibold">${formatRupiah(row.totalTagihan)}</td>
+              <td class="text-right font-mono text-emerald-700">${formatRupiah(row.bayar)}</td>
+              <td class="text-right font-mono font-bold text-rose-700">${formatRupiah(row.sisa)}</td>
+              <td class="text-center font-mono">${row.jumlahTagihan.toLocaleString("id-ID")}</td>
+              <td class="text-center font-mono font-semibold text-emerald-700">${row.jumlahLunas.toLocaleString("id-ID")}</td>
             </tr>
           `,
             )
@@ -188,13 +201,15 @@ export function generateLaporanRekapHtml(
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="3" class="text-center"><b>TOTAL KESELURUHAN</b></td>
-            <td class="text-center"><b>${totalTagihanCount.toLocaleString("id-ID")}</b></td>
+            <td colspan="4" class="text-center"><b>TOTAL KESELURUHAN</b></td>
             <td class="text-right"><b>${formatRupiah(totalNominal)}</b></td>
             <td class="text-right"><b>${formatRupiah(totalPotongan)}</b></td>
-            <td class="text-right"><b>${formatRupiah(totalTerbayar)}</b></td>
-            <td class="text-right text-red-600"><b>${formatRupiah(totalSisa)}</b></td>
-            <td class="text-center"><b>${overallPercentage}%</b></td>
+            <td class="text-right"><b>${formatRupiah(totalDenda)}</b></td>
+            <td class="text-right"><b>${formatRupiah(totalTagihan)}</b></td>
+            <td class="text-right"><b>${formatRupiah(totalBayar)}</b></td>
+            <td class="text-right text-rose-700"><b>${formatRupiah(totalSisa)}</b></td>
+            <td class="text-center"><b>${totalJumlahTagihan.toLocaleString("id-ID")}</b></td>
+            <td class="text-center"><b>${totalJumlahLunas.toLocaleString("id-ID")}</b></td>
           </tr>
         </tfoot>
       </table>

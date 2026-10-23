@@ -11,7 +11,7 @@ import NavbarHelpMenu from "./NavbarHelpMenu";
 import NavbarProfileModal from "./NavbarProfileModal";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../features/auth/hooks/useAuth";
-import { formatRoleName } from "../../common/helpers/helpers";
+import { formatRoleName, getInitials } from "../../common/helpers/helpers";
 
 function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -68,7 +68,8 @@ function MenuAccount() {
   const isOpen = isHovered || isClicked;
 
   const { user, activeRole } = useAuth();
-
+  const userName = user?.nama || "Siddik Super Admin";
+  const initials = getInitials(userName);
 
   // Click outside listener untuk menutup modal profil
   useEffect(() => {
@@ -107,19 +108,21 @@ function MenuAccount() {
     >
       <button
         type="button"
-        className={`p-2 flex align-middle items-center space-x-4 rounded-lg transition-colors duration-200 cursor-pointer ${
+        className={`p-1.5 sm:px-3 sm:py-2 flex align-middle items-center space-x-3 rounded-lg transition-colors duration-200 cursor-pointer ${
           isOpen ? "bg-black/25 text-white" : "hover:bg-gray-700 text-white"
         }`}
         onClick={handleClick}
         aria-label="User menu"
       >
-        <IoMdPerson className="text-white text-base" />
+        <div className="w-8 h-8 rounded-full bg-[#2e3330] border border-gray-600 text-white font-bold text-xs flex items-center justify-center shadow-inner flex-shrink-0">
+          <span className="tracking-wide select-none">{initials}</span>
+        </div>
         <div className="hidden sm:block">
           <p className="text-white text-start text-sm font-normal max-w-[200px] truncate">
-            {user?.nama}
+            {userName}
           </p>
           <p className="text-white text-xs font-normal text-start">
-            {formatRoleName(activeRole)}
+            {formatRoleName(activeRole) || "Super Admin"}
           </p>
         </div>
         <IoMdArrowDropdown

@@ -4,6 +4,9 @@ export const ROUTES = {
   // Dashboard
   DASHBOARD: "/dashboard",
 
+  // Profil
+  PROFILE: "/profil",
+
   // Operasional
   OPERASIONAL: {
     PEMBAYARAN: "/operasional/pembayaran",

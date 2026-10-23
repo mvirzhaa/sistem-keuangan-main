@@ -18,6 +18,21 @@ const menuList = [
       Roles.REKTOR,
     ],
   },
+  {
+    menu: "Profil",
+    route: ROUTES.PROFILE,
+    showInNavbar: false,
+    allowedRoles: [
+      Roles.SUPER_ADMIN,
+      Roles.ADMIN_KEUANGAN,
+      Roles.OPERATOR_KEUANGAN,
+      Roles.KASUBAG_KEUANGAN,
+      Roles.KEPALA_TU_FAKULTAS,
+      Roles.WAKIL_DEKAN_2,
+      Roles.WAKIL_REKTOR_2,
+      Roles.REKTOR,
+    ],
+  },
 
   {
     menu: "Operasional",

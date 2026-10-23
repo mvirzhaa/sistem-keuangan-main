@@ -19,6 +19,10 @@ import {
   generateLaporanRekapHtml,
   type RekapRowData,
 } from "../utils/generateLaporanRekapHtml";
+import {
+  exportRekapToPdf,
+  exportRekapToExcel,
+} from "../utils/exportLaporan";
 
 export default function LaporanRekapTagihanPage() {
   document.title = "Laporan Rekap Tagihan - Sistem Informasi Keuangan UIKA";
@@ -54,91 +58,109 @@ export default function LaporanRekapTagihanPage() {
     }).format(num);
   };
 
-  // Mock data rekapitulasi tagihan per program studi
+  // Mock data rekapitulasi tagihan per program studi (12 kolom sesuai Gambar 1)
   const mockRekapData: RekapRowData[] = [
     {
       no: 1,
+      kodeProdi: "55201",
       prodi: "S1 - Teknik Informatika",
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? "Semua Tagihan"
+          ? "UKT"
           : selectedJenisTagihan,
-      jumlahTagihan: 450,
-      nominalTagihan: 2025000000,
+      nominal: 2025000000,
       potongan: 125000000,
-      terbayar: 1650000000,
-      sisaPiutang: 250000000,
-      persentaseTerbayar: 81.5,
+      denda: 0,
+      totalTagihan: 1900000000,
+      bayar: 1650000000,
+      sisa: 250000000,
+      jumlahTagihan: 450,
+      jumlahLunas: 380,
     },
     {
       no: 2,
+      kodeProdi: "57201",
       prodi: "S1 - Sistem Informasi",
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? "Semua Tagihan"
+          ? "UKT"
           : selectedJenisTagihan,
-      jumlahTagihan: 320,
-      nominalTagihan: 1440000000,
+      nominal: 1440000000,
       potongan: 90000000,
-      terbayar: 1150000000,
-      sisaPiutang: 200000000,
-      persentaseTerbayar: 79.9,
+      denda: 0,
+      totalTagihan: 1350000000,
+      bayar: 1150000000,
+      sisa: 200000000,
+      jumlahTagihan: 320,
+      jumlahLunas: 260,
     },
     {
       no: 3,
+      kodeProdi: "61201",
       prodi: "S1 - Manajemen",
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? "Semua Tagihan"
+          ? "UKT"
           : selectedJenisTagihan,
-      jumlahTagihan: 600,
-      nominalTagihan: 2700000000,
+      nominal: 2700000000,
       potongan: 180000000,
-      terbayar: 2200000000,
-      sisaPiutang: 320000000,
-      persentaseTerbayar: 81.5,
+      denda: 0,
+      totalTagihan: 2520000000,
+      bayar: 2200000000,
+      sisa: 320000000,
+      jumlahTagihan: 600,
+      jumlahLunas: 510,
     },
     {
       no: 4,
+      kodeProdi: "62201",
       prodi: "S1 - Akuntansi",
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? "Semua Tagihan"
+          ? "UKT"
           : selectedJenisTagihan,
-      jumlahTagihan: 280,
-      nominalTagihan: 1260000000,
+      nominal: 1260000000,
       potongan: 60000000,
-      terbayar: 980000000,
-      sisaPiutang: 220000000,
-      persentaseTerbayar: 77.8,
+      denda: 0,
+      totalTagihan: 1200000000,
+      bayar: 980000000,
+      sisa: 220000000,
+      jumlahTagihan: 280,
+      jumlahLunas: 220,
     },
     {
       no: 5,
+      kodeProdi: "74201",
       prodi: "S1 - Ilmu Hukum",
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? "Semua Tagihan"
+          ? "UKT"
           : selectedJenisTagihan,
-      jumlahTagihan: 350,
-      nominalTagihan: 1575000000,
+      nominal: 1575000000,
       potongan: 75000000,
-      terbayar: 1200000000,
-      sisaPiutang: 300000000,
-      persentaseTerbayar: 76.2,
+      denda: 0,
+      totalTagihan: 1500000000,
+      bayar: 1200000000,
+      sisa: 300000000,
+      jumlahTagihan: 350,
+      jumlahLunas: 280,
     },
     {
       no: 6,
+      kodeProdi: "86201",
       prodi: "S1 - Pendidikan Agama Islam",
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? "Semua Tagihan"
+          ? "UKT"
           : selectedJenisTagihan,
-      jumlahTagihan: 420,
-      nominalTagihan: 1680000000,
+      nominal: 1680000000,
       potongan: 140000000,
-      terbayar: 1350000000,
-      sisaPiutang: 190000000,
-      persentaseTerbayar: 80.4,
+      denda: 0,
+      totalTagihan: 1540000000,
+      bayar: 1350000000,
+      sisa: 190000000,
+      jumlahTagihan: 420,
+      jumlahLunas: 350,
     },
   ];
 
@@ -152,16 +174,47 @@ export default function LaporanRekapTagihanPage() {
     }, 100);
   };
 
-  // Handler Lihat di Tab Baru
-  const handleLihatTabBaru = () => {
+  // Handler Lihat di Tab Baru & Auto Download sesuai format
+  const handleLihatTabBaru = async () => {
+    const formattedTahun = tahunAkademik === "-- Semua --" ? "" : tahunAkademik;
+    const formattedJenis =
+      selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
+        ? ""
+        : selectedJenisTagihan;
+    const formattedPenerima =
+      selectedPenerima === "-- Pilih Semua Penerima --" ? "" : selectedPenerima;
+
+    if (selectedFormat === "PDF") {
+      await exportRekapToPdf({
+        useKop,
+        tahunAkademik: formattedTahun,
+        selectedProdi,
+        selectedJenisTagihan: formattedJenis,
+        selectedPenerima: formattedPenerima,
+        rekapData: mockRekapData,
+        formatRupiah,
+      });
+      return;
+    }
+
+    if (selectedFormat === "EXCEL") {
+      exportRekapToExcel({
+        useKop,
+        tahunAkademik: formattedTahun,
+        selectedProdi,
+        selectedJenisTagihan: formattedJenis,
+        selectedPenerima: formattedPenerima,
+        rekapData: mockRekapData,
+      });
+      return;
+    }
+
+    // Default HTML: Buka di tab baru
     const reportHtml = generateLaporanRekapHtml({
       useKop,
-      tahunAkademik: tahunAkademik === "-- Semua --" ? "" : tahunAkademik,
+      tahunAkademik: formattedTahun,
       selectedProdi,
-      selectedJenisTagihan:
-        selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? ""
-          : selectedJenisTagihan,
+      selectedJenisTagihan: formattedJenis,
       tglCutOff,
       periodeMasuk:
         periodeMasuk === "-- Pilih Periode Masuk --" ? "" : periodeMasuk,
@@ -172,10 +225,7 @@ export default function LaporanRekapTagihanPage() {
       gelombang: gelombang === "-- Pilih Gelombang --" ? "" : gelombang,
       sistemKuliah:
         sistemKuliah === "-- Pilih Sistem Kuliah --" ? "" : sistemKuliah,
-      selectedPenerima:
-        selectedPenerima === "-- Pilih Semua Penerima --"
-          ? ""
-          : selectedPenerima,
+      selectedPenerima: formattedPenerima,
       rekapData: mockRekapData,
       formatRupiah,
     });
@@ -344,12 +394,14 @@ export default function LaporanRekapTagihanPage() {
       {/* Preview Section */}
       {showPreview && (
         <LaporanRekapTagihanPreview
+          useKop={useKop}
           tahunAkademik={tahunAkademik === "-- Semua --" ? "" : tahunAkademik}
           selectedProdi={selectedProdi}
           selectedFormat={selectedFormat}
           rekapData={mockRekapData}
           formatRupiah={formatRupiah}
           onLihatTabBaru={handleLihatTabBaru}
+          onCetakFormat={handleLihatTabBaru}
         />
       )}
     </div>

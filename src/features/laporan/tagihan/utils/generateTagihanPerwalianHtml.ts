@@ -3,15 +3,19 @@ export interface PerwalianRowData {
   nim: string;
   nama: string;
   prodi: string;
-  angkatan: string;
+  periodeSemester: string; // Periode / Semester
   statusSemester: string;
+  sks: number;
   jenisTagihan: string;
-  jatuhTempo: string;
-  nominal: number;
+  idTagihan: string;
+  bulanTagihan: string;
+  nominalTagihan: number;
+  denda: number;
+  potongan: number;
+  totalTagihan: number;
+  totalBayar: number;
   sisaTagihan: number;
   status: string;
-  kontak?: string;
-  denda?: number;
 }
 
 export interface GenerateTagihanPerwalianHtmlParams {
@@ -22,8 +26,8 @@ export interface GenerateTagihanPerwalianHtmlParams {
   statusSemester: string;
   statusTagihan: string;
   jenisTagihan: string;
-  tampilkanKontak: boolean;
-  tampilkanDenda: string;
+  tampilkanKontak?: boolean;
+  tampilkanDenda?: string;
   reportData: PerwalianRowData[];
   formatRupiah: (num: number) => string;
 }
@@ -39,19 +43,17 @@ export function generateTagihanPerwalianHtml(
     statusSemester,
     statusTagihan,
     jenisTagihan,
-    tampilkanKontak,
-    tampilkanDenda,
     reportData,
     formatRupiah,
   } = params;
 
-  const totalNominal = reportData.reduce((acc, curr) => acc + curr.nominal, 0);
+  const totalNominal = reportData.reduce((acc, curr) => acc + curr.nominalTagihan, 0);
+  const totalDenda = reportData.reduce((acc, curr) => acc + curr.denda, 0);
+  const totalPotongan = reportData.reduce((acc, curr) => acc + curr.potongan, 0);
+  const totalTagihan = reportData.reduce((acc, curr) => acc + curr.totalTagihan, 0);
+  const totalBayar = reportData.reduce((acc, curr) => acc + curr.totalBayar, 0);
   const totalSisa = reportData.reduce(
     (acc, curr) => acc + curr.sisaTagihan,
-    0,
-  );
-  const totalDenda = reportData.reduce(
-    (acc, curr) => acc + (curr.denda || 0),
     0,
   );
 
@@ -63,20 +65,26 @@ export function generateTagihanPerwalianHtml(
       <title>Laporan Perwalian Tagihan - Universitas Ibn Khaldun Bogor</title>
       <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; color: #252a38; }
-        .header { text-align: center; margin-bottom: 25px; border-bottom: ${useKop ? "3px double #10ac84" : "none"}; padding-bottom: ${useKop ? "15px" : "0"}; }
-        .header h2 { margin: 0; font-size: 20px; color: #1e3a8a; }
-        .header h1 { margin: 5px 0; font-size: 24px; color: #10ac84; }
-        .header p { margin: 3px 0; font-size: 13px; color: #4b5563; }
+        .header { margin-bottom: 20px; }
+        .header-content { display: flex; align-items: center; justify-content: center; gap: 20px; }
+        .header-logo { width: 75px; height: 75px; object-fit: contain; }
+        .header-text { text-align: center; }
+        .header-text h2 { margin: 0; font-size: 20px; font-weight: bold; color: #111827; letter-spacing: 0.5px; }
+        .header-text p { margin: 2px 0; font-size: 12px; color: #374151; }
+        .header-line { border-bottom: 3px double #111827; margin-top: 10px; }
+        .report-title { text-align: center; margin: 15px 0 20px 0; }
+        .report-title h3 { margin: 0; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #111827; }
         .info-table { width: 100%; margin-bottom: 20px; font-size: 13px; }
         .info-table td { padding: 4px 8px; }
         .info-table td.label { font-weight: bold; width: 180px; color: #1e3a8a; }
         table.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-        table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 8px 10px; text-align: left; }
-        table.data-table th { background-color: #1e3a8a; color: white; font-weight: 600; text-align: center; }
+        table.data-table th, table.data-table td { border: 1px solid #d1d5db; padding: 7px 8px; text-align: left; }
+        table.data-table th { background-color: #1e3a8a; color: white; font-weight: 600; text-align: center; font-size: 11px; }
         table.data-table tr:nth-child(even) { background-color: #f9fafb; }
         table.data-table tfoot tr { background-color: #f3f4f6; font-weight: bold; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
+        .font-mono { font-family: monospace; }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
         .badge-lunas { background: #d1fae5; color: #065f46; }
         .badge-belum { background: #fee2e2; color: #991b1b; }
@@ -96,17 +104,21 @@ export function generateTagihanPerwalianHtml(
         useKop
           ? `
         <div class="header">
-          <h2>UNIVERSITAS IBN KHALDUN BOGOR</h2>
-          <h1>SISTEM INFORMASI KEUANGAN</h1>
-          <p>Jl. KH. Sholeh Iskandar KM.2, Kedung Badak, Tanah Sereal, Kota Bogor, Jawa Barat 16162</p>
-          <p>Telepon: (0251) 8356884 | Email: info@uika-bogor.ac.id</p>
+          <div class="header-content">
+            <img src="/images/logo-uika.png" alt="Logo UIKA" class="header-logo" />
+            <div class="header-text">
+              <h2>UNIVERSITAS IBN KHALDUN BOGOR</h2>
+              <p>Jl KH Sholeh Iskandar KM 2 Kedung Badak Bogor</p>
+              <p>Website : uika-bogor.ac.id/ e-Mail :mail@uika-bogor.ac.id / Telepon :0251-8356884</p>
+            </div>
+          </div>
+          <div class="header-line"></div>
         </div>
       `
           : ""
       }
-      <div style="text-align: center; margin: 20px 0;">
-        <h3 style="margin: 0; text-transform: uppercase; letter-spacing: 1px; color: #1e3a8a;">Laporan Perwalian Tagihan</h3>
-        <p style="margin: 5px 0 0 0; font-size: 12px; color: #6b7280;">Tanggal Cetak: ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
+      <div class="report-title">
+        <h3>LAPORAN PERWALIAN TAGIHAN ${periodePerwalian ? `PERIODE ${periodePerwalian.toUpperCase()}` : ""}</h3>
       </div>
 
       <table class="info-table">
@@ -133,17 +145,21 @@ export function generateTagihanPerwalianHtml(
       <table class="data-table">
         <thead>
           <tr>
-            <th width="35">No</th>
+            <th width="35">No.</th>
             <th>NIM</th>
-            <th>Nama Mahasiswa</th>
+            <th>Nama</th>
             <th>Program Studi</th>
-            <th class="text-center">Angkatan</th>
-            <th class="text-center">Status Smt</th>
+            <th>Periode / Semester</th>
+            <th class="text-center">Status Semester</th>
+            <th class="text-center">SKS</th>
             <th>Jenis Tagihan</th>
-            <th class="text-center">Jatuh Tempo</th>
-            ${tampilkanKontak ? `<th>Kontak</th>` : ""}
+            <th>ID Tagihan</th>
+            <th>Bulan Tagihan</th>
             <th class="text-right">Nominal Tagihan</th>
-            ${tampilkanDenda !== "Tidak" ? `<th class="text-right">Denda</th>` : ""}
+            <th class="text-right">Denda</th>
+            <th class="text-right">Potongan</th>
+            <th class="text-right">Total Tagihan</th>
+            <th class="text-right">Total Bayar</th>
             <th class="text-right">Sisa Tagihan</th>
             <th class="text-center">Status</th>
           </tr>
@@ -154,17 +170,21 @@ export function generateTagihanPerwalianHtml(
               (row) => `
             <tr>
               <td class="text-center">${row.no}</td>
-              <td class="text-center">${row.nim}</td>
+              <td class="text-center font-mono">${row.nim}</td>
               <td><b>${row.nama}</b></td>
               <td>${row.prodi}</td>
-              <td class="text-center">${row.angkatan}</td>
+              <td class="text-center">${row.periodeSemester}</td>
               <td class="text-center">${row.statusSemester}</td>
+              <td class="text-center font-mono">${row.sks}</td>
               <td>${row.jenisTagihan}</td>
-              <td class="text-center">${row.jatuhTempo}</td>
-              ${tampilkanKontak ? `<td>${row.kontak || "-"}</td>` : ""}
-              <td class="text-right">${formatRupiah(row.nominal)}</td>
-              ${tampilkanDenda !== "Tidak" ? `<td class="text-right">${formatRupiah(row.denda || 0)}</td>` : ""}
-              <td class="text-right font-semibold">${formatRupiah(row.sisaTagihan)}</td>
+              <td class="text-center font-mono">${row.idTagihan}</td>
+              <td class="text-center">${row.bulanTagihan}</td>
+              <td class="text-right font-mono">${formatRupiah(row.nominalTagihan)}</td>
+              <td class="text-right font-mono">${formatRupiah(row.denda)}</td>
+              <td class="text-right font-mono">${formatRupiah(row.potongan)}</td>
+              <td class="text-right font-mono font-semibold">${formatRupiah(row.totalTagihan)}</td>
+              <td class="text-right font-mono text-emerald-700">${formatRupiah(row.totalBayar)}</td>
+              <td class="text-right font-mono font-bold text-rose-700">${formatRupiah(row.sisaTagihan)}</td>
               <td class="text-center">
                 <span class="badge ${row.status === "Lunas" ? "badge-lunas" : "badge-belum"}">
                   ${row.status}
@@ -177,10 +197,13 @@ export function generateTagihanPerwalianHtml(
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="${tampilkanKontak ? 9 : 8}" class="text-center"><b>TOTAL</b></td>
+            <td colspan="10" class="text-center"><b>TOTAL</b></td>
             <td class="text-right"><b>${formatRupiah(totalNominal)}</b></td>
-            ${tampilkanDenda !== "Tidak" ? `<td class="text-right"><b>${formatRupiah(totalDenda)}</b></td>` : ""}
-            <td class="text-right text-red-600"><b>${formatRupiah(totalSisa)}</b></td>
+            <td class="text-right"><b>${formatRupiah(totalDenda)}</b></td>
+            <td class="text-right"><b>${formatRupiah(totalPotongan)}</b></td>
+            <td class="text-right"><b>${formatRupiah(totalTagihan)}</b></td>
+            <td class="text-right text-emerald-700"><b>${formatRupiah(totalBayar)}</b></td>
+            <td class="text-right text-rose-700"><b>${formatRupiah(totalSisa)}</b></td>
             <td></td>
           </tr>
         </tfoot>

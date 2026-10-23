@@ -25,6 +25,10 @@ import {
   generateLaporanPivotHtml,
   type PivotRowData,
 } from "../utils/generateLaporanPivotHtml";
+import {
+  exportPivotToPdf,
+  exportPivotToExcel,
+} from "../utils/exportLaporan";
 
 export default function LaporanPivotTagihanPage() {
   document.title = "Laporan Pivot Tagihan - Sistem Informasi Keuangan UIKA";
@@ -95,136 +99,63 @@ export default function LaporanPivotTagihanPage() {
     }).format(num);
   };
 
-  // Mock data pivot tagihan berdasarkan kolom pivot terpilih
+  // Mock data pivot tagihan (9 kolom sesuai Gambar 3)
   const getMockPivotData = (): PivotRowData[] => {
-    const activeDimension = kolomPivot || "Program Studi";
-
-    if (activeDimension === "Angkatan") {
-      return [
-        {
-          no: 1,
-          pivotKey: "2026",
-          belumBayar: 1200000000,
-          belumLunas: 450000000,
-          lunas: 3800000000,
-          dispensasi: 150000000,
-          totalTagihan: 5600000000,
-          totalTerbayar: 3950000000,
-          sisaPiutang: 1650000000,
-          persentaseTerbayar: 70.5,
-        },
-        {
-          no: 2,
-          pivotKey: "2025",
-          belumBayar: 850000000,
-          belumLunas: 320000000,
-          lunas: 4100000000,
-          dispensasi: 100000000,
-          totalTagihan: 5370000000,
-          totalTerbayar: 4200000000,
-          sisaPiutang: 1170000000,
-          persentaseTerbayar: 78.2,
-        },
-        {
-          no: 3,
-          pivotKey: "2024",
-          belumBayar: 620000000,
-          belumLunas: 210000000,
-          lunas: 4500000000,
-          dispensasi: 80000000,
-          totalTagihan: 5410000000,
-          totalTerbayar: 4580000000,
-          sisaPiutang: 830000000,
-          persentaseTerbayar: 84.7,
-        },
-        {
-          no: 4,
-          pivotKey: "2023",
-          belumBayar: 410000000,
-          belumLunas: 150000000,
-          lunas: 4800000000,
-          dispensasi: 50000000,
-          totalTagihan: 5410000000,
-          totalTerbayar: 4850000000,
-          sisaPiutang: 560000000,
-          persentaseTerbayar: 89.6,
-        },
-      ];
-    }
-
-    // Default Program Studi
     return [
       {
         no: 1,
-        pivotKey: "S1 - Teknik Informatika",
-        belumBayar: 350000000,
-        belumLunas: 180000000,
-        lunas: 1850000000,
-        dispensasi: 45000000,
-        totalTagihan: 2425000000,
-        totalTerbayar: 1895000000,
-        sisaPiutang: 530000000,
-        persentaseTerbayar: 78.1,
+        namaMahasiswa: "ZIYAD RAIS",
+        jumlahTagihan: 2,
+        nominalTagihan: 4500000,
+        denda: 0,
+        potongan: 0,
+        totalTagihan: 4500000,
+        nominalBayar: 4500000,
+        sisaTagihan: 0,
       },
       {
         no: 2,
-        pivotKey: "S1 - Sistem Informasi",
-        belumBayar: 280000000,
-        belumLunas: 140000000,
-        lunas: 1350000000,
-        dispensasi: 30000000,
-        totalTagihan: 1800000000,
-        totalTerbayar: 1380000000,
-        sisaPiutang: 420000000,
-        persentaseTerbayar: 76.7,
+        namaMahasiswa: "ANNISA AGUSTIN",
+        jumlahTagihan: 1,
+        nominalTagihan: 3200000,
+        denda: 25000,
+        potongan: 500000,
+        totalTagihan: 2725000,
+        nominalBayar: 2225000,
+        sisaTagihan: 500000,
       },
       {
         no: 3,
-        pivotKey: "S1 - Manajemen",
-        belumBayar: 450000000,
-        belumLunas: 220000000,
-        lunas: 2400000000,
-        dispensasi: 60000000,
-        totalTagihan: 3130000000,
-        totalTerbayar: 2460000000,
-        sisaPiutang: 670000000,
-        persentaseTerbayar: 78.6,
+        namaMahasiswa: "MUHAMMAD JABAR",
+        jumlahTagihan: 3,
+        nominalTagihan: 2500000,
+        denda: 50000,
+        potongan: 0,
+        totalTagihan: 2550000,
+        nominalBayar: 1050000,
+        sisaTagihan: 1500000,
       },
       {
         no: 4,
-        pivotKey: "S1 - Akuntansi",
-        belumBayar: 210000000,
-        belumLunas: 110000000,
-        lunas: 1150000000,
-        dispensasi: 25000000,
-        totalTagihan: 1495000000,
-        totalTerbayar: 1175000000,
-        sisaPiutang: 320000000,
-        persentaseTerbayar: 78.6,
+        namaMahasiswa: "AHID MUHAMMAD RIDWAN",
+        jumlahTagihan: 1,
+        nominalTagihan: 5000000,
+        denda: 100000,
+        potongan: 0,
+        totalTagihan: 5100000,
+        nominalBayar: 100000,
+        sisaTagihan: 5000000,
       },
       {
         no: 5,
-        pivotKey: "S1 - Ilmu Hukum",
-        belumBayar: 320000000,
-        belumLunas: 160000000,
-        lunas: 1650000000,
-        dispensasi: 40000000,
-        totalTagihan: 2170000000,
-        totalTerbayar: 1690000000,
-        sisaPiutang: 480000000,
-        persentaseTerbayar: 77.9,
-      },
-      {
-        no: 6,
-        pivotKey: "S1 - Pendidikan Agama Islam",
-        belumBayar: 390000000,
-        belumLunas: 190000000,
-        lunas: 1950000000,
-        dispensasi: 50000000,
-        totalTagihan: 2580000000,
-        totalTerbayar: 2000000000,
-        sisaPiutang: 580000000,
-        persentaseTerbayar: 77.5,
+        namaMahasiswa: "FATHUR RAHMAN",
+        jumlahTagihan: 1,
+        nominalTagihan: 750000,
+        denda: 0,
+        potongan: 0,
+        totalTagihan: 750000,
+        nominalBayar: 0,
+        sisaTagihan: 750000,
       },
     ];
   };
@@ -240,21 +171,54 @@ export default function LaporanPivotTagihanPage() {
     }, 100);
   };
 
-  // Handler Lihat di Tab Baru
-  const handleLihatTabBaru = () => {
+  // Handler Lihat di Tab Baru & Auto Download sesuai format
+  const handleLihatTabBaru = async () => {
     if (!validateForm()) return;
 
+    const formattedJenis =
+      selectedJenisTagihan === "-- Pilih Jenis tagihan --"
+        ? ""
+        : selectedJenisTagihan;
+    const formattedPenerima =
+      selectedPenerima === "-- Pilih Penerima --" ? "" : selectedPenerima;
+
+    if (selectedFormat === "PDF") {
+      await exportPivotToPdf({
+        useKop,
+        periodeTagihan: selectedPeriods,
+        unitKerja,
+        jenisTagihan: formattedJenis,
+        tglCutOff,
+        penerima: formattedPenerima,
+        kolomPivot: kolomPivot || "Program Studi",
+        pivotData: getMockPivotData(),
+        formatRupiah,
+      });
+      return;
+    }
+
+    if (selectedFormat === "EXCEL") {
+      exportPivotToExcel({
+        useKop,
+        periodeTagihan: selectedPeriods,
+        unitKerja,
+        jenisTagihan: formattedJenis,
+        tglCutOff,
+        penerima: formattedPenerima,
+        kolomPivot: kolomPivot || "Program Studi",
+        pivotData: getMockPivotData(),
+      });
+      return;
+    }
+
+    // Default HTML: Buka di tab baru
     const reportHtml = generateLaporanPivotHtml({
       useKop,
       periodeTagihan: selectedPeriods,
       unitKerja,
-      jenisTagihan:
-        selectedJenisTagihan === "-- Pilih Jenis tagihan --"
-          ? ""
-          : selectedJenisTagihan,
+      jenisTagihan: formattedJenis,
       tglCutOff,
-      penerima:
-        selectedPenerima === "-- Pilih Penerima --" ? "" : selectedPenerima,
+      penerima: formattedPenerima,
       kolomPivot,
       pivotData: getMockPivotData(),
       formatRupiah,
@@ -426,6 +390,7 @@ export default function LaporanPivotTagihanPage() {
       {/* Preview Section */}
       {showPreview && (
         <LaporanPivotPreview
+          useKop={useKop}
           periodeTagihan={selectedPeriods}
           unitKerja={unitKerja}
           selectedFormat={selectedFormat}
@@ -433,6 +398,7 @@ export default function LaporanPivotTagihanPage() {
           pivotData={getMockPivotData()}
           formatRupiah={formatRupiah}
           onLihatTabBaru={handleLihatTabBaru}
+          onCetakFormat={handleLihatTabBaru}
         />
       )}
     </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IoMdClose, IoMdPerson, IoMdLogOut } from "react-icons/io";
 import { useAuth } from "../../features/auth/hooks/useAuth";
-import { formatRoleName } from "../../common/helpers/helpers";
+import { formatRoleName, getInitials } from "../../common/helpers/helpers";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../common/routes/routes";
 
@@ -19,7 +19,7 @@ export default function NavbarProfileModal({
 
   const [selectedRole, setSelectedRole] = useState(activeRole || "");
 
-  if (!isOpen || !user) return null;
+  if (!isOpen) return null;
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const role = e.target.value;
@@ -37,11 +37,13 @@ export default function NavbarProfileModal({
     }
   };
 
+  const userName = user?.nama || "Siddik Super Admin";
+  const userInitials = getInitials(userName);
 
   return (
     <div className="bg-white rounded-lg shadow-xl w-80 overflow-hidden border border-gray-200">
-      {/* Header dengan background hijau dan pattern */}
-      <div className="relative bg-gradient-to-br from-teal-500 to-teal-600 px-6 py-8">
+      {/* Header dengan background elegan gelap dan pattern */}
+      <div className="relative bg-gradient-to-br from-slate-800 via-slate-900 to-blue-950 px-6 py-8">
         {/* Pattern background */}
         <div className="absolute inset-0 opacity-20">
           <div
@@ -55,26 +57,28 @@ export default function NavbarProfileModal({
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-1 hover:bg-white/20 rounded-full transition-colors cursor-pointer"
         >
-          <IoMdClose className="h-6 w-6 text-white hover:text-red-500" />
+          <IoMdClose className="h-6 w-6 text-white hover:text-red-400" />
         </button>
 
         {/* Profile Section */}
         <div className="relative text-center">
-          {/* Avatar */}
+          {/* Avatar dengan inisial */}
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-              <IoMdPerson className="h-12 w-12 text-white" />
+            <div className="w-20 h-20 bg-[#2e3330] rounded-full flex items-center justify-center border-4 border-white/90 shadow-xl">
+              <span className="text-2xl font-black text-white tracking-widest select-none">
+                {userInitials}
+              </span>
             </div>
           </div>
 
           {/* User Info */}
-          <h3 className="text-xl font-semibold text-white mb-1">{user.nama}</h3>
-          <p className="text-sm text-white opacity-90 mb-1">
-            {formatRoleName(activeRole)}
+          <h3 className="text-xl font-semibold text-white mb-1">{userName}</h3>
+          <p className="text-sm text-white/90 mb-1">
+            {formatRoleName(activeRole) || "Super Admin"}
           </p>
-          <p className="text-xs text-white opacity-75">
+          <p className="text-xs text-white/75">
             Universitas Ibn Khaldun
           </p>
         </div>
@@ -83,22 +87,23 @@ export default function NavbarProfileModal({
       {/* Content */}
       <div className="p-6">
         {/* Role Selection */}
-        <div className="mb-6">
-          <div className="flex items-center space-x-2 mb-3">
+        <div className="mb-2">
+          <div className="flex items-center space-x-2">
             <select
               value={selectedRole}
               onChange={handleRoleChange}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent cursor-pointer bg-gray-50"
             >
-              {userRoles.map((role) => (
-                <option key={role} value={role}>
-                  {formatRoleName(role)}
-                </option>
-              ))}
+              {userRoles.length > 0 ? (
+                userRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {formatRoleName(role)}
+                  </option>
+                ))
+              ) : (
+                <option value="SUPER_ADMIN">Super Admin</option>
+              )}
             </select>
-            {/* <button className="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600 transition-colors">
-              Pilih
-            </button> */}
           </div>
         </div>
       </div>
@@ -106,10 +111,13 @@ export default function NavbarProfileModal({
       {/* Footer Buttons */}
       <div className="flex border-t border-gray-200">
         <button
-          onClick={onClose}
-          className="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors border-r border-gray-200"
+          onClick={() => {
+            onClose();
+            navigate(ROUTES.PROFILE);
+          }}
+          className="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors border-r border-gray-200 cursor-pointer"
         >
-          <IoMdPerson className="mr-2 h-4 w-4" />
+          <IoMdPerson className="mr-2 h-4 w-4 text-blue-600" />
           Profil
         </button>
 

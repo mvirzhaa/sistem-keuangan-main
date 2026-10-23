@@ -22,6 +22,10 @@ import {
   generateTagihanPerwalianHtml,
   type PerwalianRowData,
 } from "../utils/generateTagihanPerwalianHtml";
+import {
+  exportPerwalianToPdf,
+  exportPerwalianToExcel,
+} from "../utils/exportLaporan";
 
 export default function TagihanPerwalianPage() {
   document.title = "Perwalian Tagihan - Sistem Informasi Keuangan UIKA";
@@ -66,97 +70,117 @@ export default function TagihanPerwalianPage() {
     }).format(num);
   };
 
-  // Mock data tagihan perwalian
+  // Mock data tagihan perwalian (17 kolom sesuai Gambar 2)
   const mockReportData: PerwalianRowData[] = [
     {
       no: 1,
       nim: "231106051399",
       nama: "ZIYAD RAIS",
       prodi: "S1 - Teknik Informatika",
-      angkatan: "2023",
+      periodeSemester: "2026/2",
       statusSemester: "Aktif",
+      sks: 20,
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
           ? "UKT"
           : selectedJenisTagihan,
-      jatuhTempo: "15-10-2026",
-      nominal: 4500000,
+      idTagihan: "INV-2026-001",
+      bulanTagihan: "-",
+      nominalTagihan: 4500000,
+      denda: 0,
+      potongan: 0,
+      totalTagihan: 4500000,
+      totalBayar: 4500000,
       sisaTagihan: 0,
       status: "Lunas",
-      kontak: "081289123456",
-      denda: 0,
     },
     {
       no: 2,
       nim: "231105060041",
       nama: "ANNISA AGUSTIN",
       prodi: "S1 - Sistem Informasi",
-      angkatan: "2023",
+      periodeSemester: "2026/2",
       statusSemester: "Aktif",
+      sks: 18,
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
           ? "SKS"
           : selectedJenisTagihan,
-      jatuhTempo: "15-10-2026",
-      nominal: 3200000,
+      idTagihan: "INV-2026-002",
+      bulanTagihan: "-",
+      nominalTagihan: 3200000,
+      denda: 25000,
+      potongan: 500000,
+      totalTagihan: 2725000,
+      totalBayar: 2225000,
       sisaTagihan: 500000,
       status: "Belum Lunas",
-      kontak: "085712345678",
-      denda: 25000,
     },
     {
       no: 3,
       nim: "221105031312",
       nama: "MUHAMMAD JABAR",
       prodi: "S1 - Manajemen",
-      angkatan: "2022",
+      periodeSemester: "2026/2",
       statusSemester: "Aktif",
+      sks: 22,
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
           ? "Cicilan Ke-1"
           : selectedJenisTagihan,
-      jatuhTempo: "10-10-2026",
-      nominal: 2500000,
+      idTagihan: "INV-2026-003",
+      bulanTagihan: "-",
+      nominalTagihan: 2500000,
+      denda: 50000,
+      potongan: 0,
+      totalTagihan: 2550000,
+      totalBayar: 1050000,
       sisaTagihan: 1500000,
       status: "Belum Lunas",
-      kontak: "087890123456",
-      denda: 50000,
     },
     {
       no: 4,
       nim: "241020510521",
       nama: "AHID MUHAMMAD RIDWAN",
       prodi: "S1 - Ilmu Hukum",
-      angkatan: "2024",
+      periodeSemester: "2026/2",
       statusSemester: "Aktif",
+      sks: 20,
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
           ? "Biaya Awal Masuk"
           : selectedJenisTagihan,
-      jatuhTempo: "05-10-2026",
-      nominal: 5000000,
+      idTagihan: "INV-2026-004",
+      bulanTagihan: "-",
+      nominalTagihan: 5000000,
+      denda: 100000,
+      potongan: 0,
+      totalTagihan: 5100000,
+      totalBayar: 100000,
       sisaTagihan: 5000000,
       status: "Belum Bayar",
-      kontak: "081345678901",
-      denda: 100000,
     },
     {
       no: 5,
       nim: "211010310214",
       nama: "FATHUR RAHMAN",
       prodi: "S1 - Akuntansi",
-      angkatan: "2021",
+      periodeSemester: "2026/2",
       statusSemester: "Cuti",
+      sks: 0,
       jenisTagihan:
         selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
           ? "SPP Cuti Akademik"
           : selectedJenisTagihan,
-      jatuhTempo: "01-10-2026",
-      nominal: 750000,
+      idTagihan: "INV-2026-005",
+      bulanTagihan: "-",
+      nominalTagihan: 750000,
+      denda: 0,
+      potongan: 0,
+      totalTagihan: 750000,
+      totalBayar: 0,
       sisaTagihan: 750000,
       status: "Belum Bayar",
-      kontak: "082134567890",
-      denda: 0,
     },
   ];
 
@@ -170,21 +194,63 @@ export default function TagihanPerwalianPage() {
     }, 100);
   };
 
-  // Handler Lihat di Tab Baru
-  const handleLihatTabBaru = () => {
+  // Handler Lihat di Tab Baru & Auto Download sesuai format
+  const handleLihatTabBaru = async () => {
+    const formattedPeriode =
+      periodePerwalian === "-- Semua --" ? "" : periodePerwalian;
+    const formattedAngkatan =
+      angkatan === "-- Pilih Angkatan --" ? "" : angkatan;
+    const formattedStatusSmt =
+      statusSemester === "-- Pilih Status Semester --" ? "" : statusSemester;
+    const formattedStatusTagihan =
+      statusTagihan === "-- Semua --" ? "" : statusTagihan;
+    const formattedJenisTagihan =
+      selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
+        ? ""
+        : selectedJenisTagihan;
+
+    if (selectedFormat === "PDF") {
+      await exportPerwalianToPdf({
+        useKop,
+        periodePerwalian: formattedPeriode,
+        selectedProdi,
+        angkatan: formattedAngkatan,
+        statusSemester: formattedStatusSmt,
+        statusTagihan: formattedStatusTagihan,
+        jenisTagihan: formattedJenisTagihan,
+        tampilkanKontak,
+        tampilkanDenda,
+        reportData: mockReportData,
+        formatRupiah,
+      });
+      return;
+    }
+
+    if (selectedFormat === "EXCEL") {
+      exportPerwalianToExcel({
+        useKop,
+        periodePerwalian: formattedPeriode,
+        selectedProdi,
+        angkatan: formattedAngkatan,
+        statusSemester: formattedStatusSmt,
+        statusTagihan: formattedStatusTagihan,
+        jenisTagihan: formattedJenisTagihan,
+        tampilkanKontak,
+        tampilkanDenda,
+        reportData: mockReportData,
+      });
+      return;
+    }
+
+    // Default HTML: Buka di tab baru
     const reportHtml = generateTagihanPerwalianHtml({
       useKop,
-      periodePerwalian:
-        periodePerwalian === "-- Semua --" ? "" : periodePerwalian,
+      periodePerwalian: formattedPeriode,
       selectedProdi,
-      angkatan: angkatan === "-- Pilih Angkatan --" ? "" : angkatan,
-      statusSemester:
-        statusSemester === "-- Pilih Status Semester --" ? "" : statusSemester,
-      statusTagihan: statusTagihan === "-- Semua --" ? "" : statusTagihan,
-      jenisTagihan:
-        selectedJenisTagihan === "-- Pilih Jenis Tagihan --"
-          ? ""
-          : selectedJenisTagihan,
+      angkatan: formattedAngkatan,
+      statusSemester: formattedStatusSmt,
+      statusTagihan: formattedStatusTagihan,
+      jenisTagihan: formattedJenisTagihan,
       tampilkanKontak,
       tampilkanDenda,
       reportData: mockReportData,
@@ -428,6 +494,7 @@ export default function TagihanPerwalianPage() {
       {/* Preview Section */}
       {showPreview && (
         <TagihanPerwalianPreview
+          useKop={useKop}
           periodePerwalian={
             periodePerwalian === "-- Semua --" ? "" : periodePerwalian
           }
@@ -438,6 +505,7 @@ export default function TagihanPerwalianPage() {
           reportData={mockReportData}
           formatRupiah={formatRupiah}
           onLihatTabBaru={handleLihatTabBaru}
+          onCetakFormat={handleLihatTabBaru}
         />
       )}
     </div>

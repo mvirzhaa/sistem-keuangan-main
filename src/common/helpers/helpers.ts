@@ -69,3 +69,16 @@ export const hasMenuAccess = (
   return allowedRoles.includes(activeRole);
 };
 
+/**
+ * Mengambil 2 inisial huruf dari nama (misal: "Siddik Super Admin" -> "SS")
+ */
+export const getInitials = (name?: string): string => {
+  if (!name || !name.trim()) return "SS";
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+  return (words[0][0] + words[1][0]).toUpperCase();
+};
+
+

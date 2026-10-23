@@ -36,6 +36,12 @@ export const routeConfig: RouteObject[] = [
       </ProtectedRoute>
     ),
   },
+  {
+    path: ROUTES.PROFILE,
+    element: withSuspense(
+      lazy(() => import("../../features/auth/pages/ProfilePage")),
+    ),
+  },
   // Operasional Routes
   {
     path: ROUTES.OPERASIONAL.PEMBAYARAN,
@@ -599,5 +605,182 @@ export const routeConfig: RouteObject[] = [
       ),
     ),
   },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.LAPORAN_PEMBAYARAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/LaporanPembayaranPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.LAPORAN_REKAP_PEMBAYARAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/LaporanRekapPembayaranPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.PEMBAYARAN_PER_MAHASISWA,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/PembayaranPerMahasiswaPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.DISTRIBUSI_PEMBAYARAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/DistribusiPembayaranPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.DISTRIBUSI_JENIS_TAGIHAN_PER_TANGGAL,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/DistribusiJenisTagihanPerTanggalPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.DISTRIBUSI_PEMBAYARAN_PER_TANGGAL,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/DistribusiPembayaranPerTanggalPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.PEMBAYARAN.PIVOT_PEMBAYARAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/pembayaran/pages/PivotPembayaranPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.UKT_MAHASISWA.LAPORAN_PENERIMA_UKT,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/ukt_mahasiswa/pages/LaporanPenerimaUktPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.UKT_MAHASISWA.LAPORAN_TARIF_UKT,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/ukt_mahasiswa/pages/LaporanTarifUktPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.UKT_MAHASISWA.LAPORAN_TARIF,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/ukt_mahasiswa/pages/LaporanTarifTagihanPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.DEPOSIT.LAPORAN_DEPOSIT,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/deposit/pages/LaporanDepositPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.DEPOSIT.LAPORAN_REKAP_DEPOSIT,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/deposit/pages/LaporanRekapDepositPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.POTONGAN.LAPORAN_PENERIMA_POTONGAN,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/potongan/pages/LaporanPenerimaPotonganPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.POTONGAN.REKAP_POTONGAN_BEASISWA,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/potongan/pages/RekapPotonganBeasiswaPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.MANUAL.CETAK_LAPORAN_MANUAL,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/manual/pages/CetakLaporanManualPage"
+          ),
+      ),
+    ),
+  },
+  {
+    path: ROUTES.LAPORAN.MONITORING_KEUANGAN.LAPORAN_MAHASISWA_TERCEKAL,
+    element: withSuspense(
+      lazy(
+        () =>
+          import(
+            "../../features/laporan/monitoring_keuangan/pages/LaporanMahasiswaTercekalPage"
+          ),
+      ),
+    ),
+  },
 ];
+
 

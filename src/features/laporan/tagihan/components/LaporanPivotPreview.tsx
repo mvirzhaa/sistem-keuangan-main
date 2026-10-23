@@ -1,8 +1,11 @@
 import React from "react";
-import { IoPrintOutline, IoDownloadOutline } from "react-icons/io5";
+import { IoPrintOutline } from "react-icons/io5";
+import ListTable, { type Column } from "../../../../components/tables/ListTable";
+import { KopLaporan } from "./KopLaporan";
 import type { PivotRowData } from "../utils/generateLaporanPivotHtml";
 
 interface LaporanPivotPreviewProps {
+  useKop?: boolean;
   periodeTagihan: string[];
   unitKerja: string;
   selectedFormat: string;
@@ -10,10 +13,11 @@ interface LaporanPivotPreviewProps {
   pivotData: PivotRowData[];
   formatRupiah: (num: number) => string;
   onLihatTabBaru: () => void;
-  onPrint?: () => void;
+  onCetakFormat?: () => void;
 }
 
 export const LaporanPivotPreview: React.FC<LaporanPivotPreviewProps> = ({
+  useKop = true,
   periodeTagihan,
   unitKerja,
   selectedFormat,
@@ -21,165 +25,201 @@ export const LaporanPivotPreview: React.FC<LaporanPivotPreviewProps> = ({
   pivotData,
   formatRupiah,
   onLihatTabBaru,
-  onPrint = () => window.print(),
+  onCetakFormat,
 }) => {
-  const totalBelumBayar = pivotData.reduce(
-    (acc, curr) => acc + curr.belumBayar,
-    0,
+  const totalJumlahTagihan = pivotData.reduce(
+    (acc, curr) => acc + curr.jumlahTagihan,
+    0
   );
-  const totalBelumLunas = pivotData.reduce(
-    (acc, curr) => acc + curr.belumLunas,
-    0,
+  const totalNominalTagihan = pivotData.reduce(
+    (acc, curr) => acc + curr.nominalTagihan,
+    0
   );
-  const totalLunas = pivotData.reduce((acc, curr) => acc + curr.lunas, 0);
-  const totalDispensasi = pivotData.reduce(
-    (acc, curr) => acc + curr.dispensasi,
-    0,
-  );
+  const totalDenda = pivotData.reduce((acc, curr) => acc + curr.denda, 0);
+  const totalPotongan = pivotData.reduce((acc, curr) => acc + curr.potongan, 0);
   const totalTagihan = pivotData.reduce(
     (acc, curr) => acc + curr.totalTagihan,
-    0,
+    0
   );
-  const totalTerbayar = pivotData.reduce(
-    (acc, curr) => acc + curr.totalTerbayar,
-    0,
+  const totalNominalBayar = pivotData.reduce(
+    (acc, curr) => acc + curr.nominalBayar,
+    0
   );
-  const totalSisa = pivotData.reduce((acc, curr) => acc + curr.sisaPiutang, 0);
-  const overallPct =
-    totalTagihan > 0 ? ((totalTerbayar / totalTagihan) * 100).toFixed(1) : "0";
+  const totalSisaTagihan = pivotData.reduce(
+    (acc, curr) => acc + curr.sisaTagihan,
+    0
+  );
+
+  // Definisi Kolom ListTable (9 kolom sesuai Gambar 3)
+  const columns: Column<PivotRowData>[] = [
+    {
+      key: "no",
+      header: "No.",
+      sortable: true,
+      className: "text-center py-2.5 px-2.5 border border-slate-300 text-xs",
+      headerClassName: "text-center py-2.5 px-2.5 border border-slate-300 font-semibold whitespace-nowrap",
+      width: "45px",
+      render: (item) => <span>{item.no}</span>,
+    },
+    {
+      key: "namaMahasiswa",
+      header: "Nama Mahasiswa",
+      sortable: true,
+      className: "py-2.5 px-3 border border-slate-300 text-xs font-semibold text-gray-900 whitespace-nowrap",
+      headerClassName: "text-left py-2.5 px-3 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => item.namaMahasiswa,
+    },
+    {
+      key: "jumlahTagihan",
+      header: "Jumlah Tagihan",
+      sortable: true,
+      className: "text-center py-2.5 px-2.5 border border-slate-300 text-xs font-mono text-gray-700 whitespace-nowrap",
+      headerClassName: "text-center py-2.5 px-2.5 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => item.jumlahTagihan.toLocaleString("id-ID"),
+    },
+    {
+      key: "nominalTagihan",
+      header: "Nominal Tagihan",
+      sortable: true,
+      className: "text-right py-2.5 px-3 border border-slate-300 text-xs font-mono font-medium text-gray-800 whitespace-nowrap",
+      headerClassName: "text-right py-2.5 px-3 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => formatRupiah(item.nominalTagihan),
+    },
+    {
+      key: "denda",
+      header: "Denda",
+      sortable: true,
+      className: "text-right py-2.5 px-2.5 border border-slate-300 text-xs font-mono font-medium text-gray-800 whitespace-nowrap",
+      headerClassName: "text-right py-2.5 px-2.5 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => formatRupiah(item.denda),
+    },
+    {
+      key: "potongan",
+      header: "Potongan / Beasiswa",
+      sortable: true,
+      className: "text-right py-2.5 px-2.5 border border-slate-300 text-xs font-mono font-medium text-gray-800 whitespace-nowrap",
+      headerClassName: "text-right py-2.5 px-2.5 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => formatRupiah(item.potongan),
+    },
+    {
+      key: "totalTagihan",
+      header: "Total Tagihan",
+      sortable: true,
+      className: "text-right py-2.5 px-3 border border-slate-300 text-xs font-mono font-semibold text-gray-900 whitespace-nowrap",
+      headerClassName: "text-right py-2.5 px-3 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => formatRupiah(item.totalTagihan),
+    },
+    {
+      key: "nominalBayar",
+      header: "Nominal Bayar",
+      sortable: true,
+      className: "text-right py-2.5 px-3 border border-slate-300 text-xs font-mono font-medium text-emerald-700 whitespace-nowrap",
+      headerClassName: "text-right py-2.5 px-3 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => formatRupiah(item.nominalBayar),
+    },
+    {
+      key: "sisaTagihan",
+      header: "Sisa Tagihan",
+      sortable: true,
+      className: "text-right py-2.5 px-3 border border-slate-300 text-xs font-mono font-bold text-rose-700 whitespace-nowrap",
+      headerClassName: "text-right py-2.5 px-3 border border-slate-300 font-semibold whitespace-nowrap",
+      render: (item) => formatRupiah(item.sisaTagihan),
+    },
+  ];
+
+  // Baris Total Keseluruhan untuk Footer ListTable
+  const footerRow = (
+    <tr className="bg-gray-100 font-bold text-gray-900 border-t-2 border-gray-300">
+      <td colSpan={2} className="py-2.5 px-3 text-center border border-slate-300 font-semibold">
+        TOTAL KESELURUHAN
+      </td>
+      <td className="py-2.5 px-3 text-center border border-slate-300 font-mono">
+        {totalJumlahTagihan.toLocaleString("id-ID")}
+      </td>
+      <td className="py-2.5 px-3 text-right border border-slate-300 font-mono">
+        {formatRupiah(totalNominalTagihan)}
+      </td>
+      <td className="py-2.5 px-3 text-right border border-slate-300 font-mono">
+        {formatRupiah(totalDenda)}
+      </td>
+      <td className="py-2.5 px-3 text-right border border-slate-300 font-mono">
+        {formatRupiah(totalPotongan)}
+      </td>
+      <td className="py-2.5 px-3 text-right border border-slate-300 font-mono">
+        {formatRupiah(totalTagihan)}
+      </td>
+      <td className="py-2.5 px-3 text-right border border-slate-300 font-mono text-emerald-700">
+        {formatRupiah(totalNominalBayar)}
+      </td>
+      <td className="py-2.5 px-3 text-right border border-slate-300 font-mono text-rose-700">
+        {formatRupiah(totalSisaTagihan)}
+      </td>
+    </tr>
+  );
+
+  const handleAction = onCetakFormat || onLihatTabBaru;
 
   return (
     <div
       id="pivot-preview-section"
       className="bg-white rounded shadow-md border-t-4 border-t-blue-600 p-6 mb-10 transition-all animate-fade-in"
     >
+      {/* Header Preview & Action Button */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 pb-4 border-b border-gray-200">
         <div>
           <h2 className="text-lg font-bold text-gray-900">
             Preview Laporan Pivot Tagihan
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Berdasarkan: <b className="text-blue-700">{kolomPivot}</b> |
-            Periode:{" "}
+            Berdasarkan: {kolomPivot || "Program Studi"} | Periode:{" "}
             {periodeTagihan.length > 0
               ? periodeTagihan.join(", ")
               : "Semua Periode"}{" "}
-            | Unit: {unitKerja || "Universitas Ibn Khaldun"} | Format:{" "}
-            {selectedFormat}
+            | Format: {selectedFormat}
           </p>
         </div>
+
+        {/* Tombol Cetak ({selectedFormat}) */}
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={onPrint}
-            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded flex items-center gap-1 transition-colors cursor-pointer"
+            onClick={handleAction}
+            className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded flex items-center gap-1.5 transition-colors cursor-pointer border border-blue-200 shadow-sm active:scale-95"
+            title={`Cetak dalam format ${selectedFormat}`}
           >
             <IoPrintOutline size={16} />
-            <span>Cetak</span>
-          </button>
-          <button
-            type="button"
-            onClick={onLihatTabBaru}
-            className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded flex items-center gap-1 transition-colors cursor-pointer"
-          >
-            <IoDownloadOutline size={16} />
-            <span>Export ({selectedFormat})</span>
+            <span>Cetak ({selectedFormat})</span>
           </button>
         </div>
       </div>
 
-      {/* Table Pivot Data */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs text-left border border-gray-200">
-          <thead className="bg-[#1e3a8a] text-white">
-            <tr>
-              <th className="py-2.5 px-3 text-center border">No</th>
-              <th className="py-2.5 px-3 border">{kolomPivot}</th>
-              <th className="py-2.5 px-3 text-right border">Belum Bayar</th>
-              <th className="py-2.5 px-3 text-right border">Belum Lunas</th>
-              <th className="py-2.5 px-3 text-right border">Lunas</th>
-              <th className="py-2.5 px-3 text-right border">Dispensasi</th>
-              <th className="py-2.5 px-3 text-right border">Total Tagihan</th>
-              <th className="py-2.5 px-3 text-right border">Total Terbayar</th>
-              <th className="py-2.5 px-3 text-right border">Sisa Piutang</th>
-              <th className="py-2.5 px-3 text-center border">% Terbayar</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {pivotData.map((row) => (
-              <tr key={row.no} className="hover:bg-gray-50">
-                <td className="py-2 px-3 text-center border">{row.no}</td>
-                <td className="py-2 px-3 font-semibold text-gray-900 border">
-                  {row.pivotKey}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono text-rose-600">
-                  {formatRupiah(row.belumBayar)}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono text-amber-600">
-                  {formatRupiah(row.belumLunas)}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono text-emerald-600">
-                  {formatRupiah(row.lunas)}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono">
-                  {formatRupiah(row.dispensasi)}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono font-medium">
-                  {formatRupiah(row.totalTagihan)}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono font-semibold text-emerald-700">
-                  {formatRupiah(row.totalTerbayar)}
-                </td>
-                <td className="py-2 px-3 text-right border font-mono font-semibold text-rose-700">
-                  {formatRupiah(row.sisaPiutang)}
-                </td>
-                <td className="py-2 px-3 text-center border">
-                  <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                      row.persentaseTerbayar >= 70
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "bg-amber-100 text-amber-800"
-                    }`}
-                  >
-                    {row.persentaseTerbayar}%
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot className="bg-gray-100 font-semibold text-gray-900 border-t-2 border-gray-300">
-            <tr>
-              <td colSpan={2} className="py-2.5 px-3 text-center border">
-                TOTAL KESELURUHAN
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono text-rose-600">
-                {formatRupiah(totalBelumBayar)}
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono text-amber-600">
-                {formatRupiah(totalBelumLunas)}
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono text-emerald-600">
-                {formatRupiah(totalLunas)}
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono">
-                {formatRupiah(totalDispensasi)}
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono">
-                {formatRupiah(totalTagihan)}
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono text-emerald-700">
-                {formatRupiah(totalTerbayar)}
-              </td>
-              <td className="py-2.5 px-3 text-right border font-mono text-rose-700">
-                {formatRupiah(totalSisa)}
-              </td>
-              <td className="py-2.5 px-3 text-center border">
-                {overallPct}%
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+      {/* Kop Laporan Resmi UIKA jika opsi Gunakan KOP aktif */}
+      {useKop && (
+        <KopLaporan
+          title="LAPORAN PIVOT TAGIHAN"
+          periode={
+            periodeTagihan.length > 0
+              ? `PERIODE ${periodeTagihan.join(", ")}`
+              : ""
+          }
+        />
+      )}
+
+      {/* Tabel Data Menggunakan ListTable Reusable Component */}
+      <div className="w-full text-xs">
+        <ListTable<PivotRowData>
+          data={pivotData}
+          columns={columns}
+          rowKey={(row) => row.no}
+          pageSize={10}
+          pageSizeOptions={[10, 25, 50, 100]}
+          emptyMessage="Tidak ada data pivot tagihan"
+          showFooter={true}
+          footerRow={footerRow}
+        />
       </div>
     </div>
   );
 };
+
+export default LaporanPivotPreview;
